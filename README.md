@@ -65,21 +65,3 @@ website = Website(
 if __name__ == "__main__":
 	website.cli()
 ```
-
-## CLI:
-	Usage: example <mode> <options> 
-	Modes:
-	    -h / --help : Show the documentation.
-	Options:
-	Author: Daan van den Bergh 
-	Copyright: © Daan van den Bergh 2020. All rights reserved.
-
-## Python Examples.
-
-Initialize the encryption class (Leave the passphrase None if you require no passphrase).
-```python
-# initialize the encryption class.
-encryption = Encryption(
-	key='mykey/',
-	passphrase='MyPassphrase123!')
-```
