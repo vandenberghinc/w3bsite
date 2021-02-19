@@ -5,7 +5,7 @@ Copyright:  © 2020 Daan van den Bergh All Rights Reserved<br>
 <br>
 <br>
 <p align="center">
-  <img src="https://raw.githubusercontent.com/vandenberghinc/public-storage/master/vandenberghinc/icon/icon.png" alt="Bergh-Encryption" width="50"/>
+  <img src="https://raw.githubusercontent.com/vandenberghinc/public-storage/master/vandenberghinc/icon/icon.png" alt="VanDenBerghInc" width="50"/>
 </p>
 
 ## Installation
