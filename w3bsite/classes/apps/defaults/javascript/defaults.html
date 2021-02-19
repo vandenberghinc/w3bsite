@@ -1,0 +1,518 @@
+{% load static %} 
+<!-- html format to parse django template data -->
+<script type="text/javascript">
+
+// adds an element to the array if it does not already exist using a comparer 
+// function
+Array.prototype.push_if_not_included = function(element) { 
+	if (!this.includes(element)) {
+		this.push(element)
+	}
+}
+
+// make request.
+$.ajaxSetup({ 
+     beforeSend: function(xhr, settings) {
+         function getCookie(name) {
+             var cookieValue = null;
+             if (document.cookie && document.cookie != '') {
+                 var cookies = document.cookie.split(';');
+                 for (var i = 0; i < cookies.length; i++) {
+                     var cookie = jQuery.trim(cookies[i]);
+                     // Does this cookie string begin with the name we want?
+                     if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                         break;
+                     }
+                 }
+             }
+             return cookieValue;
+         }
+         if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+             // Only send the token to relative URLs i.e. locally.
+             xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+         }
+     } 
+});
+function __make_request__(url, response_element=null, loader=null, data={}, handler=null) {
+	if (response_element != null) {
+		response_element.style.display = 'none'
+	}
+	if (loader != null) {
+		loader.style.display = "block"
+	}
+	$.ajax({
+			url: url,
+			data: data,
+			type: "post",
+			dataType: 'json',
+			success: function (data, status, xhr) {
+				//try {
+				//	data = JSON.parse(data)
+				//} catch(e) {}
+				// check error response.
+				if (loader != null) {
+					loader.style.display = "none"
+				}
+				if (data.error != null) {
+					if (response_element != null) {
+						response_element.style.display = "block"
+						response_element.style.color = '{{colors.red}}'
+						response_element.innerHTML = data.error
+						setTimeout(function() {
+							response_element.style.display = 'none'
+						}, 3500)
+					}
+					if (handler != null) { handler(data) }
+
+				// check success response.
+				} else if (data.success == true || data.success == "true" || data.success == "True") {
+					if (response_element != null) {
+						response_element.style.display = "block"
+						response_element.style.color = '{{colors.green}}'
+						if (data.message != null) { 
+								response_element.innerHTML = data.message
+						} else {
+								response_element.innerHTML = "Success."
+						}
+						setTimeout(function() {
+							response_element.style.display = 'none'
+						}, 3500)
+					}
+					if (handler != null) { handler(data) }
+
+				// should not happen.
+				} else {
+					if (response_element != null) {
+						response_element.style.display = "block"
+						response_element.style.color = '{{colors.red}}'
+						response_element.innerHTML = "Some unexpexted error arised #872364."
+						setTimeout(function() {
+							response_element.style.display = 'none'
+						}, 3500)
+					}
+					if (handler != null) { 
+						console.log(JSON.loads(data).error)
+						handler({
+							success:false,
+							message:null,
+							error:"Encoutered an unknown error (76345)."
+						})
+					}
+				}
+
+			},
+			error: function(error) {
+				if (loader != null) {
+					loader.style.display = "none"
+				}
+				if (response_element != null) {
+					response_element.style.color = "{{colors.red}}"
+					if (error.msg != null) {
+						response_element.innerHTML = "Error: "+error.msg
+					} else if (error.msg != null) {
+						response_element.innerHTML = "Error: "+error.msg
+					//} else if (error.responseText != null) {
+					//  response_element.innerHTML = "Error: "+error.responseText
+					} else {
+						response_element.innerHTML = "Some unexpexted error arised, #3478834"
+					}
+					setTimeout(function() {
+						response_element.style.display = 'none'
+					}, 3500)
+				}
+				if (handler != null) { 
+					handler({
+						success:false,
+						message:null,
+						error:"Encoutered error: "+error.responseText
+					})
+				}
+			}
+	})
+}
+
+
+// capitalize the start of a word.
+function capitalize_world(string) {
+	return string.charAt(0).toUpperCase() + string.slice(1)
+}
+
+// capitalize each word in a scentence.
+function capitalize_scentence(string) {
+	var items = string.split(" ")
+	scentence = ""
+	items.forEach(function(item) {
+		if (scentence == ""){
+			scentence = capitalize_world(item)
+		} else {
+			scentence += " "+capitalize_world(item)
+		}
+	})
+	return scentence
+}
+
+// capitalize each word in a scentence.
+function __set_background_color__(color) {
+	var topbar = document.getElementById("topbar")
+	var content = document.getElementById("content")
+	var body = document.getElementById("body")
+	body.style.background = color;
+	body.style.backgroundColor = color;
+	content.style.background = color;
+	content.style.backgroundColor = color;
+	topbar.style.background = color;
+	topbar.style.backgroundColor = color;
+}
+
+// toggle full screen.
+FULLSCREEN = false
+var old_fullscreen_values = {}
+function __toggle_full_screen__(mode="toggle", options=["toggle", "show", "hide"]) {
+	var content = document.getElementById("content")
+	if (mode == "show") {
+		old_fullscreen_values = {
+			left:content.style.left,
+			right:content.style.right,
+			top:content.style.top,
+			bottom:content.style.bottom,
+		}
+		content.style.left = "0px"
+		content.style.right = "0px"
+		content.style.top = "0px"
+		content.style.bottom = "0px"
+		FULLSCREEN = true
+	} else if (mode == "hide") {
+		content.style.left = old_fullscreen_values.left
+		content.style.right = old_fullscreen_values.right
+		content.style.top = old_fullscreen_values.top
+		content.style.bottom = old_fullscreen_values.bottom
+		FULLSCREEN = false
+	} else if (mode == "toggle") {
+		if (FULLSCREEN == true) {
+			__toggle_full_screen__("hide")
+		} else {
+			__toggle_full_screen__("show")
+		}
+	}
+}
+
+// hide & show the left bar.
+var LEFTBAR_OPEN = true
+function __toggle_left_bar__(mode="toggle", options=["toggle", "show", "hide"]) {
+	var leftbar = document.getElementById("leftbar")
+	var content = document.getElementById("content")
+	if (mode == "show") {
+		leftbar.style.display = "block"
+		content.style.left = "280px"
+		LEFTBAR_OPEN = true
+	} else if (mode == "hide") {
+		leftbar.style.display = "none"
+		content.style.left = "15px"
+		LEFTBAR_OPEN = false
+	} else if (mode == "toggle") {
+		if (LEFTBAR_OPEN == true) {
+			__toggle_left_bar__("hide")
+		} else {
+			__toggle_left_bar__("show")
+		}
+	}
+}
+
+// hide & show the right bar.
+var LEFTBAR_OPEN = true
+function __toggle_right_bar__(mode="toggle", options=["toggle", "show", "hide"]) {
+	var rightbar = document.getElementById("rightbar")
+	var content = document.getElementById("content")
+	if (mode == "show") {
+		rightbar.style.display = "block"
+		content.style.right = "280px"
+		LEFTBAR_OPEN = true
+	} else if (mode == "hide") {
+		rightbar.style.display = "none"
+		content.style.right = "15px"
+		LEFTBAR_OPEN = false
+	} else if (mode == "toggle") {
+		if (LEFTBAR_OPEN == true) {
+			__toggle_left_bar__("hide")
+		} else {
+			__toggle_left_bar__("show")
+		}
+	}
+}
+
+// hide & show the top bar.
+var TOPBAR_OPEN = true
+function __toggle_top_bar__(mode="toggle", options=["toggle", "show", "hide"]) {
+	var topbar = document.getElementById("topbar")
+	var content = document.getElementById("content")
+	var leftbar = document.getElementById("leftbar")
+	if (mode == "show") {
+		topbar.style.display = "block"
+		content.style.top = "90px"
+		leftbar.style.top = "90px"
+		TOPBAR_OPEN = true
+	} else if (mode == "hide") {
+		topbar.style.display = "none"
+		content.style.top = "15px"
+		leftbar.style.top = "15px"
+		TOPBAR_OPEN = false
+	} else if (mode == "toggle") {
+		if (TOPBAR_OPEN == true) {
+			__toggle_top_bar__("hide")
+		} else {
+			__toggle_top_bar__("show")
+		}
+	}
+}
+
+// hide & show the left bar.
+function __toggle_widgets__(id="my_widget", widgets={"my_widget":document.getElementById("my_widget")}, flex=false) {
+	Object.entries(widgets).forEach(function([key, value]) {
+		if (key == id) {
+			if (flex == true || value.className == "full_window_centered" || value.className == "full_window_row_centered") {
+				value.style.display = "flex"
+			} else {
+				value.style.display = "block"
+			}
+		} else {
+			value.style.display = "none"
+		}
+	});
+}
+
+// toggle buttons.
+function toggle_button(identifier, enable_event=null, disable_event=null) {
+	input = document.getElementById(identifier+".input")
+	button = document.getElementById(identifier+".button")
+	if (input.value == "False" || input.value == "false" || input.value == false) {
+		input.value = "True"
+		button.style.marginLeft = "19px";
+		button.style.background = "{{colors.green}}";
+		if (enable_event != null) {
+			enable_event(identifier)
+		}
+	} else if (input.value == "True" || input.value == "true" || input.value == true) {
+		input.value = "False"
+		button.style.marginLeft = "0px";
+		button.style.background = "{{colors.red}}";
+		if (disable_event != null) {
+			disable_event(identifier)
+		}
+	}
+}
+function initialize_toggle_button(identifier) {
+	input = document.getElementById(identifier+".input")
+	button = document.getElementById(identifier+".button")
+	if (input.value == "True" || input.value == "true" || input.value == true) {
+		button.style.marginLeft = "19px";
+		button.style.background = "{{colors.green}}";
+	} else {// (input.value == "False" || input.value == "false" || input.value == false) {
+		input.value = "False"
+		button.style.marginLeft = "0px";
+		button.style.background = "{{colors.red}}";
+	}
+}
+function set_toggle_button(identifier, mode=true) {
+	input = document.getElementById(identifier+".input")
+	button = document.getElementById(identifier+".button")
+	if (mode == "False" || mode == "false" || mode == false) {
+		input.value = "False"
+		button.style.marginLeft = "0px";
+		button.style.background = "{{colors.red}}";
+	} else if (mode == "True" || mode == "true" || mode == true) {
+		input.value = "True"
+		button.style.marginLeft = "19px";
+		button.style.background = "{{colors.green}}";
+	}
+}
+function disable_toggle_button(identifier) {
+	input = document.getElementById(identifier+".input")
+	button = document.getElementById(identifier+".button")
+	if (input.value == "False" || input.value == "false" || input.value == false) {
+		input.value = "False"
+		button.style.marginLeft = "0px";
+		button.style.background = "{{colors.red}}75";
+		button.onclick = function() {}
+	} else if (input.value == "True" || input.value == "true" || input.value == true) {
+		input.value = "True"
+		button.style.marginLeft = "19px";
+		button.style.background = "{{colors.green}}75";
+		button.onclick = function() {}
+	}
+}
+function enable_toggle_button(identifier) {
+	input = document.getElementById(identifier+".input")
+	button = document.getElementById(identifier+".button")
+	if (input.value == "False" || input.value == "false" || input.value == false) {
+		input.value = "False"
+		button.style.marginLeft = "0px";
+		button.style.background = "{{colors.red}}";
+		button.onclick = function() {
+			toggle_button(identifier)
+		}
+	} else if (input.value == "True" || input.value == "true" || input.value == true) {
+		input.value = "True"
+		button.style.marginLeft = "19px";
+		button.style.background = "{{colors.green}}";
+		button.onclick = function() {
+			toggle_button(identifier)
+		}
+	}
+}
+
+// Mobile detection.
+var mobile_platform = {
+		Android: function() {
+				return navigator.userAgent.match(/Android/i);
+		},
+		BlackBerry: function() {
+				return navigator.userAgent.match(/BlackBerry/i);
+		},
+		iOS: function() {
+				return navigator.userAgent.match(/iPhone|iPad|iPod/i);
+		},
+		Opera: function() {
+				return navigator.userAgent.match(/Opera Mini/i);
+		},
+		Windows: function() {
+				return navigator.userAgent.match(/IEMobile/i) || navigator.userAgent.match(/WPDesktop/i);
+		},
+		any: function() {
+				return (mobile_platform.Android() || mobile_platform.BlackBerry() || mobile_platform.iOS() || mobile_platform.Opera() || mobile_platform.Windows());
+		}
+};
+/*
+	if (mobile_platform.any()) {
+		alert('Mobile')
+	}
+*/
+
+// get url parameters.
+function get_boolean_url_param(id) {
+	var url = new URL(window.location.href);
+	var value = url.searchParams.get(id);
+	if (value == "true" || value == "True" || value == true) {
+		return true
+	}
+	else { 
+		return false 
+	}
+}
+function get_url_param(id) {
+	var url = new URL(window.location.href);
+	return url.searchParams.get(id);
+}
+
+// get a timestamp dd-mm-yy
+function get_timestamp() {
+	let date_ob = new Date()
+	let date = ("0" + date_ob.getDate()).slice(-2)
+	let month = ("0" + (date_ob.getMonth() + 1)).slice(-2)
+	let year = date_ob.getFullYear()
+	return year + "-" + month + "-" + date
+}
+
+// string python like format function.
+String.prototype.format = function () {
+	var i = 0, args = arguments;
+	return this.replace(/{}/g, function () {
+		return typeof args[i] != 'undefined' ? args[i++] : '';
+	});
+};
+
+// convert a float to int.
+function float2int (value) {
+	if (value == "NaN") {
+		return 'NaN'
+	} else {
+		return Math.round(value * 1) / 1	
+	}
+}
+
+// retrieve the browser platform.
+function get_platform() {
+		if ( ( window.innerWidth <= 800 ) && ( window.innerHeight <= 600 ) ) {
+			return "mobile"
+		} else {
+			return "desktop"
+		}
+}
+
+// get content size.
+function len(item) {
+	if (typeof item === 'string' || item instanceof String) {
+		return item.length;
+	} else if (typeof item === 'object' || item instanceof Object) {
+		return Object.keys(item).length;
+	} else if (typeof item === 'array' || item instanceof Array) {
+		return item.length;
+	}
+
+}
+
+// clone a dictionary.
+function __clone_dict__(clone) {
+	return JSON.parse(JSON.stringify(clone));
+}
+
+// get cookie.
+function get_cookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+// const csrftoken = get_cookie('csrftoken');
+
+// browsers.
+
+// Opera 8.0+
+var isOpera = (!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
+
+// Firefox 1.0+
+var isFirefox = typeof InstallTrigger !== 'undefined';
+
+// Safari 3.0+ "[object HTMLElementConstructor]" 
+var isSafari = /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || (typeof safari !== 'undefined' && window['safari'].pushNotification));
+
+// Internet Explorer 6-11
+var isIE = /*@cc_on!@*/false || !!document.documentMode;
+
+// Edge 20+
+var isEdge = !isIE && !!window.StyleMedia;
+
+// Chrome 1 - 79
+var isChrome = !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime);
+
+// Edge (based on chromium) detection
+var isEdgeChromium = isChrome && (navigator.userAgent.indexOf("Edg") != -1);
+
+// Blink engine detection
+var isBlink = (isChrome || isOpera) && !!window.CSS;
+
+
+// active tab
+$(function() {
+    window.isActive = true;
+    $(window).focus(function() { this.isActive = true; });
+    $(window).blur(function() { this.isActive = false; });
+    showIsActive();
+});
+function showIsActive() {
+    window.setTimeout("showIsActive()", 2000);
+}
+/*
+	if (window.isActive) {
+	}
+*/
+</script>

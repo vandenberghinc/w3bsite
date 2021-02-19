@@ -1,0 +1,336 @@
+{% extends 'w3bsite/classes/apps/defaults/html/base.html' %}
+{% load static %}
+{% block content %}
+
+<!-- TOP BAR -->
+<button type="button" class="button_bordered" style="position: absolute; left: 15px; top: 5px; width: 100px; z-index: 11;">
+	<a id="previous" href="/" class="empty_a">
+		Previous
+	</a>
+</button>
+<a href="/" class="empty_a" style="z-index: 12; position: absolute; right: 15px; top: 15px;">
+	<img src="{% static 'favicon.png' %}" width="25px" height="25px" style="">
+</a>
+
+<!-- JAVASCRIPT -->
+<script type="text/javascript">
+	var PRODUCT = get_url_param("product")
+	var PLAN = get_url_param("plan")
+	var PRODUCTS = {}
+	var previous = get_url_param("previous")
+	if (previous == null) {
+		previous = "/"
+	}
+	if (previous != null && previous != "") {
+		document.getElementById("previous").href = previous
+	}
+</script>
+{% for key, value in STRIPE.PRODUCTS.items %}
+	<script type="text/javascript">
+		PRODUCTS["{{key}}"] = {}
+	</script>
+	{% for key_, value_ in value.items %}
+		<script type="text/javascript">
+			PRODUCTS["{{key}}"]["{{key_}}"] = {}
+		</script>
+		{% for key__, value__ in value_.items %}
+			<script type="text/javascript">
+				PRODUCTS["{{key}}"]["{{key_}}"]["{{key__}}"] = "{{value__}}"
+			</script>
+		{% endfor %}
+	{% endfor %}
+{% endfor %}
+<script type="text/javascript">
+	__toggle_full_screen__("show")
+</script>
+
+<!-- CONTENT -->
+<div id="payments.loaded" class="full_window" style="height: 100%; display: none;">
+	<div id="payments.container" class="full_window_centered" style="">
+		<div id="payments.content" class="" style="margin: 0 auto;">
+
+			<!-- step 1 -->
+			<div id="payments.content.left" class="centered widget" style="max-width: 400px; margin: 0px 0px 0px 00px; float: left; background: #00000000; box-shadow: 0 0 0px #00000000; position: relative; margin: 0 auto;">
+
+				<!-- product -->
+				<h1 class="title_reversed" style="text-align: center; font-size: 26px; margin-top: 1px;">
+					Subscription Plans
+				</h1>
+				<p class="text_reversed" style="margin-top: 0px;">
+					Select one of the subscription plans to cancel.
+				</p>
+				<div id="payments.plans" style="display: flex; flex-grow: 1; flex-direction: column;">
+				</div>
+				
+			</div>
+
+			<!-- step 2 -->
+			<div id="payments.content.right" class="widget" style="max-width: 400px; margin: 0px 0px 0px 0px; float: left; display: block; margin: 0 auto; display: none;">
+
+				<!-- still to pay. -->
+				<div id="payments.form" style="display: none;">
+
+					<!-- title -->
+					<h1 class="title" style="text-align: center; font-size: 24px; margin-top: 1px;">
+						Cancel Subscription
+					</h1>
+					<p class="text" id="payments.text">
+						Cancel the subscription plan $plan of product $product.
+					</p>
+
+					<!-- response -->
+					<p class="text" id="payments.response" style="display: none; font-size: 12px; overflow: scroll;"></p>
+					<div class="loader" id="payments.loader" style="transform: scale(0.33); display: block; margin: 0 auto; display: none;"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+
+					<!-- buttons -->
+					<div class="wrapper">
+						<button onclick="" type="button" class="button" style="margin-top: 25px;">
+							<a href="/" class="empty_a">
+								Home
+							</a>
+						</button>
+						<div style="width: 10px;"></div>
+						<button onclick="cancel()" type="button" class="button" style="margin-top: 25px;">
+							<a href="#" class="empty_a">
+								Unsubscribe
+							</a>
+						</button>
+					</div>
+					<p class="text" style="text-align: center; font-size: 10px; margin-top: 15px;">
+						Your subscription will be canceled immediately.
+					</p>
+				</div>
+
+				<!-- successfull purchase -->
+				<div id="payments.success" style="display: block;">
+
+					<!-- title -->
+					<h1 class="title" style="text-align: center; font-size: 24px; margin-top: 1px;">
+						Successfully Unsubscribed
+					</h1>
+					<p id="payments.success.text" class="text" style="">
+						Successfully unsubscribed from subscription to plan $plan from product $product.
+					</p>
+					<img src="{% static 'media/icons/check.png' %}" alt="" width="55" height="55" style="margin: 0 auto; display: block; margin-top: 25px; margin-bottom: 15px;" /> 
+
+					<!-- buttons -->
+					<button onclick="" type="button" class="button" style="margin-top: 25px;">
+						<a href="/" class="empty_a">
+							Home
+						</a>
+					</button>
+					<p class="text" style="text-align: center; font-size: 10px; margin-top: 15px;">
+						Your subscription should be canceled immediately.
+					</p>
+
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+<div id="payments.loading" class="full_window" style="display: block;">
+	<div class="full_window_centered">
+		<h1 class="title_reversed">
+			Loading Subscriptions
+		</h1>
+		<div class="loader_reversed" style="transform: scale(1); display: block; margin: 0 auto; margin-top: 25px;"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+	</div>
+</div>
+
+<!-- JAVASCRIPT -->
+<script type="text/javascript">
+
+	// elements.
+	var payment_elements = {
+		loading:document.getElementById("payments.loading"),
+		loaded:document.getElementById("payments.loaded"),
+		container:document.getElementById("payments.container"),
+		content:document.getElementById("payments.content"),
+		left_content:document.getElementById("payments.content.left"),
+		right_content:document.getElementById("payments.content.right"),
+		form:document.getElementById("payments.form"),
+		success:document.getElementById("payments.success"),
+		success_text:document.getElementById("payments.success.text"),
+		text:document.getElementById("payments.text"),
+		card_name:document.getElementById("payments.card_name"),
+		card_number:document.getElementById("payments.card_number"),
+		expiration_year:document.getElementById("payments.expiration_year"),
+		expiration_month:document.getElementById("payments.expiration_month"),
+		cvc:document.getElementById("payments.cvc"),
+		plans:document.getElementById("payments.plans"),
+		response:document.getElementById("payments.response"),
+		loader:document.getElementById("payments.loader"),
+	}
+
+	// check authenticated.
+	if ("{{request.user.username}}" == "") {
+		location.href = "/authentication/signin/"
+	}
+
+	// add the active subscriptions.
+	SUBSCRIPTIONS = {}
+	function add_subscriptions() {
+		__make_request__("/requests/payments/subscriptions/list/", null, null, {
+		}, function(response) {
+			payment_elements.loading.style.display = "none"
+			payment_elements.loaded.style.display = "block"
+			if (response.success == true) {
+				SUBSCRIPTIONS = response.subscriptions
+				if (len(SUBSCRIPTIONS) == 0) {
+					show_error(
+						// message.
+						"Warning!",
+						"You have no active subscriptions..",
+						"{% static 'media/icons/warning.png' %}",
+						// left button.
+						"Previous",
+						function() {
+							location.href = previous
+						},
+						// right button.
+						"Home",
+						function() {
+							location.href = "/"
+						},
+					)
+
+				} else {
+					payment_elements.plans.innerHTML = ""
+					for (const [plan_id, subscription_info] of Object.entries(SUBSCRIPTIONS)) {
+						plan_name = subscription_info["plan"]
+						product_name = subscription_info["product"]
+						favicon = subscription_info["favicon"]
+						if (favicon == null || favicon == "None") {
+							favicon = "{% static 'favicon.ico' %}"
+						}
+						payment_elements.plans.innerHTML += `
+							<div class="wrapper" style="flex: 1; width: 100%;">
+								<a class="empty_a" href="#" style="flex: 1;" onclick="PLAN='`+plan_name+`';select_plan('`+product_name+`', '`+plan_name+`')">
+									<div class="wrapper widget_reversed" style="border: 1px solid #00000010; border-radius: 25px; width: 100%; height: 55px;  margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px; background-color: {{colors.widgets}}; border: 1px solid {{COLORS.widgets_reversed}}; box-shadow: none;">
+										<img src="`+favicon+`" alt="Poker Stats" width="30" height="30" style="margin: 12.5px 0px 0px 15px;" /> 
+										<div style="width: 100%; white-space: nowrap; overflow: scroll; margin: 15px 0px 0px 10px; padding-right: 25px; flex: 1;">
+											<h1 id="payments.title" class="subtitle" style="text-align: left; color: {{COLORS.widgets_reversed}}; font-size: 16px; font-weight: 600;  margin: 0px 0px 0px 10px; padding: 0px 0px 0px 0px;">
+												`+capitalize_scentence(product_name).replace("Nas-", "NAS-")+` - `+capitalize_scentence(plan_name)+`
+											</h1>
+										</div>
+										<div style="min-width: 100px; margin: 12.5px 0px 0px 0px; flex: 0;">
+											<h1 id="payments.price" class="subtitle" style="text-align: center; overflow: scroll; color: {{COLORS.widgets_reversed}}; font-size: 14px; font-weight: 500; margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px;">
+												€ `+subscription_info.price+`
+											</h2>
+											<h1 id="payments.interval" class="subtitle" style="text-align: center; color: {{COLORS.widgets_reversed}}; font-size: 8px; font-weight: 400; margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px;">
+												per month
+											</h2>
+										</div>
+									</div>
+								</a>
+								<button onclick="select_cancel('`+plan_id+`')" href="#" class="button_bordered" type="button" style="color: {{colors.red}}; border: 1px solid {{colors.red}}; padding: 2.5px 5px 2.5px 5px; width: 50px; font-size: 12px; height: 25px; margin: 15px 15px 0px 15px;">
+									<a href="#" class="empty_a">
+										Cancel
+									</a>
+								</button>
+							</div>
+							<div style="height: 5px; width: 5px;"></div>
+						`
+					}
+				}
+			} else {
+				show_error(
+					// message.
+					"Warning!",
+					response.error,
+					"{% static 'media/icons/warning.png' %}",
+					// left button.
+					"Previous",
+					function() {
+						location.href = previous
+					},
+					// right button.
+					"Home",
+					function() {
+						location.href = "/"
+					},
+				)
+			}
+		})
+	}
+
+	// cancel.
+	CANCEL = {
+		product:null,
+		plan:null,
+		subscription_id:null,
+	}
+	function select_cancel(id) {
+		CANCEL.plan = SUBSCRIPTIONS[id].plan
+		CANCEL.product = SUBSCRIPTIONS[id].product
+		CANCEL.subscription_id = SUBSCRIPTIONS[id].subscription_id
+		payment_elements.text.innerHTML = `Cancel the subscription plan ${CANCEL.plan} of product ${CANCEL.product}.`
+		payment_elements.left_content.style.display = "none"
+		payment_elements.right_content.style.display = "block"
+	}
+	function cancel() {
+		show_error(
+			// message.
+			"Warning!",
+			`You are canceling subscription plan ${CANCEL.plan} of product ${CANCEL.product}. Do you wish to proceed?`,
+			"{% static 'media/icons/warning.png' %}",
+			// left button.
+			"Cancel",
+			function() {
+				hide_error()
+			},
+			// right button.
+			"Proceed",
+			function() {
+				hide_error()
+				__make_request__("/requests/payments/subscriptions/delete/", payment_elements.response, payment_elements.loader, {
+					subscription_id:CANCEL.subscription_id,
+					//plan: CANCEL.plan,
+					//product: CANCEL.product,
+				}, function(response) {
+					if (response.success == true) {
+						setInterval(function() {
+							payment_elements.left_content.style.display = "none"
+							payment_elements.form.style.display = "none"
+							payment_elements.success.style.display = "block"
+							payment_elements.success_text.innerHTML = `Successfully unsubscribed from plan ${PLAN} of product ${PRODUCT}.`
+						}, 2500)
+						
+					}
+				})
+			},
+		)
+	}
+
+	// check id token.
+	add_subscriptions()
+
+	// set flex.
+	PAYMENTS_FLEX_LARGE = true
+	function __set_payments_flex__() {
+		if (window.innerWidth > 950 && PAYMENTS_FLEX_LARGE == false) {
+			payment_elements.container.setAttribute("class", "full_window_centered")
+			payment_elements.container.style.paddingTop = "0px"
+			payment_elements.container.style.paddingBottom = "0px"
+			payment_elements.content.style.maxWidth = "1025px"
+			payment_elements.content.style.flexDirection = "row"
+			payment_elements.left_content.style.float = "left"
+			payment_elements.right_content.style.float = "left"
+			PAYMENTS_FLEX_LARGE = true
+		} else if (window.innerWidth <= 950 && PAYMENTS_FLEX_LARGE == true) {
+			payment_elements.container.setAttribute("class", "")
+			payment_elements.container.style.paddingTop = "50px"
+			payment_elements.container.style.paddingBottom = "50px"
+			payment_elements.content.style.maxWidth = "450px"
+			payment_elements.content.style.flexDirection = "column"
+			payment_elements.left_content.style.float = "none"
+			payment_elements.right_content.style.float = "none"
+			PAYMENTS_FLEX_LARGE = false
+		}
+	}
+	__set_payments_flex__()
+	
+</script>
+
+{% endblock %}

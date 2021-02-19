@@ -1,0 +1,86 @@
+{% extends 'w3bsite/classes/apps/defaults/html/base.html' %}
+{% load static %}
+{% block content %}
+
+<!-- JS -->
+<script type="text/javascript">
+	__toggle_top_bar__("hide")
+	__toggle_left_bar__("hide")
+	__toggle_right_bar__("hide")
+	check_authenticated(function(response) {
+		if (response.error == null) {
+			location.href = "/"
+		}
+	})
+</script>
+
+<!-- CONTENT -->
+<div class="full_window_centered">
+	<img src="{% static 'favicon.png' %}" width="45px" height="45px" style="display: block; margin: 0 auto; margin-bottom: 35px;">
+
+	<!-- SIGN UP -->
+	<div class="widget_container">
+		<div class="widget_child">
+			<h1 class="title">
+				Sign In
+			</h1>		
+			<p class="text" style="">
+				Enter your username & password to sign in.
+			</p>
+			<input id="username" type="username" placeholder="Username" class="input" style="margin-bottom: 5px;">
+			<input id="password" type="password" placeholder="Your Passphrase" class="input" style="margin-bottom: 5px;">
+			<p class="text" style="font-size: 12px; text-align: right; padding: 0px 20px 0px 20px; margin: 10px 0px 5px 0px;">
+				<a href="/authentication/reset/" class="empty_a">
+					Reset Password
+				</a>
+			</p>
+			<p class="text" id="response" style="display: none; font-size: 12px; overflow: scroll;"></p>
+			<div class="loader" id="loader" style="transform: scale(0.33); display: block; margin: 0 auto; display: none;"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+			<div style="display: flex;">
+				<button class="button" style="width: 49%;">
+					<a href="/authentication/signup/" class="empty_a">
+						Sign Up
+					</a>
+				</button>
+				<div style="width: 2%; height: 1%;"></div>
+				<button class="button" style="width: 49%;" onclick="__sign_in__()">
+					<a href="#" class="empty_a">
+						Sign In
+					</a>
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<h1 class="text_reversed" style="font-size: 6px; font-weight: 400; margin-top: 35px;">
+		© 2020 VanDenBerghInc. All Rights Reserved.
+	</h1>
+</div>
+
+<!-- JAVASCRIPT -->
+<script type="text/javascript">
+	
+	// create encryption request.
+	function __sign_in__() {
+		var username = document.getElementById("username").value
+		var password = document.getElementById("password").value
+		function __handle_response__(response) {
+			if (response.error == null) {
+				location.href = "/"
+			} else {}
+		}
+		__make_request__("/requests/authentication/signin/", document.getElementById("response"), document.getElementById("loader"), {
+				username:username, 
+				password:password, 
+				code:null,
+			},
+			function(response) {
+				__handle_response__(response)
+			}, function(response) {
+				__handle_response__(response)
+			})
+	}
+
+</script>
+
+{% endblock %}

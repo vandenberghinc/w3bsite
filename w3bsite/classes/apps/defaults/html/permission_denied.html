@@ -1,0 +1,41 @@
+{% extends 'w3bsite/classes/apps/defaults/html/base.html' %}
+{% load static %}
+{% block content %}
+
+<!-- CHECK INSTALLATION -->
+<script type="text/javascript">
+	__toggle_top_bar__("hide")
+	set_header_path("permission-denied/")
+</script>
+
+<!-- CONTENT -->
+<div class="full_window_centered">
+
+	<!-- LOGO -->
+	<img src="{% static 'favicon.png' %}" width="45px" height="45px" style="display: block; margin: 0 auto; margin-bottom: 35px;">
+
+	<!-- SIGN IN WIDGET -->
+	<div class="widget_container"  style="">
+		<div class="widget_child">
+			<h1 class="title">
+				Permission Denied
+			</h1>
+			<p class="text">
+				User {{request.user.username}} is not authorized to visit this url.
+			</p>
+			<button class="button" onclick="" >
+				<a href="/" class="empty_a inherit empty">
+					Home
+				</a>
+			</button>
+		</div>
+	</div>
+
+	<!-- FOOTER -->
+	<h1 class="text_reversed" style="font-size: 6px; font-weight: 400; margin-top: 35px;">
+		© 2020 VanDenBerghInc. All Rights Reserved.
+	</h1>
+
+</div>
+
+{% endblock %}

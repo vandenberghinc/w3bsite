@@ -1,0 +1,193 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+	
+	<!-- HEADER -->
+	<head>
+		{% include "w3bsite/classes/apps/defaults/html/header.html" %}		
+	</head>
+	
+	<!-- JAVASCRIPT -->
+	<a href="/" id="base_url" style="display: none;"></a>
+	<script type="text/javascript">
+		var EMAIL = localStorage.getItem("EMAIL")
+	</script>
+
+	<!-- BODY -->
+	<body id="body" style="background: {{colors.background}}">
+		<div id="root-content" style="min-width: 250px; red; position: absolute; top: 0px; left: 0px; right: 0px; bottom: 0px; position: relative;"> 
+
+			<!-- TOPBAR -->
+			{% include "w3bsite/classes/apps/defaults/html/topbar.html" %}
+
+			<!-- BACKGROUND IMAGE -->
+			<!--
+			<div class="background-image"  style="background-image: url('{% static 'media//images/bg1.jpg' %}'); width: 100%; height: 100%; position: fixed; left: 0px; top: 0px; bottom: 0px; right: 0px;">
+			</div>
+			-->
+			
+			<!-- LEFT BAR -->
+			<div id="leftbar" class="widget" style="position: fixed; top: 90px; left: 15px; width: 250px; bottom: 35px; margin-top: 0px;  display: none; ">
+				<div style="overflow: scroll; position: relative; width: 100%; height: 100%;">
+					{% block leftbar %}
+					{% endblock %}
+				</div>
+			</div>
+
+			<!-- RIGHT BAR -->
+			<div id="rightbar" class="widget" style="position: fixed; top: 90px; right: 15px; width: 250px; bottom: 35px; margin-top: 0px; display: none;">
+				<div style="overflow: scroll; position: relative; width: 100%; height: 100%;">
+					{% block rightbar %}
+					{% endblock %}
+				</div>
+			</div>
+
+			<!-- BLOCKS -->
+			<div id="content" style="z-index: 7; position: fixed; top: 15px; bottom: 35px; right: 15px; left: 15px; overflow: visible; border-radius: 10px;">
+				<div style="position: relative; width: 100%; height: 100%; overflow: visible;">
+				
+					<!-- error pop up -->
+					<div class="full_window_centered" id="error.popup" style="padding-top: 25px; display: none;">
+						<div class="widget_container">
+							<div class="widget_child">
+
+								<!-- title -->
+								<div style="display: flex; margin: 0 auto; width: 200px; padding-left: 45px; margin-bottom: 5px;  margin-top: 15px;">
+									<h1 id="error.popup.title" class="title" style="color: {{colors.text}}; text-align: center; font-size: 26px; flex: 0; margin-top: 1px;">
+										Important
+									</h1>
+									<img id="error.popup.icon" src="{% static 'media//icons/warning.png' %}" alt="VanDenBerghInc" width="30" style="width: 30px; height: 30px; margin: 0 auto; margin-left: 10px;" />
+								</div>
+								<p id="error.popup.text" class="text" style="margin-top: 0px; margin-bottom: 20px;">
+									You must use email address [] during the transaction.
+								</p>
+
+								<!-- buttons -->
+								<div style="display: flex;">
+									<button id="error.popup.left_button" onclick="toggle_popup('hide')" type="button" class="button" style="">
+										<a href="#" class="empty_a">
+											Cancel
+										</a> 
+									</button>
+									<div style="width: 5px; height: 10px;"></div>
+									<button id="error.popup.right_button" onclick="purchase()" type="button" class="button" style="">
+											<a href="#" class="empty_a">
+												Understood
+											</a>
+									</button>
+									</a>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- show error javascript -->
+					<script type="text/javascript">
+						
+						function show_error(title, text, icon="{% static 'media/icons/warning.png' %}", left_button_txt, left_button_function, right_button_txt, right_button_function) {
+							content_blocks = document.getElementById("content_blocks")
+							error_div = document.getElementById("error.popup")
+							error_title = document.getElementById("error.popup.title")
+							error_icon = document.getElementById("error.popup.icon")
+							error_text = document.getElementById("error.popup.text")
+							error_left_button = document.getElementById("error.popup.left_button")
+							error_right_button = document.getElementById("error.popup.right_button")
+							// make msg.
+							error_title.innerHTML = title
+							error_text.innerHTML = text
+							error_icon.src = icon
+							// show.
+							content_blocks.style.display = "none"
+							error_div.style.display = "flex"
+							error_left_button.innerHTML = left_button_txt
+							error_left_button.onclick = function() {
+								left_button_function()
+							}
+							error_right_button.innerHTML = right_button_txt
+							error_right_button.onclick = function() {
+								right_button_function()
+							}
+						}
+						function hide_error() {
+							// hide.
+							content_blocks = document.getElementById("content_blocks")
+							error_div = document.getElementById("error.popup")
+							content_blocks.style.display = "inherit"
+							error_div.style.display = "none"
+						}
+
+						/*
+						// show an error demo.
+						show_error(
+							// The error title.
+							"Warning!",
+							// The error message.
+							"You must be signed in to use the seach feature.",
+							// The error icon's path.
+							"{% static 'media/icons/warning.png' %}",
+							// The left button's text.
+							"Cancel",
+							// The left button's function.
+							function() {
+								hide_error()
+
+							},
+							// The right button's text.
+							"Sign In",
+							// The right button's function.
+							function() {
+								location.href = "/"
+							},
+						)
+
+						*/
+					</script>
+					
+					<!-- content blocks -->
+					<div id="content_blocks" style="display: inherit; position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px; overflow: scroll;">
+						{% block content %}
+						{% endblock %}
+					</div>
+
+					<!-- ...include footer.. 
+					<h1 class="text" style="font-size: 6px; font-weight: 400; color: {{colors.darkest}}; margin-top: 25px;">
+						© 2020 VanDenBerghInc. All Rights Reserved.
+					</h1>
+					-->
+
+				</div>
+			</div>
+
+		</div>
+		{% csrf_token %}
+	</body>
+
+	
+	<!-- SET ELEMENTS BY WIDTH -->
+	<script type="text/javascript">
+		var references_small = false
+		function __set_elements_by_width__() {
+
+			// reference items.
+			//console.log("Window width: "+window.innerWidth)
+			if (window.innerWidth > 510 && references_small == true) {
+				var items = document.getElementsByClassName("reference")
+				Array.from(items).forEach(function(item, index) {
+					item.style.float = "left"
+				})
+				references_small = false
+			} else if (window.innerWidth < 510 && references_small == false) {
+				var items = document.getElementsByClassName("reference")
+				Array.from(items).forEach(function(item, index) {
+					item.style.float = "none"
+				})
+				references_small = true
+			}
+
+			try { __set_payments_flex__() } catch(e) {}
+		}
+		__set_elements_by_width__()
+		window.addEventListener("resize", __set_elements_by_width__);
+	</script>
+
+</html>

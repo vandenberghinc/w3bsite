@@ -1,0 +1,52 @@
+{% load static %}
+
+<!-- TITLE -->
+<title id="root.title">
+	VanDenBerghInc REST API | https://api.vandenberghinc.com
+</title>
+<meta charset="utf-8">
+<link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}" />
+
+<!-- URL SHARING -->
+<meta property="og:url"                content="https://api.vandenberghinc.com" />
+<meta property="og:type"               content="website" />
+<meta property="og:title"              content="VanDenBerghInc REST API" />
+<meta property="og:description"        content="REST API for vandenberghinc packages." />
+<meta property="og:image"              content="{% static 'favicon.ico' %}" />
+
+<!-- SEO -->
+<meta name="title" content="VanDenBerghInc REST API">
+<meta name="description" content="REST API for vandenberghinc packages.">
+<meta name="keywords" content="vandenberghinc.com,api.vandenberghinc.com,vandenberghinc,VanDenBerghInc">
+<meta name="author" content="Daan van den Bergh">
+
+<!-- MOBILE SUPPORT -->
+<meta id="viewport" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"> 
+<!-- , user-scalable=no -->
+<meta name="HandheldFriendly" content="true" />
+<script>
+	
+	// set min content width.
+	//if (window.innerWidth < 550) {
+	//	document.getElementById("viewport").setAttribute('content','width=550');	
+	//}
+
+</script>
+
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-178553180-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', '....');
+</script>
+
+<!-- CSS -->
+{% include "w3bsite/classes/apps/defaults/css/styles.html" %}  <!-- from html to render template data -->
+
+<!-- JQUERY -->
+<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+
+<!-- JAVASCRIPT DEFAULTS -->
+{% include "w3bsite/classes/apps/defaults/javascript/defaults.html" %}  <!-- from html to render template data -->

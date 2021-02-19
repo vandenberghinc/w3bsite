@@ -1,0 +1,63 @@
+{% extends 'w3bsite/classes/apps/defaults/html/base.html' %}
+{% load static %}
+{% block content %}
+
+<!-- PREVIOUS -->
+<button type="button" class="button_bordered" style="position: absolute; left: 0px; top: -10px; width: 100px; z-index: 11;">
+	<a id="previous" href="/" class="empty_a">
+		Previous
+	</a>
+</button>
+<a href="/" class="empty_a" style="z-index: 12; position: absolute; right: 15px; top: 15px;">
+	<img src="{% static 'favicon.png' %}" width="25px" height="25px" style="">
+</a>
+
+<!-- JS -->
+<script type="text/javascript">
+	__toggle_full_screen__("show")
+	__toggle_top_bar__("hide")
+	__toggle_left_bar__("hide")
+	__toggle_right_bar__("hide")
+	var previous = get_url_param("previous")
+	if (previous != null && previous != "") {
+		document.getElementById("previous").href = previous
+	}
+</script>
+
+<!-- CONTENT -->
+<div style="display: block; margin: 0 auto; max-width: 800px; padding: 25px 10px 25px 10px;">
+
+	<img src="{% static 'favicon.png' %}" width="45px" height="45px" style="display: block; margin: 0 auto; margin-bottom: 35px;">
+	<h2 class="title_reversed">
+		Privacy Policy
+	</h2>
+	<p class="text_reversed">
+		Your privacy is important to us. It is VanDenBerghInc's policy to respect your privacy regarding any information we may collect from you across our website, <a href="#" style="color: inherit;">https://{{DOMAIN}}</a>, and other sites we own and operate.
+	</p>
+	<p class="text_reversed">
+		We only ask for personal information when we truly need it to provide a service to you. We collect it by fair and lawful means, with your knowledge and consent. We also let you know why we’re collecting it and how it will be used.
+	</p>
+	<p class="text_reversed">
+		We only retain collected information for as long as necessary to provide you with your requested service. What data we store, we’ll protect within commercially acceptable means to prevent loss and theft, as well as unauthorised access, disclosure, copying, use or modification.
+	</p>
+	<p class="text_reversed">
+		We don’t share any personally identifying information publicly or with third-parties, except when required to by law.
+	</p>
+	<p class="text_reversed">
+		Our website may link to external sites that are not operated by us. Please be aware that we have no control over the content and practices of these sites, and cannot accept responsibility or liability for their respective privacy policies.
+	</p>
+	<p class="text_reversed">
+		You are free to refuse our request for your personal information, with the understanding that we may be unable to provide you with some of your desired services.
+	</p>
+	<p class="text_reversed">
+		Your continued use of our website will be regarded as acceptance of our practices around privacy and personal information. If you have any questions about how we handle user data and personal information, feel free to contact us.
+	</p>
+	<p class="text_reversed">
+		This policy is effective as of 19 January 2021.
+	</p>
+	<h1 class="text_reversed" style="font-size: 6px; font-weight: 400; margin-top: 35px;">
+		© 2020 VanDenBerghInc. All Rights Reserved.
+	</h1>
+</div>
+
+{% endblock %}

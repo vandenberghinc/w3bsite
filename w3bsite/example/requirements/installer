@@ -1,0 +1,206 @@
+#!/usr/bin/bash
+
+# functions.
+function osinfo() {
+    user=$(echo $USER)
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        os="linux"
+        group="root"
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        os="macos"
+        group="wheel"
+    elif [[ "$OSTYPE" == "cygwin" ]]; then
+       os="posix"     # POSIX compatibility layer and Linux environment emulation for Windows
+       group="root"
+    elif [[ "$OSTYPE" == "msys" ]]; then
+        os="mysys"    # Lightweight shell and GNU utilities compiled for Windows (part of MinGW)
+        group="root"
+    elif [[ "$OSTYPE" == "win32" ]]; then
+        os="win32"    # I'm not sure this can happen.
+        group="root"
+    elif [[ "$OSTYPE" == "freebsd"* ]]; then
+        os="freebsd"    # ...
+        group="root"
+    else
+        os="unknown"    # Unknown.
+        group="root"
+    fi
+    #echo "Operating system: "$os
+}
+function log() {
+    if [ "$2" == "done" ]; then
+        echo "$1 ... done"
+        echo ""
+    elif [ "$2" == "failed" ]; then
+        echo "$1 ... failed"
+    elif [ "$2" == "error" ]; then
+        echo "$1 ... failed"
+    else
+        echo "$1 ..."
+    fi
+}
+function argument_present() {
+    c=0
+    success="false"
+    for var in "$@"
+    do
+        if (( c > 0 )) ; then
+            if [ "$var" == "$1" ] ; then
+                success="true"
+                break
+            fi
+        fi
+        ((c=c+1))
+    done
+    echo $success
+}
+function get_argument() {
+    c=0
+    success="false"
+    value="none"
+    for var in "$@"
+    do
+        if (( c > 0 )) ; then
+            if [ "$var" == "$1" ] ; then
+                success="true"
+            elif [ "$success" == "true" ] ; then
+                value=$var
+                break
+            fi
+        fi
+        ((c=c+1))
+    done
+    echo $value
+}
+
+# check etc dir.
+alias="api.vandenberghinc.com" # must use "" not '' for w3bsite.
+version="v1" # must use "" not '' for w3bsite.
+package="/usr/local/lib/$alias/" # must use "" not '' for w3bsite.
+database="/etc/$alias/" # must use "" not '' for w3bsite.
+pypi_package="false" # must use "" not '' for w3bsite.
+website_package="true" # must use "" not '' for w3bsite.
+
+# defaults.
+osinfo
+requirements_dir=$(dirname "$0")
+if [[ ! "$requirements_dir" =~ "/$version/requirements" ]] ; then
+    echo "Error: Invalid installer path $requirements_dir/installer. The installer requires to be located at: /path/to/source/$version/requirements/installer"
+    exit 1
+fi
+current_installation=${requirements_dir///requirements/}
+current_installation=${current_installation///$version/}"/" 
+package_base=${package///$alias/}
+if [[ "$alias" == "" ]] ; then
+    echo "Error: Specify the alias variable in installer script: $current_installation/$version/requirements/installer."
+    exit 1
+fi
+if [[ "$version" == "" ]] ; then
+    echo "Error: Specify the version variable in installer script: $current_installation/$version/requirements/installer."
+    exit 1
+fi
+if [ $(get_argument "--user" $@) != "none" ] ; then
+    user=$(get_argument "--user" $@)
+fi
+
+# install source code.
+if [[ "$current_installation" != "$package" ]] ; then
+    sudo rm -fr $package
+    sudo mkdir $package
+    sudo chmod 770 $package
+    sudo chown $user:$group $package
+    sudo rm -fr $package
+    sudo cp -r $current_installation $package_base
+    sudo chmod -R 770 $package
+    sudo chown -R $user:$group $package
+else 
+    sudo chmod -R 770 $package
+    sudo chown -R $user:$group $package
+fi
+
+# check database.
+if [ "$database" != "" ] ; then
+    if [ ! -d "$database" ] ; then
+        sudo mkdir $database
+        sudo chown $user:$group $database
+        sudo chmod 770 $database
+    fi
+    if [ ! -d "$database/tls" ] ; then
+        sudo mkdir $database/tls
+        sudo chown $user:$group $database/tls
+        sudo chmod 770 $database/tls
+    fi
+fi
+
+# exit code update.
+CODE_UPDATE=$(argument_present "--code-update" $@)
+DEPLOY=$(argument_present "--deploy" $@)
+if [ "$CODE_UPDATE" == "true" ] ; then
+    echo "Finished installing $alias code updates."
+    if [ "$DEPLOY" == "true" ] ; then
+        $package/$version/deployment/installer --code-update
+    fi
+    # regular log for confirmation:
+    echo "Successfully installed $alias."
+    exit 0
+fi
+
+# install dependencies.
+if [ "$os" == "linux" ]; then
+    echo "Installing Linux requirements..."
+
+    # update.
+    sudo apt-get -y update
+    sudo apt-get -y upgrade
+
+    # network.
+    sudo apt-get -y install net-tools
+
+    # python:
+    sudo apt-get -y upgrade python3
+    sudo apt-get -y install libjpeg-dev zlib1g-dev build-essential cmake pkg-config libx11-dev libatlas-base-dev libgtk-3-dev libboost-python-dev python-dev python3-dev python3-pip python3-venv python3-setuptools openssh-client openssh-server
+
+# invalid.
+else
+    echo "Error: Unsupported operating system ["$os"]."
+    exit 1
+fi
+
+# python requirements:
+file=$requirements_dir"/requirements.pip"
+if [ -f "$file" ] ; then
+    echo "Installing PIP requirements..."
+    sudo -u $user pip3 install -r $file 2> /dev/null
+    if [[ "$os" == "macos" ]] && [[ -f "/usr/bin/pip3" ]] ; then
+        sudo /usr/bin/pip3 install -r $file -u $user 2> /dev/null
+    fi
+fi
+
+# install alias.
+if [[ "$website_package" == "true" ]] || [[ "$website_package" == "True" ]] ; then
+    python3 $package/$version/website.py --create-alias $alias --sudo 
+else 
+    python3 $package/$version --create-alias $alias --sudo
+fi
+
+# install pypi package.
+if [[ "$pypi_package" == "true" ]] || [[ "$pypi_package" == "True" ]] ; then
+    cd $current_installation
+    pip3 install .
+    cd ~
+fi
+
+# firewall.
+printf "y\n" | sudo ufw enable
+sudo ufw allow 80
+sudo ufw allow 443
+sudo ufw allow 5900
+sudo ufw allow 22
+
+# auto deploy.
+if [ "$DEPLOY" == "true" ] ; then
+    $package/$version/deployment/installer
+fi
+
+# regular log for confirmation:
+echo "Successfully installed $alias."

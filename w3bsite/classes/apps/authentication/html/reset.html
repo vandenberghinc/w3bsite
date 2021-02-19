@@ -1,0 +1,126 @@
+{% extends 'w3bsite/classes/apps/defaults/html/base.html' %}
+{% load static %}
+{% block content %}
+
+<!-- JS -->
+<script type="text/javascript">
+	__toggle_top_bar__("hide")
+	__toggle_left_bar__("hide")
+	__toggle_right_bar__("hide")
+	check_authenticated(function(response) {
+		if (response.error == null) {
+			location.href = "/"
+		}
+	})
+</script>
+
+<!-- CONTENT -->
+<div class="full_window_centered">
+	<img src="{% static 'favicon.png' %}" width="45px" height="45px" style="display: block; margin: 0 auto; margin-bottom: 35px;">
+
+	<!-- STEP 1 -->
+	<div class="widget_container" id="step_1">
+		<div class="widget_child">
+			<h1 class="title">
+				Reset Password
+			</h1>		
+			<p class="text" style="">
+				Enter the email address of your account to send a verification code.
+			</p>
+			<input id="email" type="email" placeholder="Your Email" class="input" style="margin-bottom: 5px;">
+			<p class="text" id="response.step_1" style="display: none; font-size: 12px;"></p>
+			<div class="loader" id="loader.step_1" style="transform: scale(0.33); display: block; margin: 0 auto; display: none;"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+			<div style="display: flex;">
+				<button class="button" style="width: 49%;">
+					<a href="/authentication/signin/" class="empty_a">
+						Sign In
+					</a>
+				</button>
+				<div style="width: 2%; height: 1%;"></div>
+				<button class="button" style="width: 49%;" onclick="__send_code__()">
+					<a href="#" class="empty_a">
+						Send Code
+					</a>
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- STEP 2 -->
+	<div class="widget_container" id="step_2" style="display: none;">
+		<div class="widget_child">
+			<h1 class="title">
+				Reset Password
+			</h1>		
+			<p class="text" style="">
+				Enter the verification code send to your email address and configure a new password.
+			</p>
+			<input id="code" type="text" placeholder="Verification Code" class="input" style="margin-bottom: 5px;">
+			<input id="password" type="password" placeholder="Your Passphrase" class="input" style="margin-bottom: 5px;">
+			<input id="verify_password" type="password" placeholder="Verify Passphrase" class="input" style="margin-bottom: 5px;">
+			<p class="text" id="response.step_2" style="display: none; font-size: 12px;"></p>
+			<div class="loader" id="loader.step_2" style="transform: scale(0.33); display: block; margin: 0 auto; display: none;"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+			<div style="display: flex;">
+				<button class="button" onclick="__toggle_widgets__('step_1', widgets); document.getElementById('response.step_1').style.display = 'none' " style="width: 49%;">
+					<a href="#" class="empty_a">
+						Back
+					</a>
+				</button>
+				<div style="width: 2%; height: 1%;"></div>
+				<button class="button" style="width: 49%;" onclick="__reset_password__()">
+					<a href="#" class="empty_a">
+						Reset password
+					</a>
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<h1 class="text_reversed" style="font-size: 6px; font-weight: 400; margin-top: 35px;">
+		© 2020 VanDenBerghInc. All Rights Reserved.
+	</h1>
+</div>
+
+<!-- JAVASCRIPT -->
+<script type="text/javascript">
+	
+	// the widgets.
+	widgets = {
+		step_1:document.getElementById("step_1"),
+		step_2:document.getElementById("step_2"),
+	}
+
+	// create encryption request.
+	function __send_code__() {
+		var response_element = document.getElementById("response.step_1")
+		__make_request__("/requests/authentication/send_code/", response_element, document.getElementById("loader.step_1"), {
+			email:document.getElementById("email").value,
+			mode:"reset_password",
+		}, function(response) {
+			if (response.error == null) {
+				__toggle_widgets__("step_2", widgets)
+				document.getElementById("response.step_2").style.display = "none"
+			}
+		})
+	}
+
+	// create encryption request.
+	function __reset_password__() {
+		var response_element = document.getElementById("response.step_2")
+		__make_request__("/requests/authentication/reset_password/", response_element, document.getElementById("loader.step_2"), {
+			email:document.getElementById("email").value,
+			code:document.getElementById("code").value,
+			password:document.getElementById("password").value,
+			verify_password:document.getElementById("verify_password").value,
+		}, function(response) {
+			if (response.error == null) {
+				setTimeout(function() {
+					location.href = "/authentication/signin/"
+				}, 1500)
+			}
+		})
+	}
+
+</script>
+
+{% endblock %}

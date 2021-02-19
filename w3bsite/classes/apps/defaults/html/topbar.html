@@ -1,0 +1,55 @@
+{% load static %}
+
+<!-- TOP BAR -->
+<div id="topbar" class="widget" style="position: fixed; top: 25px; left: 15px; right: 15px; height: 50px; padding: 0px 0px 0px 0px; z-index: 10; display: none;"> <!-- box-shadow: 0px 0px 3px #55555550; -->
+	<div style="display: flex;">
+
+		<!-- LOGO -->
+		<div style="">
+			<a class="desktop_only_home_redirects" style="" href="/">
+				<!-- {% static 'media/logo.png' %} vs {% static 'media//icons/chip-2.png' %} -->
+				<img src="{% static 'favicon.png' %}" alt="" width="20" style="position: absolute; top: 14px; left: 25px;" />
+				<h3 class="text" style="position: absolute; height: 17px; width: 1px; top: -2px; left: 60px; background-color: {{ colors.text }}; "></h3>
+				<h3 class="text" style="position: absolute; top: -6px; left: 75px; color: {{ colors.text }}; font-weight: 600;">
+					RSAMessenger
+				</h3>
+			</a>
+		</div>
+
+		<!-- RIGHT -->
+		<div style="padding-left: 185px; display: flex; padding-right: 10px; right: 0px; position: absolute;">
+
+			<!-- SEARCH BAR -->
+			<!--
+			<div id="searchbar" style="width: 300px; height: 50px; display: block; margin-right: 25px;"> 
+				<a onclick="set_searchbar_menu('show')" href="#" style="text-decoration: none;">
+					<div class="widget" style="height: 32px; margin-top: 5px; margin-top: 10px; display: flex; padding: 0px 10px 0px 10px; box-shadow: 0 0 15px #00000035;">
+						<input required id="searchbar.input" onkeydown="if (event.keyCode==13) { searchbar.query = this.value ; searchbar.submit() }" value="" placeholder="Search bar" class="input_reversed" type="text" style="flex: 1; padding: 0px 5px 0px 5px;">
+						<img  onclick="searchbar.query = document.getElementById('searchbar.input').value ; searchbar.submit()" src="{% static 'media//icons/arrow.png' %}" alt="VanDenBerghInc" width="20" style="width: 12.5px; height: 12.5px; float: right; transform: rotate(180deg); margin-top: 10px; margin-right: 10px;" />
+					</div>
+				</a>
+			</div>
+			-->
+
+			<!-- ICONS -->
+			<!--
+			<a href="#" id="top_bar.search_button" onclick="toggle_searchbar_menu()" style="text-decoration: none; display: block;">
+				<img onclick="__toggle_left_bar__('toggle')" src="{% static 'media/icons/search.png' %}" alt="VanDenBerghInc" width="16" style="margin-top: 16.5px; margin-right: 15px;" />
+			</a>
+			<a href="#" id="top_bar.filter_button" style="text-decoration: none; display: none;">
+				<img onclick="toggle_filterbar_menu()" src="{% static 'media/icons/filter.png' %}" alt="VanDenBerghInc" width="16" style="margin-top: 16.5px; margin-right: 15px;" />
+			</a>
+			-->
+			<a href="#" id="top_bar.menu_button" style="text-decoration: none; display: block;">
+				<img onclick="__toggle_left_bar__('toggle')" src="{% static 'media/icons/menu.dark.png' %}" alt="VanDenBerghInc" width="16" style="margin-top: 16.5px; margin-right: 15px;" />
+			</a>
+			<a href="/account/membership" style="text-decoration: none;">
+				<img onclick="" src="{% static 'media/icons/user.dark.png' %}" alt="VanDenBerghInc" width="20" style="margin-top: 15px; margin-right: 15px;" />
+			</a>
+			<a href="#" style="text-decoration: none;">
+				<img onclick="sign_out()" src="{% static 'media/icons/sign_out.dark.png' %}" alt="VanDenBerghInc" width="20" style="margin-top: 15px; margin-right: 15px;" />
+			</a>
+		</div>
+	</div>
+
+</div> 

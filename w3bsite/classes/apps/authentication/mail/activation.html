@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+	</head>
+
+	<!-- BODY -->
+	<body>
+		<div id="email.content" style="position: absolute; top: 0px; left: 0px; bottom: 0px; right: 0px; font-family: 'Avenir Next'; text-align: center; padding: 15px 15px 15px 15px;">
+			<div style="width: 35px; height: 25px;"></div>
+			<a href="{domain}">
+				<img id="email.logo" src="{domain}/static/favicon.png" alt="vandenberghinc" width="45px" height="45px" style="
+			margin-top: 14px; height: 45px; width: 45px; margin: 0 auto; display: block;" />
+			</a>
+			<div style="width: 35px; height: 25px;"></div>
+			<h1 class="email.texts" style="font-size: 28px; color: {widgets_reversed}; font-weight: 400;">
+				Your Verification Code.
+			</h1>
+			<p class="email.texts" style="font-size: 14px; color: {widgets_reversed}; font-weight: 300;">
+				Your requested verification code to activate your account [{email}] from {domain}. <br>
+			</p>
+			<p class="email.texts" style="font-size: 10px; color: {widgets_reversed}; font-weight: 200;">
+				Immediately change your password if you did not make this request.
+				IP Address: {ip}.
+				Timestamp: {timestamp}.
+			</p>
+			<button id="email.button" type="text" onclick="email_settings()" style="margin-top: 25px;color: {white}; font-size: 10px; background-color: {widgets_reversed}; border-radius: 25px; height: 40px; font-size: 12px; max-width: 250px; width: 100%;text-decoration: none; border: none;">
+				Your verification code: {code}.
+			</button>
+			<p class="email.texts" style="color: {widgets_reversed}; font-weight: 500; font-size: 6px; margin-top: 10px;">
+				© 2020 VanDenBerghInc.
+			</p>
+			<div style="width: 100%; height: 85px; margin-top: 15px;">
+		</div>
+
+	</body>
+</html>

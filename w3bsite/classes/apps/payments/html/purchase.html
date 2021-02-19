@@ -1,0 +1,414 @@
+{% extends 'w3bsite/classes/apps/defaults/html/base.html' %}
+{% load static %}
+{% block content %}
+
+<!-- TOP BAR -->
+<button type="button" class="button_bordered" style="position: absolute; left: 15px; top: 5px; width: 100px; z-index: 11;">
+	<a id="previous" href="/" class="empty_a">
+		Previous
+	</a>
+</button>
+<a href="/" class="empty_a" style="z-index: 12; position: absolute; right: 15px; top: 15px;">
+	<img src="{% static 'favicon.png' %}" width="25px" height="25px" style="">
+</a>
+
+<!-- JAVASCRIPT -->
+<script type="text/javascript">
+	var PRODUCT = get_url_param("product")
+	var PLAN = get_url_param("plan")
+	var PRODUCTS = {}
+	var previous = get_url_param("previous")
+	if (previous == null) {
+		previous = "/"
+	}
+	if (previous != null && previous != "") {
+		document.getElementById("previous").href = previous
+	}
+</script>
+{% for key, value in STRIPE.PRODUCTS.items %}
+	<script type="text/javascript">
+		PRODUCTS["{{key}}"] = {}
+	</script>
+	{% for key_, value_ in value.items %}
+		<script type="text/javascript">
+			PRODUCTS["{{key}}"]["{{key_}}"] = {}
+		</script>
+		{% for key__, value__ in value_.items %}
+			<script type="text/javascript">
+				PRODUCTS["{{key}}"]["{{key_}}"]["{{key__}}"] = "{{value__}}"
+			</script>
+		{% endfor %}
+	{% endfor %}
+{% endfor %}
+<script type="text/javascript">
+	__toggle_full_screen__("show")
+</script>
+
+<!-- CONTENT -->
+<div id="payments.loaded" class="full_window" style="height: 100%; display: none;">
+	<div id="payments.container" class="full_window_centered" style="">
+		<div id="payments.content" class="wrapper" style="margin: 0 auto;">
+
+			<!-- left -->
+			<div id="payments.content.left" class="centered widget" style="max-width: 400px; margin: 0px 0px 0px 00px; float: left; background: #00000000; box-shadow: 0 0 0px #00000000; position: relative; margin: 0 auto;">
+
+				<!-- product -->
+				<h1 class="title_reversed" style="text-align: center; font-size: 26px; margin-top: 1px;">
+					Subscription Plans
+				</h1>
+				<p class="text_reversed" id="payments.text" style="margin-top: 0px;">
+					Select one of the $product subscription plans.
+				</p>
+				<div id="payments.plans"></div>
+				<div id="payments.privacy_policy.left">
+					<div style="height: 30px; width: 15px;"></div>
+					<div class="wrapper" style="margin: 0 auto; max-width: 125px;">
+						<p class="text_reversed" style="font-size: 8px; font-weight: 400; margin-top: 0px;">
+							<a id="payments.privacy_policy_1" href="#" style="color: inherit;">
+								Privacy Policy
+							</a>
+						</p>
+						<div style="width: 25px; height: 1px;"></div>
+						<p class="text_reversed" style="font-size: 8px; font-weight: 400; margin-top: 0px;">
+							<a id="payments.terms_of_use_1" href="#" style="color: inherit;">
+								Terms of Use
+							</a>
+						</p>
+					</div>
+					<script type="text/javascript">
+						document.getElementById("payments.privacy_policy_1").href = "/base/privacy_policy/?previous="+location.href
+						document.getElementById("payments.terms_of_use_1").href = "/base/terms_of_use/?previous="+location.href
+					</script>
+				</div>
+
+			</div>
+
+			<!-- flex divider -->
+			<div class="divider" id="payments.divider" style="display: none; background: {{colors.white}}75; width: 90%; margin: 0 auto; margin-bottom: 25px;"></div>
+
+			<!-- right -->
+			<div style="width: 50px; height: 25px;"></div>
+			<div id="payments.content.right" class="widget" style="max-width: 400px; margin: 0px 0px 0px 0px; float: left; display: block; margin: 0 auto;">
+
+				<!-- still to pay. -->
+				<div id="payments.form" style="display: block;">
+
+					<!-- title -->
+					<h1 class="title" style="text-align: center; font-size: 24px; margin-top: 1px;">
+						Pay with Credit Card
+					</h1>
+					<p class="text" style="">
+						Enter your payment information.
+					</p>
+
+					<!-- card -->
+					<h1 class="subtitle" style="text-align: left; font-size: 16px; margin-top: 1px; font-weight: 600; padding-left: 5px;">
+						Name on Card
+					</h1>
+					<input class="input_bordered" required id="payments.card_name"value="" placeholder="Name on card" type="text" style="margin-top: 0px; margin-bottom: 0px;">
+					
+					<!-- card -->
+					<h1 class="subtitle" style="text-align: left; font-size: 16px; margin-top: 1px; font-weight: 600; padding-left: 5px;">
+						Card Information
+					</h1>
+					<input class="input_bordered" required id="payments.card_number"value="" placeholder="1234 1234 1234 1234" type="text" style="margin-bottom: 2.5px">
+					<div class="wrapper">
+						<div class="wrapper">
+							<input class="input_bordered" required id="payments.expiration_month" value="" placeholder="MM" type="text" style="width: 50%;">
+							<input class="input_bordered" required id="payments.expiration_year" value="" placeholder="YY" type="text" style="margin-left: 2.5px; width: 50%;">
+						</div>
+						<input onkeydown="if (event.keyCode==13) { purchase() }" class="input_bordered" required id="payments.cvc"value="" placeholder="CVC" type="text" style="margin-left: 2.5px; width: 50%;">
+					</div>
+
+					<!-- response -->
+					<p class="text" id="payments.response" style="display: none; font-size: 12px; overflow: scroll;"></p>
+					<div class="loader" id="payments.loader" style="transform: scale(0.33); display: block; margin: 0 auto; display: none;"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+
+					<!-- buttons -->
+					<button onclick="purchase()" type="button" class="button" style="margin-top: 25px;">
+						<a href="#" class="empty_a">
+							Subscribe
+						</a>
+					</button>
+					<p class="text" style="text-align: center; font-size: 10px; margin-top: 15px;">
+						By confirming your subscription, you allow {{DOMAIN}} to charge your card for this payment and future payments in accordance with our terms.
+					</p>
+				</div>
+
+				<!-- successfull purchase -->
+				<div id="payments.success" style="display: none;">
+
+					<!-- title -->
+					<h1 class="title" style="text-align: center; font-size: 24px; margin-top: 1px;">
+						Successfull Subscription
+					</h1>
+					<p id="payments.success.text" class="text" style="">
+						Successfully subscribed to plan $plan from product $product.
+					</p>
+					<img src="{% static 'media/icons/party.png' %}" alt="" width="85" height="85" style="margin: 0 auto; display: block; margin-top: 25px; margin-bottom: 15px;" /> 
+
+					<!-- buttons -->
+					<button onclick="" type="button" class="button" style="margin-top: 25px;">
+						<a href="/" class="empty_a">
+							Home
+						</a>
+					</button>
+					<p class="text" style="text-align: center; font-size: 10px; margin-top: 15px;">
+						Your subscription will updated within the hour.
+					</p>
+
+				</div>
+
+			</div>
+			<div id="payments.privacy_policy.right" style="display: none;">
+				<div style="height: 30px; width: 15px;"></div>
+				<div class="wrapper" style="margin: 0 auto; max-width: 125px;">
+					<p class="text_reversed" style="font-size: 8px; font-weight: 400; margin-top: 0px;">
+						<a id="payments.privacy_policy_2" href="#" style="color: inherit;">
+							Privacy Policy
+						</a>
+					</p>
+					<div style="width: 25px; height: 1px;"></div>
+					<p class="text_reversed" style="font-size: 8px; font-weight: 400; margin-top: 0px;">
+						<a id="payments.terms_of_use_2" href="#" style="color: inherit;">
+							Terms of Use
+						</a>
+					</p>
+				</div>
+				<script type="text/javascript">
+					document.getElementById("payments.privacy_policy_2").href = "/base/privacy_policy/?previous="+location.href
+					document.getElementById("payments.terms_of_use_2").href = "/base/terms_of_use/?previous="+location.href
+				</script>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="payments.loading" class="full_window" style="display: block;">
+	<div class="full_window_centered">
+		<h1 class="title_reversed">
+			Loading Products
+		</h1>
+		<div class="loader_reversed" style="transform: scale(1); display: block; margin: 0 auto; margin-top: 25px;"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+	</div>
+</div>
+
+<!-- JAVASCRIPT -->
+<script type="text/javascript">
+
+	// elements.
+	var payment_elements = {
+		loading:document.getElementById("payments.loading"),
+		loaded:document.getElementById("payments.loaded"),
+		container:document.getElementById("payments.container"),
+		content:document.getElementById("payments.content"),
+		left_content:document.getElementById("payments.content.left"),
+		right_content:document.getElementById("payments.content.right"),
+		form:document.getElementById("payments.form"),
+		success:document.getElementById("payments.success"),
+		success_text:document.getElementById("payments.success.text"),
+		divider:document.getElementById("payments.divider"),
+		privacy_policy_left:document.getElementById("payments.privacy_policy.left"),
+		privacy_policy_right:document.getElementById("payments.privacy_policy.right"),
+		text:document.getElementById("payments.text"),
+		card_name:document.getElementById("payments.card_name"),
+		card_number:document.getElementById("payments.card_number"),
+		expiration_year:document.getElementById("payments.expiration_year"),
+		expiration_month:document.getElementById("payments.expiration_month"),
+		cvc:document.getElementById("payments.cvc"),
+		plans:document.getElementById("payments.plans"),
+		response:document.getElementById("payments.response"),
+		loader:document.getElementById("payments.loader"),
+	}
+
+	// check authenticated.
+	if ("{{request.user.username}}" == "") {
+		location.href = "/authentication/signin/"
+	}
+
+	// retrieve current cards.
+	function get_card() {
+		__make_request__("/requests/payments/methods/list/", null, null, {}, function(response) {
+			// set loaded.
+			payment_elements.loading.style.display = "none"
+			payment_elements.loaded.style.display = "block"
+			if (response.error == null) {
+				for (const [card_id, card] of Object.entries(response.cards)) {
+					payment_elements.card_name.value = card.card_name
+					payment_elements.card_number.value = card.card_number
+					payment_elements.expiration_year.value = card.card_expiration_year
+					payment_elements.expiration_month.value = card.card_expiration_month
+					payment_elements.cvc.value = card.card_cvc
+					break
+				}
+			} else {
+				console.log("Encoutered an error while retrieving the users cards. Error: "+response.error)
+			}
+		})
+	}
+
+	// select & add the plans.
+	function select_plan(product, plan) {
+		if (PRODUCTS[product] == null) {
+			show_error(
+				// message.
+				"Warning!",
+				"Product "+product+" does not exist.",
+				"{% static 'media/icons/warning.png' %}",
+				// left button.
+				"Previous",
+				function() {
+					location.href = previous
+				},
+				// right button.
+				"Home",
+				function() {
+					location.href = "/"
+				},
+			)
+
+		} else {
+			payment_elements.text.innerHTML = `Select one of the ${product} subscription plans.`
+			payment_elements.plans.innerHTML = ""
+			plan_set = false
+			for (const [plan_name, plan_info] of Object.entries(PRODUCTS[product])) {
+				product = product
+				favicon = plan_info.favicon
+				if (favicon == null || favicon == "None") {
+					favicon = "{% static 'favicon.ico' %}"
+				}
+				if (plan_name == plan) {
+					plan_set = true
+					payment_elements.plans.innerHTML += `
+						<a class="empty_a" href="#" onclick="PLAN='`+plan_name+`';select_plan('`+product+`', '`+plan_name+`')">
+							<div class="wrapper widget_reversed" style="border: 1px solid #00000010; border-radius: 25px; width: 100%; height: 55px;  margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px; background-color: {{colors.widgets}}; border: 1px solid {{COLORS.widgets_reversed}}; box-shadow: none;">
+								<img src="`+favicon+`" alt="Poker Stats" width="30" height="30" style="margin: 12.5px 0px 0px 15px;" /> 
+								<div style="width: 100%; margin: 15px 0px 0px 10px;">
+									<h1 id="payments.title" class="subtitle" style="text-align: left; color: {{COLORS.widgets_reversed}}; font-size: 16px; font-weight: 600;  margin: 0px 0px 0px 10px; padding: 0px 0px 0px 0px;">
+										`+capitalize_scentence(product).replace("Nas-", "NAS-")+` - `+capitalize_scentence(plan_name)+`
+									</h1>
+								</div>
+								<div style="min-width: 100px; margin: 12.5px 0px 0px 0px;">
+									<h1 id="payments.price" class="subtitle" style="text-align: center; overflow: scroll; color: {{COLORS.widgets_reversed}}; font-size: 14px; font-weight: 500; margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px;">
+										€ `+plan_info.price+`
+									</h2>
+									<h1 id="payments.interval" class="subtitle" style="text-align: center; color: {{COLORS.widgets_reversed}}; font-size: 8px; font-weight: 400; margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px;">
+										per month
+									</h2>
+								</div>
+							</div>
+						</a>
+						<div style="height: 5px; width: 5px;"></div>
+					`
+				} else {
+					payment_elements.plans.innerHTML += `
+						<a class="empty_a" href="#" onclick="PLAN='`+plan_name+`';select_plan('`+product+`', '`+plan_name+`')">
+							<div class="wrapper widget_reversed" style="border: 1px solid #00000010; border-radius: 25px; width: 100%; height: 55px;  margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px; background-color: {{colors.widgets}}50; border: 1px solid {{COLORS.widgets_reversed}}; box-shadow: none;">
+								<img src="`+favicon+`" alt="Poker Stats" width="30" height="30" style="margin: 12.5px 0px 0px 15px;" /> 
+								<div style="width: 100%; margin: 15px 0px 0px 10px;">
+									<h1 id="payments.title" class="subtitle" style="text-align: left; color: {{COLORS.widgets_reversed}}; font-size: 16px; font-weight: 600;  margin: 0px 0px 0px 10px; padding: 0px 0px 0px 0px;">
+										`+capitalize_scentence(product).replace("Nas-", "NAS-")+` - `+capitalize_scentence(plan_name)+`
+									</h1>
+								</div>
+								<div style="min-width: 100px; margin: 12.5px 0px 0px 0px;">
+									<h1 id="payments.price" class="subtitle" style="text-align: center; overflow: scroll; color: {{COLORS.widgets_reversed}}; font-size: 14px; font-weight: 500; margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px;">
+										€ `+plan_info.price+`
+									</h2>
+									<h1 id="payments.interval" class="subtitle" style="text-align: center; color: {{COLORS.widgets_reversed}}; font-size: 8px; font-weight: 400; margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px;">
+										per month
+									</h2>
+								</div>
+							</div>
+						</a>
+						<div style="height: 5px; width: 5px;"></div>
+					`	
+				}
+			}
+			if (plan_set == false) {
+				show_error(
+					// message.
+					"Warning!",
+					"Plan "+plan+" of product "+product+" does not exist.",
+					"{% static 'media/icons/warning.png' %}",
+					// left button.
+					"Previous",
+					function() {
+						location.href = previous
+					},
+					// right button.
+					"Home",
+					function() {
+						location.href = "/"
+					},
+				)
+			}
+
+		}
+	}
+
+	// purchase.
+	function purchase() {
+		__make_request__("/requests/payments/subscriptions/purchase/", payment_elements.response, payment_elements.loader, {
+			plan: PLAN,
+			product: PRODUCT,
+			card_name:payment_elements.card_name.value,
+			card_number:payment_elements.card_number.value,
+			card_expiration_year:payment_elements.expiration_year.value,
+			card_expiration_month:payment_elements.expiration_month.value,
+			card_cvc:payment_elements.cvc.value,
+		}, function(response) {
+			if (response.success == true) {
+				setInterval(function() {
+					payment_elements.success.style.display = "block"
+					payment_elements.success_text.innerHTML = `Successfully subscribed to plan ${PLAN} from product ${PRODUCT}.`
+					payment_elements.form.style.display = "none"
+					payment_elements.divider.style.display = "none"
+					payment_elements.left_content.style.display = "none"
+					payment_elements.privacy_policy_right.style.display = "none"
+					payment_elements.privacy_policy_left.style.display = "none"
+				}, 2500)
+				
+			}
+		})
+	}
+
+	// select plan.
+	select_plan(PRODUCT, PLAN)
+
+	// check id token.
+	get_card()
+
+
+	// set flex.
+	PAYMENTS_FLEX_LARGE = true
+	function __set_payments_flex__() {
+		if (window.innerWidth > 950 && PAYMENTS_FLEX_LARGE == false) {
+			payment_elements.container.setAttribute("class", "full_window_centered")
+			payment_elements.container.style.paddingTop = "0px"
+			payment_elements.container.style.paddingBottom = "0px"
+			payment_elements.content.style.maxWidth = "1025px"
+			payment_elements.content.style.flexDirection = "row"
+			payment_elements.left_content.style.float = "left"
+			payment_elements.right_content.style.float = "left"
+			payment_elements.divider.style.display = "none"
+			payment_elements.privacy_policy_left.style.display = "block"
+			payment_elements.privacy_policy_right.style.display = "none"
+			PAYMENTS_FLEX_LARGE = true
+		} else if (window.innerWidth <= 950 && PAYMENTS_FLEX_LARGE == true) {
+			payment_elements.container.setAttribute("class", "")
+			payment_elements.container.style.paddingTop = "50px"
+			payment_elements.container.style.paddingBottom = "50px"
+			payment_elements.content.style.maxWidth = "450px"
+			payment_elements.content.style.flexDirection = "column"
+			payment_elements.left_content.style.float = "none"
+			payment_elements.right_content.style.float = "none"
+			payment_elements.divider.style.display = "block"
+			payment_elements.privacy_policy_left.style.display = "none"
+			payment_elements.privacy_policy_right.style.display = "block"
+			PAYMENTS_FLEX_LARGE = false
+		}
+	}
+	__set_payments_flex__()
+	
+</script>
+
+{% endblock %}

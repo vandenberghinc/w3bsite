@@ -1,0 +1,1484 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+	
+	<!-- HEADER -->
+	<head>
+		<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+	</head>
+	
+	<!-- JAVASCRIPT -->
+	<a href="/" id="base_url" style="display: none;"></a>
+	<script type="text/javascript">
+		var BASE_URL = document.getElementById("base_url").href
+	</script>
+	
+	<!-- CSS -->
+	<style type="text/css">
+
+		/* basics */
+		button:focus, select:focus, textarea:focus input:focus {
+			outline:0;
+		}
+		.select option:focus {
+			width: 250px;
+		}
+		.select option:focus {
+		}
+		.select {
+			text-decoration: none; 
+			border: none; 
+			background: #00000000;
+		}
+		.nomargin {
+			margin: 0px 0px 0px 0px;
+		}
+		.nopadding {
+			padding: 0px 0px 0px 0px;
+		}
+		.inherit {
+			font-size: inherit;
+			font-style: inherit;
+			font-weight: inherit;
+			font-family: inherit;
+			color: inherit;
+			background: inherit;
+			border: inherit;
+			text-decoration: inherit;
+		}
+		.empty {
+			border: none;
+			text-decoration: none;
+		}
+
+		/* clipboard */
+		.copied_to_clipboard {
+			font-family: Avenir Next;
+			font-weight: 600;
+			padding: 5px 10px 5px 10px;
+			font-size: 10px;
+			position: absolute;
+			left: 100px;
+			top: 100px;
+			border-radius: 25px;
+			border: 1px solid #FAFAFA50;
+			box-shadow: 0px 0px 15px #00000050;
+			z-index: 100;
+			color:  {{colors.white}};
+			/*background: {{colors.background}};*/
+		}
+
+		/* left bar */
+		.leftbar {
+			position: fixed; 
+			top: 0px; 
+			left: 0px;
+			bottom: 0px; 
+			margin: 0px 0px 0px 0px; 
+			padding: 0px 0px 0px 0px; 
+			display: block; 
+			box-shadow: 0px 0px 15px #00000050;
+			/*border-right: 1px solid #79797925;*/
+			border-right: 1px solid {{colors.white}}35;
+			width: {{leftbar_width}}; 
+			/*border-right: 1px solid #42424225;*/
+		}
+		.leftbar_chapter_container {
+			margin: 0px 0px 0px 0px;
+			padding: 0px 15px 10px 15px;
+		}
+		.leftbar_chapter_title {
+			font-family: Avenir Next;
+			font-weight: 600;
+			margin-top: 0px; 
+			font-size: 16px;
+			margin: 12px 0px 00px 0px;
+			padding: 0px 0px 0px 0px;
+			text-align: left;
+			overflow-y: scroll;
+			color: {{ colors.white }}; 
+		}
+		.leftbar_section_container {
+			margin: 0px 0px 0px 0px;
+			padding: 0px 0px 0px 0px;
+			width: 100%;
+		}
+		.leftbar_section_title {
+			font-family: Avenir Next;
+			font-weight: 500;
+			margin-top: 0px; 
+			font-size: 14px;
+			margin: 0px 0px 0px 00px;
+			padding: 0px 0px 0px 15px;
+			width: 100%;
+			text-align: left;
+			overflow-y: scroll;
+			color: {{ colors.white }}95; 
+		}
+		.leftbar_chapter_divider {
+			width: 100%;
+			height: 1px;
+			margin-top: 5px;
+			margin-bottom: 5px;
+			background: {{ colors.white }}50; 
+		}
+		.leftbar_section_divider {
+			width: 100%;
+			height: 1px;
+			margin-top: 10px;
+			margin-bottom: 10px;
+			background: {{ colors.white }}50; 
+		}
+		.leftbar_chapter_arrow {
+			margin-top: 14px;
+			transform: rotate(180deg);
+		}
+		.searchbar {
+			/*overflow-y: scroll;*/
+			font-family: Avenir Next;
+			font-size: 16px;
+			border-radius: 10px; 
+			text-decoration: none; 
+			margin-left: 15px;
+			margin: 0 auto;
+			text-align: left;
+			width: auto;
+			color: #FAFAFA90;
+			border: 1px solid #00000050;
+			box-shadow: 0px 0px 5px #00000050;
+			background: #FAFAFA50;
+			outline:0;
+			padding: 0px 5px 0px 5px; 
+		}
+
+		/* the top bar */
+		.topbar {
+			position: fixed; 
+			top: 0px; 
+			left: 0px; 
+			right: 0px; 
+			height: 50px; 
+			padding: 0px 0px 0px 0px; 
+			z-index: 10; 
+			display: block; 
+			box-shadow: 0px 0px 15px #00000050;
+			border-bottom: 1px solid #79797925;
+			/*border-bottom: 1px solid #42424225;*/
+		}
+
+		/* the chapter header */
+		.chapter {
+
+		}
+		.chapter_header {
+			font-family: Avenir Next;
+			font-weight: 500;
+			margin-top: 0px; 
+			font-size: 14px;
+			margin: 15px 0px 0px 20px;
+			padding: 0px 0px 0px 0px;
+			text-align: left;
+			color: {{ colors.white }}95; 
+		}
+		.chapter_img {
+			transform: rotate(90deg);
+			margin: 16px 0px 0px 10px;
+		}
+
+		/* sections */
+		.section, .flex_section {
+			padding: 45px 65px 45px 65px;
+			width: auto;
+		}
+		.flex_section {
+			display: flex;
+		}
+		.section_left {
+			width: 100%;
+			min-width: 50%;
+			flex: 1;
+		}
+		.section_right {
+			min-width: 40%;
+			max-width: 500px;
+			/*max-width: 500px;*/
+		}
+		.section_divider {
+			margin: 0px 65px 0px 65px;
+			width: auto;
+			height: 1px;
+			margin-top: 10px;
+			margin-bottom: 10px;
+			background: {{ colors.white }}50; 
+		}
+
+		/* code section */
+		.code {
+			font-family: Courier New;
+			margin: 7.5px 0px 7.5px 0px;
+			padding: 0px 0px 0px 0px;
+			border: 0.5px solid #00000030;
+			border-radius: 10px;
+			width: 100%;
+			background: {{colors.white}}25;
+			color: {{colors.white}};
+		}
+		.code_header {
+			display: flex;
+			padding: 10px 15px 10px 15px;
+			border-radius: 10px 10px 0px 0px;
+			border: 0.5px solid #00000030;
+			background: {{colors.white}}25;
+		}
+		.code_container {
+			display: block;
+			margin: 0 auto;
+			width: 100%;
+			overflow: scroll;
+		}
+		.code_content {
+			font-family: Courier New;
+			padding: 15px 15px 15px 15px;
+			background: #00000000;
+			border: none;
+			text-decoration: none;
+			width: 100%;
+			overflow: visible;
+			flex-wrap: wrap;
+			/*word-wrap: break-word;*/
+    		/*white-space:pre-wrap;*/
+    		/*width: auto;*/
+    		
+    		overflow-y: scroll;
+    		white-space:pre;
+    		/*display: block*/
+			color: {{colors.white}};
+		}
+		.code_content span {
+		  display: inline;
+		}
+		.code_linenumber {
+			font-size: 12px;
+			color: {{colors.white}}50;;
+		}
+		.code_header_title {
+			font-size: 14px;
+			font-weight: 500;
+			margin: 2px 0px 0px 0px;
+			padding: 0px 0px 0px 0px;
+			color: {{colors.grey}};
+		}
+		.code_header_url {
+			font-size: 12px;
+			font-weight: 300;
+			margin: 2.5px 0px 0px 5px;
+			padding: 0px 0px 0px 0px;
+			flex: 1;
+			width: 100%;
+			color: {{colors.grey}};
+		}
+		.code_language_select {
+			font-family: Avenir Next;
+			font-weight: 400;
+			font-size: 14px;
+			color: {{ colors.white }}95; 
+		}
+
+		/* parameters */
+		.parameter_title {
+			font-family: Avenir Next;
+			font-weight: 500;
+			font-size: 18px;
+			text-align: left;
+			margin: 0px 0px 0px 0px;
+			padding: 0px 0px 0px 0px;
+			margin-top: 35px;
+			color: {{ colors.white }}; 
+		}
+		.parameter_container {
+			position: relative;
+		}
+		.parameter_name_container {
+			display: flex;
+			position: relative;
+		}
+		.parameter_name {
+			font-family: Courier New;
+			font-weight: 600;
+			font-size: 14px;
+			text-align: left;
+			margin: 0px 0px 0px 0px;
+			padding: 0px 0px 0px 0px;
+			color: {{ colors.white }}; 
+		}
+		.parameter_instance {
+			font-family: Courier New;
+			font-weight: 400;
+			font-size: 12px;
+			text-align: left;
+			margin: 1px 0px 0px 10px;
+			padding: 0px 0px 0px 0px;
+			color: {{ colors.white }}90; 
+		}
+		.parameter_description {
+			font-family: Avenir Next;
+			text-align: left;
+			font-size: 16px;
+			margin-top: 5px;
+			color: {{ colors.white }}; 
+		}
+		.parameter_divider {
+			margin: 0px 0px 0px 0px;
+			width: auto;
+			height: 1px;
+			margin-top: 15px;
+			margin-bottom: 15px;
+			background: {{ colors.white }}50; 
+		}
+		.parameter_fold_button {
+			margin: 0px 0px 0px 0px;
+		}
+
+		/* elements */
+		.description {
+			font-family: Avenir Next;
+			text-align: left;
+			font-weight: 400;
+			font-size: 16px;
+			margin-top: 5px;
+			/*margin-bottom: 25px;*/
+			color: {{ colors.white }}; 
+		}
+		.title {
+			font-family: Avenir Next;
+			font-weight: 500;
+			margin-top: 0px; 
+			font-size: 26px;
+			padding-bottom: 0px;
+			text-align: left;
+			color: {{ colors.white }}; 
+		}
+		.subtitle {
+			font-family: Avenir Next;
+			padding-top: 15px; 
+			padding-bottom: 0px; 
+			font-weight: 400;
+			font-size: 22px;
+			text-align: left;
+			color: {{ colors.white }}; 
+		}
+		.button, .button_bordered {
+			/* disable electron border button */
+			outline: none !important;
+			/* keep padding from increasing width:*/
+			-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+		    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+		    box-sizing: border-box;         /* Opera/IE 8+ */
+		    /* .. */
+		    white-space: nowrap;
+		    font-family: Avenir Next;
+		    border-radius: 25px; 
+		    font-size: 12px; 
+		    font-weight: 400;
+		    width: 100%;
+		    text-decoration: none;
+		    border: none;
+		    margin-top: 15px;
+		    padding: 12.5px 25px 12.5px 25px;
+		    box-shadow: 0 0 10px #00000050;
+			background: {{ colors.white }};  
+			color: {{ colors.dark_grey }};
+		}
+		.button_bordered {
+			background: #00000000;  
+			border: 1px solid {{ colors.white }};  
+		}
+		.divider {
+			width: 100%;
+			height: 1px;
+			margin-top: 25px;
+			margin-bottom: 15px;
+			background: {{ colors.white }}50; 
+		}
+
+		/*#####################################################################*/
+		/*#####################################################################*/
+		/* DEFAULTS */
+
+		/* disable iphone input zooming */
+		body { font-size: 16px; }
+		input, select { font-size: 100%; }
+		/* disable padding width stretching */
+		div textarea pre {
+			-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+		    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+		    box-sizing: border-box;         /* Opera/IE 8+ */
+		}
+
+		/* toggle buttons */
+		.toggle_button_container {
+			display: flex;
+		}
+		.toggle_button_child {
+			position: relative;
+			padding-left: 10px; 
+			padding-top: 6px; 
+		}
+		.toggle_button_text {
+			white-space: nowrap;
+		}
+		.toggle_button {
+			width: 20px; 
+			height: 20px; 
+			border-radius: 50%; 
+			border: none; 
+			text-decoration: none; 
+			margin-top: 10.5px; 
+			margin-left: 0px; 
+			position: absolute; 
+			text-decoration: none; 
+			outline: none;
+			background: {{colors.red}}; 
+		}
+		.toggle_button_input, .toggle_button_input_reversed {
+			color: #00000000; 
+			font-size: 10px; 
+			border-radius: 10px; 
+			width: 35px; 
+			height: 9px; 
+			float: left; 
+			margin-top: 14px; 
+			height: 14px; 
+			padding: 0px 0px 0px 0px;
+			border: 1px solid {{colors.grey}};
+			background-color: {{colors.widgets}}; 
+		}
+		.toggle_button_input_reversed {
+			background-color: {{colors.widgets_reversed}}; 
+		}
+		/* spawn toggle button as:
+
+			<div class="toggle_button_container">
+				<p class="toggle_button_text">
+					Sudo:
+				</p>
+				<div class="toggle_button_child">
+					<button id="actions.sudo.button" onclick="toggle_button('actions.sudo')" class="toggle_button" style=""></button>
+					<input required readonly="" id="actions.sudo.input" value="False" class="toggle_button_input" type="text">
+					<script type="text/javascript">initialize_toggle_button('actions.sudo')</script>
+				</div>
+			</div>
+
+		*/
+
+		/* defaults */
+		.air {
+			width: 1px;
+			height: 35px;	
+		}
+		.full_window, .full_window_centered, .full_window_row_centered, .desktop_only_full_window_centered, .desktop_only_full_window_row_centered {
+			position: absolute; 
+			top: 0px; 
+			bottom: 0px; 
+			left: 0px; 
+			right: 0px;
+			/*
+			width: 100%;
+			height: 100%;
+			*/
+		}
+		.centered, .full_window_centered, .full_window_row_centered, .column_centered, .desktop_only_full_window_centered, .desktop_only_full_window_row_centered {
+			display: flex; 
+			justify-content: center; 
+			align-items: center; 
+			flex-direction: column;
+		}
+		.full_window_row_centered, .column_centered, .desktop_only_full_window_row_centered {
+			flex-direction: row;
+		}
+		.wrapper {
+		  display: flex;
+		  flex-direction: row;
+		  align-items: stretch;
+		}
+
+		/* loader */
+		.loader , .loader_reversed {
+		  display: inline-block;
+		  position: relative;
+		  width: 80px;
+		  height: 80px;
+		}
+		.loader div, .loader_reversed div {
+		  animation: loader 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+		  transform-origin: 40px 40px;
+		}
+		.loader div:after, .loader_reversed div:after {
+		  content: " ";
+		  display: block;
+		  position: absolute;
+		  width: 7px;
+		  height: 7px;
+		  border-radius: 50%;
+		  background: {{colors.widgets_reversed}};
+		  margin: -4px 0 0 -4px;
+		}
+		.loader_reversed div:after {
+			background: {{colors.widgets}};
+		}
+		.loader div:nth-child(1), .loader_reversed div:nth-child(1) {
+		  animation-delay: -0.036s;
+		}
+		.loader div:nth-child(1):after, .loader_reversed div:nth-child(1):after {
+		  top: 63px;
+		  left: 63px;
+		}
+		.loader div:nth-child(2), .loader_reversed div:nth-child(2) {
+		  animation-delay: -0.072s;
+		}
+		.loader div:nth-child(2):after, .loader_reversed div:nth-child(2):after {
+		  top: 68px;
+		  left: 56px;
+		}
+		.loader div:nth-child(3), .loader_reversed div:nth-child(3) {
+		  animation-delay: -0.108s;
+		}
+		.loader div:nth-child(3):after, .loader_reversed div:nth-child(3):after {
+		  top: 71px;
+		  left: 48px;
+		}
+		.loader div:nth-child(4), .loader_reversed div:nth-child(4) {
+		  animation-delay: -0.144s;
+		}
+		.loader div:nth-child(4):after, .loader_reversed div:nth-child(4):after {
+		  top: 72px;
+		  left: 40px;
+		}
+		.loader div:nth-child(5), .loader_reversed div:nth-child(5) {
+		  animation-delay: -0.18s;
+		}
+		.loader div:nth-child(5):after, .loader_reversed div:nth-child(5):after {
+		  top: 71px;
+		  left: 32px;
+		}
+		.loader div:nth-child(6), .loader_reversed div:nth-child(6) {
+		  animation-delay: -0.216s;
+		}
+		.loader div:nth-child(6):after, .loader_reversed div:nth-child(6):after {
+		  top: 68px;
+		  left: 24px;
+		}
+		.loader div:nth-child(7), .loader_reversed div:nth-child(7) {
+		  animation-delay: -0.252s;
+		}
+		.loader div:nth-child(7):after, .loader_reversed div:nth-child(7):after {
+		  top: 63px;
+		  left: 17px;
+		}
+		.loader div:nth-child(8), .loader_reversed div:nth-child(8) {
+		  animation-delay: -0.288s;
+		}
+		.loader div:nth-child(8):after, .loader_reversed div:nth-child(8):after {
+		  top: 56px;
+		  left: 12px;
+		}
+		@keyframes loader {
+		  0% {
+		    transform: rotate(0deg);
+		  }
+		  100% {
+		    transform: rotate(360deg);
+		  }
+		}
+
+		/* call the load with html as:
+		<div class="loader" style="transform: scale(1.0); display: block; margin: 0 auto;"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+		*/
+
+	</style>
+
+	<!-- SERIALIZE TEMPLATE CHAPTERS -->
+	<script type="text/javascript">
+		var DOCS = {
+			chapters:{},}
+	</script>
+	{% for chapter_id, chapter in CHAPTERS.items %}
+		<script type="text/javascript">
+			DOCS["chapters"]["{{chapter_id}}"] = {}
+		</script>
+		{% for key, value in chapter.items %}
+			{% if key != "sections" %}
+				<script type="text/javascript">
+					DOCS["chapters"]["{{chapter_id}}"]["{{key}}"] = `{{value}}`
+				</script>
+			{% else %}
+				<script type="text/javascript">
+					DOCS["chapters"]["{{chapter_id}}"]["{{key}}"] = {}
+				</script>
+				{% for section_id, section in value.items %}
+					<script type="text/javascript">
+						DOCS["chapters"]["{{chapter_id}}"]["sections"]["{{section_id}}"] = {}
+					</script>
+					{% for key, value in section.items %}
+						{% if key != "parameters" and key != "attributes" and key != "code_areas" %}
+							{% for key_, value_ in value.items %}
+								<script type="text/javascript">
+									DOCS["chapters"]["{{chapter_id}}"]["sections"]["{{section_id}}"]["{{key}}"]["{{key_}}"] = `{{value_}}`
+								</script>
+							{% endfor %}	
+						{% else %}
+							<script type="text/javascript">
+								DOCS["chapters"]["{{chapter_id}}"]["sections"]["{{section_id}}"]["{{key}}"] = `{{value}}`
+							</script>
+						{% endif %}	
+					{% endfor %}
+				{% endfor %}
+			{% endif %}	
+		{% endfor %}
+	{% endfor %}
+
+	<!-- JAVASCRIPT -->
+	{% include "w3bsite/classes/apps/defaults/javascript/defaults.html" %}
+	<script type="text/javascript">
+
+		// variables.
+		var CHAPTERS = {} // { $chapter_id: HTMLDiv }
+		var SECTIONS = {} // { $chapter_id: { $section_id: HTMLDiv } }
+		var SECTIONS_LEFT = {} // { $chapter_id: { $section_id: HTMLDiv } }
+		var SECTIONS_RIGHT = {} // { $chapter_id: { $section_id: HTMLDiv } }
+		var ATTRIBUTES = {} // { $chapter_id: { $section_id: { $attribute_id: HTMLDiv } } }
+		var PARAMETERS = {} // { $chapter_id: { $section_id: { $parameter_id: HTMLDiv } } }
+		var CODE_AREAS = {} // { $chapter_id: { $section_id: { $code_area_id: HTMLDiv } } }
+		var CODE_AREAS_CONTENT = {} // { $chapter_id: { $section_id: { $code_area_id: { $language: HTMLDiv } } } } }
+		var CHAPTER_TITLES = {} // {$chapter: $title }
+		var SECTION_TITLES = {} // {$chapter: {$section: $title }}
+		var LANGUAGES = [] // [python, json]
+		var API_KEY = "{{API_KEY}}"
+
+		// set chapter header.
+		function set_chapter_id(chapter) {
+			document.getElementById("chapter_id").innerHTML = chapter
+		}
+
+		// fold description texts.
+		function fold_description(id, mode="fold") { // options: fold, unfold & toggle.
+			var description = document.getElementById(id+".description")
+			var button = document.getElementById(id+".fold")
+			if (description == null)
+				console.log(`ERROR: Unable to find description ${id}.description`)
+			if (button == null)
+				console.log(`ERROR: Unable to find description fold button ${id}.fold`)
+			if (mode == "fold") {
+				description.style.display = "none"
+				button.style.transform = "rotate(90deg)"
+				button.style.right = "-10px"
+				description.setAttribute("folded", "true")
+			} else if (mode == "unfold") {
+				description.style.display = "block"
+				button.style.transform = "rotate(0deg)"
+				button.style.right = "0px"
+				description.setAttribute("folded", "false")
+			} else {
+				var folded = description.getAttribute("folded")
+				if (folded == "true") {
+					return fold_description(id, "unfold")
+				} else {
+					return fold_description(id, "fold")
+				}
+			}
+		}
+
+		// fold leftbar chapter.
+		function fold_leftbar_chapter(id, mode="fold") { // options: fold, unfold & toggle.
+			var sections = document.getElementById(id+".sections")
+			var button = document.getElementById(id+".fold")
+			if (sections == null)
+				console.log(`ERROR: Unable to find sections ${id}.sections`)
+			if (button == null)
+				console.log(`ERROR: Unable to find sections fold button ${id}.fold`)
+			if (mode == "fold") {
+				sections.style.display = "none"
+				button.style.transform = "rotate(180deg)"
+				button.style.right = "-10px"
+				sections.setAttribute("folded", "true")
+			} else if (mode == "unfold") {
+				sections.style.display = "block"
+				button.style.transform = "rotate(90deg)"
+				button.style.right = "0px"
+				sections.setAttribute("folded", "false")
+			} else {
+				var folded = sections.getAttribute("folded")
+				if (folded == "true") {
+					return fold_leftbar_chapter(id, "unfold")
+				} else {
+					return fold_leftbar_chapter(id, "fold")
+				}
+			}
+		}
+
+		// hide & show the left bar.
+		var LEFTBAR_OPEN = true
+		function __toggle_left_bar__(mode="toggle", options=["toggle", "show", "hide"]) {
+			var leftbar = document.getElementById("leftbar")
+			var content = document.getElementById("content")
+			if (mode == "show") {
+				leftbar.style.display = "block"
+				content.style.left = "{{leftbar_width}}"
+				LEFTBAR_OPEN = true
+			} else if (mode == "hide") {
+				leftbar.style.display = "none"
+				content.style.left = "0px"
+				LEFTBAR_OPEN = false
+			} else if (mode == "toggle") {
+				if (LEFTBAR_OPEN == true) {
+					__toggle_left_bar__("hide")
+				} else {
+					__toggle_left_bar__("show")
+				}
+			}
+		}
+		// hide & show the top bar.
+		var TOPBAR_OPEN = true
+		function __toggle_top_bar__(mode="toggle", options=["toggle", "show", "hide"]) {
+			var topbar = document.getElementById("topbar")
+			var content = document.getElementById("content")
+			var leftbar = document.getElementById("leftbar")
+			if (mode == "show") {
+				topbar.style.display = "block"
+				content.style.top = "50px"
+				leftbar.style.top = "50px"
+				TOPBAR_OPEN = true
+			} else if (mode == "hide") {
+				topbar.style.display = "none"
+				content.style.top = "0px"
+				leftbar.style.top = "0px"
+				TOPBAR_OPEN = false
+			} else if (mode == "toggle") {
+				if (TOPBAR_OPEN == true) {
+					__toggle_top_bar__("hide")
+				} else {
+					__toggle_top_bar__("show")
+				}
+			}
+		}
+
+		// parse template data.
+		function parse_data(value, format="str") {
+			if (value == null || value == "None") {
+				return null
+			}
+			if (format == "str" || format == "string") {
+				return value
+			} else if (format == "int" || format == "integer") {
+				return parseInt(value)
+			} else if (format == "float") {
+				return parseFloat(value)
+			} else if (format == "boolean") {
+				if (value == "True" || value == "True" || value == "True") {
+					return true
+				} else {
+					return false
+				}
+			} else if (format == "html") {	
+				var parser = new DOMParser();
+				return parser.parseFromString(value, 'text/html');
+			//} else if (format == "dict") {
+			//} else if (format == "list") {
+			} else {
+				console.log(`Error: unkown format ${format}, options: [str, int, float, boolean, html]`)
+			}
+		}
+
+		// generate id.
+		function generate_id(substring=null, length=32) {
+			var result           = ''
+			var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+			var charactersLength = characters.length
+			for ( var i = 0; i < length; i++ ) {
+				result += characters.charAt(Math.floor(Math.random() * charactersLength))
+			}
+			if (substring == null) {
+				return result
+			} else {
+				return substring+"."+result
+			}
+		}
+
+		// assign ids.
+		function assign_ids(ids={"$old id":"$new id"}) {
+			Object.entries(ids).forEach(function([old_id, new_id]) {
+				var element = document.getElementById(old_id)
+				if (element == null) {
+					console.log(`ERROR: Unable to find element ${old_id}`)
+				} else {
+					element.setAttribute("id", new_id)
+				}
+			})
+		}
+
+		// serialize js key from hello_world to helloWorld .
+		function serialize_2_js_key(key) {
+			var to_upper = false
+			var newkey = ""
+			for (var i = 0; i < key.length; i++) {
+				var char = key[i]
+				if (char == "_" || char == "-") {
+					to_upper = true
+				} else {
+					if (to_upper == true) {
+						to_upper = false
+						char = char.toUpperCase()
+					}
+					newkey += char
+				}
+			}
+			return newkey
+		}
+		function serialize_2_css_key(key) {
+			var newkey = ""
+			for (var i = 0; i < key.length; i++) {
+				var char = key[i]
+				if (char == "_") {
+					newkey += "-"
+				} else {
+					newkey += char
+				}
+			}
+			return newkey
+		}
+
+		// proccess color word.
+		function process_word(value=null, color=null, italic=false, joiner="", styles={}, parse=true) {
+			value = value.replaceAll("***API_KEY***", "{{API_KEY}}")
+			var span_start = "" ; var span_end = ""
+			if (parse == true) {
+				var color = parse_data(color, "string")
+				var italic = parse_data(italic, "boolean")
+				var joiner = parse_data(joiner, "string")
+			}
+			if (italic == true) {
+				italic = "font-style: italic;"
+			} else {
+				italic = ""
+			}
+			css_styles = ""
+			Object.entries(styles).forEach(function([python_key, _value_]) {
+				css_key = serialize_2_css_key(python_key)
+				css_styles += `;${css_key}:${_value_}`
+			})
+			if (color != null) {
+				css_styles += `;color:${color};${italic}`
+			}
+			if (css_styles != "") {
+				var span_start = `<span style="${css_styles}">`
+				var span_end = "</span>"
+			}
+			return `${span_start}${value}${span_end}${joiner}`//.replace("\n", "<br>")
+		}
+
+		// capitalize language to user end visible.
+		function captialize_language(language) {
+			if (language == "json") {
+				return "JSON"
+			} else if (language == "cli") {
+				return "CLI"
+			} else if (language == "pip") {
+				return "PIP"
+			} else {
+				return capitalize_scentence(language)
+			}
+		}
+
+		// set flex.
+		SECTIONS_FLEX_LARGE = true
+		function __set_sections_flex__(forced=null) {
+			if (forced == "large" || (window.innerWidth >= 1000 && SECTIONS_FLEX_LARGE == false)) {
+				Object.entries(SECTIONS).forEach(function([chapter_id, sections]) {
+					Object.entries(sections).forEach(function([section_id, section]) {
+						section.setAttribute("class", "flex_section")
+						section.paddingLeft = "45px"
+						section.paddingRight = "45px"
+						SECTIONS_RIGHT[chapter_id][section_id].style.paddingLeft = "30px"
+						SECTIONS_RIGHT[chapter_id][section_id].style.maxWidth = "500px"
+					})
+				})
+				__toggle_top_bar__("hide")
+				__toggle_left_bar__("show")
+				SECTIONS_FLEX_LARGE = true
+			} else if (forced == "small" || (window.innerWidth <= 1000 && SECTIONS_FLEX_LARGE == true)) {
+				Object.entries(SECTIONS).forEach(function([chapter_id, sections]) {
+					Object.entries(sections).forEach(function([section_id, section]) {
+						section.setAttribute("class", "section")
+						section.paddingLeft = "25px"
+						section.paddingRight = "25px"
+						SECTIONS_RIGHT[chapter_id][section_id].style.paddingLeft = "0px"
+						SECTIONS_RIGHT[chapter_id][section_id].style.maxWidth = "none"
+					})
+				})
+				__toggle_top_bar__("show")
+				__toggle_left_bar__("hide")
+				SECTIONS_FLEX_LARGE = false
+			}
+		}
+
+		// selected drop down event.
+		function dropdown_select_handler(self) {
+			var chapter = self.options[self.selectedIndex].parentElement.label
+			var section_id = self.options[self.selectedIndex].getAttribute("section_id")
+			var chapter_id = self.options[self.selectedIndex].getAttribute("chapter_id")
+			var section = self.value
+			document.getElementById(section_id).scrollIntoView()	
+		}
+
+		// select language handler.
+		function language_select_handler(self) {
+			if (typeof self === 'string' || self instanceof String) {
+				var selected = self
+			} else {
+				var selected = self.value.toLowerCase()
+			}
+			Object.entries(CODE_AREAS).forEach(function([chapter_id, sections]) {
+				Object.entries(sections).forEach(function([section_id, codea_areas]) {
+					Object.entries(codea_areas).forEach(function([code_area_id, code_area]) {
+						var present = code_area.getAttribute(selected)
+						if (present == "true") {
+							Object.entries(CODE_AREAS_CONTENT[chapter_id][section_id][code_area_id]).forEach(function([language, div]) {
+								if (language == selected) {
+									div.style.display = "block"
+								} else {
+									div.style.display = "none"
+								}
+							})
+						}
+					})
+				})
+			})
+		}
+
+		// get mouse location.
+		function get_mouse_location(event) {
+		    var totalOffsetX = 0;
+		    var totalOffsetY = 0;
+		    var canvasX = 0;
+		    var canvasY = 0;
+		    var currentElement = this;
+
+		    do{
+		        totalOffsetX += currentElement.offsetLeft - currentElement.scrollLeft;
+		        totalOffsetY += currentElement.offsetTop - currentElement.scrollTop;
+		    }
+		    while(currentElement = currentElement.offsetParent)
+
+		    canvasX = event.pageX - totalOffsetX;
+		    canvasY = event.pageY - totalOffsetY;
+
+		    return {x:canvasX, y:canvasY}
+		}
+
+		// drop copied to clipboard text below code area.
+
+		// click event handler function for code area (copy to clipboar)
+		function codearea_clipboard_handler(e) {
+		    e = e || window.event;
+
+		    var pageX = e.pageX;
+		    var pageY = e.pageY;
+
+		    // IE 8
+		    if (pageX === undefined) {
+		        pageX = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+		        pageY = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+		    }
+
+		    var x = pageX
+		    var y = pageY
+		    var p = document.createElement("p")
+		    p.setAttribute("class", "copied_to_clipboard")
+		    p.innerHTML = "Copied to clipboard"
+		    p.style.top = y+5+"px"
+		    p.style.left = x-60+"px"
+		    document.body.appendChild(p)
+		    setTimeout(function() {
+		    	document.body.removeChild(p)
+		    }, 200)
+		}
+
+		// select leftbar section.
+		function select_section_handler(section_id) {
+			document.getElementById(section_id).scrollIntoView()	
+			document.querySelectorAll('.leftbar_section_title').forEach(function(element) {
+				if (element.getAttribute("section_id") == section_id) {
+					element.setAttribute("selected", "true")
+					element.style.color = "{{colors.white}}"
+				} else {
+					element.setAttribute("selected", "false")
+					element.style.color = "{{colors.white}}95"
+				}
+			});
+		}
+
+		// post html elements render.
+		function __post_render__() {
+			var topbar_select = document.getElementById("topbar.select")
+			var leftbar_content = document.getElementById("leftbar.content")
+			topbar_select.innerHTML = ""
+			leftbar_content.innerHTML = ""
+			var section_id = null
+			Object.entries(SECTIONS).forEach(function([chapter_id, sections]) {
+
+				// add topbar dropdown selector category.
+				var optgroup = document.createElement("optgroup")
+				optgroup.label = CHAPTER_TITLES[chapter_id]//.toUpperCase()
+
+				var html = ""
+				Object.entries(sections).forEach(function([section_id, section]) {
+
+					// add topbar dropdown selector.
+					var option = document.createElement("option")
+					option.title = CHAPTER_TITLES[chapter_id]
+					// option.innerHTML = CHAPTER_TITLES[chapter_id]
+					option.innerHTML = option.value = SECTION_TITLES[chapter_id][section_id]
+					//option.value = option.innerHTML = SECTION_TITLES[chapter_id][section_id]
+					//option.value = option.innerHTML = SECTION_TITLES[chapter_id][section_id]
+					option.setAttribute("chapter_id", chapter_id)
+					option.setAttribute("section_id", section_id)
+					optgroup.appendChild(option)
+
+					// add leftbar sections.
+					html += `
+						<div class="leftbar_section_container">
+							<div class="leftbar_section_divider"></div>
+							<a href="#" class="empty inherit" onclick="select_section_handler('${section_id}')">
+								<h1 selected="false" section_id="${section_id}" class="leftbar_section_title" onmouseover="this.style.color='{{colors.white}}'" onmouseout="if (this.getAttribute('selected') == 'false') this.style.color='{{colors.white}}95 '">
+									`+SECTION_TITLES[chapter_id][section_id]+`
+								</h1>
+							</a>	
+						</div>	
+					 `
+
+				})
+
+				// add optbar.
+				topbar_select.appendChild(optgroup)
+
+				// add leftbar chapter.
+
+				leftbar_content.innerHTML += `
+					<div class="leftbar_chapter_divider"></div>
+					<div class="leftbar_chapter_container">
+						<a href="#" class="empty inherit nomargin nopadding wrapper" onclick="fold_leftbar_chapter('${chapter_id}', 'toggle')">
+							<h1 class="leftbar_chapter_title" style="flex: 1; width: 100%;">
+								`+CHAPTER_TITLES[chapter_id]+`
+							</h1>	
+							<img id="${chapter_id}.fold" src="{% static 'media/docs/white/arrow.transparent.png' %}" width="10px" height="10px" class="nomargin nopadding leftbar_chapter_arrow" style="margin-left: 10px;">
+						</a>
+						<div id="${chapter_id}.sections" style="width 100%;">
+							${html}
+						</div>
+					</div>
+				`
+				if (DOCS["chapters"][chapter_id]["folded"] == true) {
+					fold_leftbar_chapter(`${chapter_id}`, 'fold')
+				}
+
+			})
+			setTimeout(function() {
+				document.getElementById("loaded").style.display = "block"
+				document.getElementById("loading").style.display = "none"
+			}, 100)
+			
+		} 
+
+		// 
+
+	</script>
+
+	<!-- BODY -->
+	<body id="body" style="background: {{colors.background}}">
+		<div id="root-content" style="min-width: 250px; position: absolute; top: 0px; left: 0px; right: 0px; bottom: 0px; position: relative;"> 
+
+			<!-- TOPBAR -->
+			<div id="topbar" class="topbar">
+				<div class="wrapper">
+					<div class="wrapper" style="flex: 1;">
+						<select style="" id="topbar.select" class="chapter_header select" onchange="dropdown_select_handler(this);">
+						  <option style="" value="Documentations" selected class="">Documentations</option>
+						</select>
+					</div>
+					<div class="wrapper" style="float: right;">
+						<a href="/" class="empty_a" style="margin-top: 15px; margin-right: 15px;">
+							<img src="{% static 'favicon.png' %}" width="20px" height="20px" style="">
+						</a>
+					</div>
+				</div>
+			</div> 
+
+			<!-- LEFT BAR -->
+			<div id="leftbar" class="leftbar" style="display: none;">
+				<!-- <div style="position: absolute; right: -15px; top: 25px; width: 25px; height: 38px; border-radius: 0px 7.5px 7.5px 0px; background: {{colors.white}}; box-shadow: 0px 0px 15px #00000050; z-index: 9;"> 
+					<img src="{% static 'media/docs/dark/arrow.png' %}" width="10px" height="10px" style="transform: rotate(180deg);  margin-top: 13.5px; margin-left: 1px;">
+				</div>
+				-->
+				<div style="width: 100%; padding: 10px 0px 10px 0px;">
+					<div class="wrapper" style=" width: 190px;">
+						<a href="/" class="empty_a nomargin nopadding" style="margin-top: 12.5px; margin-left: 15px;">
+							<img src="{% static 'favicon.png' %}" width="15px" height="15px" style="">
+						</a>
+						<h1 class="title nopadding nomargin" style="font-weight: 500; font-size: 12px; margin-top: 13px; margin-left: 10px; color: {{colors.white}}95;">
+							VANDENBERGHINC
+						</h1>
+					</div>
+					<!--
+					<div style="width: auto; padding: 10px 15px 0px 15px; position: relative;">
+						<input type="text" class="searchbar" style="display: block; width: 90%;">
+					</div>
+					-->
+				</div>
+				<div id="leftbar.content" style="overflow: scroll; position: relative; width: 100%; height: 100%;">
+					<!-- example. -->
+					<div class="leftbar_chapter_divider"></div>
+					<div class="leftbar_chapter_container">
+						<div class="wrapper">
+							<h1 class="leftbar_chapter_title" style="flex: 1; width: 100%;">
+								COUPONS
+							</h1>	
+							<a href="#" class="empty inherit nomargin nopadding" >
+								<img src="{% static 'media/docs/white/arrow.transparent.png' %}" width="10px" height="10px" class="nomargin nopadding leftbar_chapter_arrow" style="">
+							</a>
+						</div>
+						<div class="leftbar_section_container">
+							<div class="leftbar_section_divider"></div>
+							<h1 class="leftbar_section_title" onmouseover="this.style.color='{{colors.white}}'" onmouseout="this.style.color='{{colors.white}}95'">
+								<a href="#" class="inherit empty">
+									The Coupon Object
+								</a>
+							</h1>	
+						</div>	
+					</div>
+				</div>
+			</div>
+
+			<!-- BLOCKS -->
+			<div id="content" style="z-index: 7; position: fixed; top: 50px; bottom: 0px; right: 0px; left: 0px; overflow: visible; border-radius: 10px;">
+				<div style="overflow: scroll; position: relative; width: 100%; height: 100%;">
+					
+					<!-- ITERATE CHAPTERS -->
+					<div id="loading" class="full_window_centered">
+						<!-- <img src="{% static 'favicon.png' %}" width="20px" height="20px" style="display: block; margin: 0 auto; position: absolute; right: 15px; top: 15px;"> -->
+						<h1 class="title" style="font-size: 32px; text-align: center; margin: 45px 0px 45px 0px;">
+							Loading Documentations
+						</h1>
+						<div class="loader_reversed" style="transform: scale(1.0); display: block; margin: 0 auto;"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+					</div>
+					<div id="loaded" style="display: none;">
+						{% for chapter_id, chapter in CHAPTERS.items %}
+							<div id="{{chapter.element_id}}"  class="chapter">
+								<script type="text/javascript">
+									CHAPTERS["{{chapter_id}}"] = document.getElementById("{{chapter.element_id}}")
+									SECTIONS["{{chapter_id}}"] = {}
+									SECTIONS_LEFT["{{chapter_id}}"] = {}
+									SECTIONS_RIGHT["{{chapter_id}}"] = {}
+									ATTRIBUTES["{{chapter_id}}"] = {}
+									PARAMETERS["{{chapter_id}}"] = {}
+									CODE_AREAS["{{chapter_id}}"] = {}
+									CODE_AREAS_CONTENT["{{chapter_id}}"] = {}
+									CHAPTER_TITLES["{{chapter_id}}"] = "{{chapter.title}}"
+									SECTION_TITLES["{{chapter_id}}"] = {}
+								</script>
+
+								<!-- ITERATE SECTIONS -->
+								{% for section_id, section in chapter.sections.items %}
+									<div id="{{section.element_id}}" class="section">
+										<script type="text/javascript">
+											SECTIONS["{{chapter_id}}"]["{{section_id}}"] = document.getElementById("{{section.element_id}}")
+											ATTRIBUTES["{{chapter_id}}"]["{{section_id}}"] = {}
+											PARAMETERS["{{chapter_id}}"]["{{section_id}}"] = {}
+											CODE_AREAS["{{chapter_id}}"]["{{section_id}}"] = {}
+											CODE_AREAS_CONTENT["{{chapter_id}}"]["{{section_id}}"] = {}
+											SECTION_TITLES["{{chapter_id}}"]["{{section_id}}"] = "{{section.title}}"
+										</script>
+										<div id="{{section.element_id}}.left" class="section_left">
+											<script type="text/javascript">
+												SECTIONS_LEFT["{{chapter_id}}"]["{{section_id}}"] = document.getElementById("{{section.element_id}}.left")
+											</script>
+											{% if section.title != None %}
+												<h1 class="title">
+													{{ section.title }}
+												</h1>
+											{% endif %}
+											{% if section.description_count > 0 %}
+												<h1 id="{{section_id}}.description" class="description">
+												</h1>
+												<script type="text/javascript">
+													var description = ""
+												</script>
+												{% for word in section.description %}
+													<script type="text/javascript">var styles={}</script>{% for key, value in word.styles.items %}<script type="text/javascript">styles["{{key}}"]="{{value}}"</script>{% endfor %}
+													<script type="text/javascript">
+														description += process_word(`{{word.value}}`, "{{word.color}}", "{{word.italic}}", "{{word.joiner}}", styles).replace("\n","<br>")
+													</script>
+												{% endfor %}
+												<script type="text/javascript">
+													var element = document.getElementById("{{section_id}}.description")
+													var div = document.createElement("div")
+													div.innerHTML = description
+													element.appendChild(div)
+												</script>
+											{% endif %}
+
+											<!-- ITERATE ATTRIBUTES -->
+											{% if section.attributes_count > 0 %}
+												<h1 class="parameter_title">
+													Attributes	
+												</h1>
+											{% endif %}
+											{% for id, info in section.attributes.items %}
+												<div class="parameter_divider"></div>
+												<div id="{{info.element_id}}" class="parameter_container">
+													<script type="text/javascript">
+														ATTRIBUTES["{{chapter_id}}"]["{{section_id}}"]["{{info.element_id}}"] = document.getElementById("{{info.element_id}}")
+													</script>
+													<div id="{{info.element_id}}.fold" class="parameter_fold_button" onclick="fold_description('{{info.element_id}}', 'toggle')" style="position: absolute; top: -15px; right: 0px; z-index: 11;">
+														<a href="#" class="empty_a">
+															<img src="{% static 'media/docs/white/arrow.transparent.png' %}" width="15px" height="15px" class="chapter_img" style="">
+														</a>
+													</div>
+													<div class="parameter_name_container">
+														<h1 class="parameter_name">
+															{{info.id}}
+														</h1>
+														{% for format in info.format %}
+															<h1 class="parameter_instance">
+																{{format}}
+															</h1>
+														{% endfor %}
+													</div>
+													{% if info.description_count > 0 %}
+														<p id="{{info.element_id}}.description" class="parameter_description">
+														</p>
+														<script type="text/javascript">
+															var description = ""
+														</script>
+														{% for word in info.description %}
+															<script type="text/javascript">var styles={}</script>{% for key, value in word.styles.items %}<script type="text/javascript">styles["{{key}}"]="{{value}}"</script>{% endfor %}
+															<script type="text/javascript">
+																description += process_word(`{{word.value}}`, "{{word.color}}", "{{word.italic}}", "{{word.joiner}}", styles).replace("\n","<br>")
+															</script>
+														{% endfor %}
+														<script type="text/javascript">
+															var element = document.getElementById("{{info.element_id}}.description")
+															var div = document.createElement("div")
+															div.innerHTML = description
+															element.appendChild(div)
+														</script>
+													{% endif %}
+												</div>
+												<script type="text/javascript">
+													var id = "{{info.element_id}}"
+													var fold_button = document.getElementById(id+".fold")
+													var folded = parse_data("{{info.folded}}", "boolean")
+													if (folded == true || "{{info.description}}" == "None") { 
+														fold_description(id, "fold")
+													}
+												</script>
+											{% endfor %}
+
+											<!-- ITERATE PARAMETERS -->
+											{% if section.parameters_count > 0 %}
+												<h1 class="parameter_title">
+													Parameters
+												</h1>
+											{% endif %}
+											{% for id, info in section.parameters.items %}
+												<div class="parameter_divider"></div>
+												<div id="{{info.element_id}}" class="parameter_container">
+													<script type="text/javascript">
+														PARAMETERS["{{chapter_id}}"]["{{section_id}}"]["{{info.element_id}}"] = document.getElementById("{{info.element_id}}")
+													</script>
+													<div id="{{info.element_id}}.fold" class="parameter_fold_button" onclick="fold_description('{{info.element_id}}', 'toggle')" style="position: absolute; top: -15px; right: 0px; z-index: 11;">
+														<a href="#" class="empty_a">
+															<img src="{% static 'media/docs/white/arrow.transparent.png' %}" width="15px" height="15px" class="chapter_img" style="">
+														</a>
+													</div>
+													<div class="parameter_name_container">
+														<h1 class="parameter_name">
+															{{info.id}}
+														</h1>
+														{% for format in info.format %}
+															<h1 class="parameter_instance">
+																{{format}}
+															</h1>
+														{% endfor %}
+														{% if info.required == True %}
+															<h1 class="parameter_instance" style="color: {{colors.red}};">
+																REQUIRED
+															</h1>
+														{% endif %}
+													</div>
+													{% if info.description_count > 0 %}
+														<p id="{{info.element_id}}.description" class="parameter_description">
+														</p>
+														<script type="text/javascript">
+															var description = ""
+														</script>
+														{% for word in info.description %}
+															<script type="text/javascript">var styles={}</script>{% for key, value in word.styles.items %}<script type="text/javascript">styles["{{key}}"]="{{value}}"</script>{% endfor %}
+															<script type="text/javascript">
+																description += process_word(`{{word.value}}`, "{{word.color}}", "{{word.italic}}", "{{word.joiner}}", styles).replace("\n","<br>")
+															</script>
+														{% endfor %}
+														<script type="text/javascript">
+															var element = document.getElementById("{{info.element_id}}.description")
+															var div = document.createElement("div")
+															div.innerHTML = description
+															element.appendChild(div)
+														</script>
+													{% endif %}
+												</div>
+												<script type="text/javascript">
+													var id = "{{info.element_id}}"
+													var fold_button = document.getElementById(id+".fold")
+													var folded = parse_data("{{info.folded}}", "boolean")
+													if (folded == true || "{{info.description}}" == "None") { 
+														fold_description(id, "fold")
+													}
+												</script>
+											{% endfor %}
+										</div>
+										<div id="{{section.element_id}}.right"class="section_right" >
+											<script type="text/javascript">
+												SECTIONS_RIGHT["{{chapter_id}}"]["{{section_id}}"] = document.getElementById("{{section.element_id}}.right")
+											</script>
+											<!-- ITERATE CODE_AREAS -->
+											{% if section.code_areas_count > 0 %}
+												<div style="height: 25px; width: 10px;"></div>
+											{% else %}
+												<script type="text/javascript">
+													document.getElementById("{{section.element_id}}.right").style.display = "none"
+												</script>
+											{% endif %}
+											{% for id, info in section.code_areas.items %}
+												<div id="{{info.element_id}}" class="code">
+													<script type="text/javascript">
+														CODE_AREAS["{{chapter_id}}"]["{{section_id}}"]["{{info.element_id}}"] = document.getElementById("{{info.element_id}}")
+														CODE_AREAS_CONTENT["{{chapter_id}}"]["{{section_id}}"]["{{info.element_id}}"] = {}
+														var code_area = document.getElementById("{{info.element_id}}")
+														var default_language = null
+													</script>
+													<div class="code_header">
+														<h5 class="code_header_title">
+															{{info.title}}	
+														</h5>
+														<h5 class="code_header_url">
+															{{info.subtitle}}	
+														</h5>
+														<select id="{{info.element_id}}.select" class="select code_language_select" onchange="language_select_handler(this);">
+														</select>
+													</div>
+													<div class="code_container">
+														<!-- <textarea id="{{info.element_id}}.content" class="code_content">{{info.content.python}}</textarea> -->
+														<div id="{{info.element_id}}.content" class="code_content"></div>
+														<script type="text/javascript">
+															var element = document.getElementById("{{info.element_id}}.content")
+															var language_select = document.getElementById(`{{info.element_id}}.select`)
+															var already_selected = false
+														</script>
+														{% for key, value in info.style.items %}
+															<script type="text/javascript">
+																element.style[serialize_2_js_key("{{key}}")] = "{{value}}" 
+															</script>
+														{% endfor %}
+														<!-- languages -->
+														{% for language, words in info.words.items %}
+															<script type="text/javascript">
+																var html = ""
+																var language = "{{language}}".toLowerCase()
+																code_area.setAttribute(language, "true")
+																LANGUAGES.push_if_not_included(language)
+															</script>
+															<!-- words -->
+															{% for word in words %}
+																<script type="text/javascript">var styles={}</script>{% for key, value in word.styles.items %}<script type="text/javascript">styles["{{key}}"]="{{value}}"</script>{% endfor %}
+																<script type="text/javascript">
+																	html += process_word(`{{word.value}}`, "{{word.color}}", "{{word.italic}}", "{{word.joiner}}", styles)
+																</script>
+															{% endfor %}
+															<script type="text/javascript">
+																if (html != "") {
+																	var new_html = ""
+																	if (language == "python"){
+																		var linecount = 0
+																		for (var i = 0; i < html.length; i++) {
+																			var char = html[i]
+																			if (char == "\n") {
+																				linecount += 1
+																				if (linecount == 1) {
+																					new_html += `<span class="code_linenumber">${linecount-1}:  </span>`
+																				} else {
+																					new_html += `<br><span class="code_linenumber">${linecount-1}:  </span>`	
+																				}
+																			} else {
+																				new_html += char
+																			}
+																		}
+																	} else {
+																		new_html = html
+																	}
+																	var div = document.createElement("div")
+																	div.innerHTML = new_html
+																	if (already_selected == true) {
+																		div.style.display = "none"
+																	}
+																	div.addEventListener('click', codearea_clipboard_handler);
+																	already_selected = true
+																	CODE_AREAS_CONTENT["{{chapter_id}}"]["{{section_id}}"]["{{info.element_id}}"][language] = div
+																	element.appendChild(div)
+																	var option = document.createElement("option")
+																	option.innerHTML = option.value = captialize_language(language)
+																	language_select.appendChild(option)
+																}
+															</script>
+														{% endfor %}
+													</div>
+												</div>
+											{% endfor %}
+										</div>
+
+									</div>
+									<div class="section_divider"></div>
+								{% endfor %}
+							</div>
+						{% endfor %}
+					</div>
+					
+
+					<!-- CREATE SELECTORS -->
+					<script type="text/javascript">
+						__post_render__()
+					</script>
+
+						
+				</div>
+			</div>
+		</div>
+		{% csrf_token %}
+	</body>
+
+	<!-- SET ELEMENTS BY WIDTH -->
+	<script type="text/javascript">
+		function __set_elements_by_width__() {
+
+			// set sections flex.
+			try { __set_sections_flex__() } catch(e) {}
+
+		}
+		__set_sections_flex__("large") // to set correct css
+		__set_elements_by_width__()
+		window.addEventListener("resize", __set_elements_by_width__);
+	</script>
+	<script type="text/javascript">
+		//__toggle_left_bar__("hide")
+		// __toggle_top_bar__("hide")
+	</script>
+
+</html>
