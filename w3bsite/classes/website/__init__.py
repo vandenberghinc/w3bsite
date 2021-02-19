@@ -472,7 +472,7 @@ class Website(cl1.CLI):
 		# logs.
 		#if not self.argument_present("-c"):
 		#	os.system("clear")
-		if LOG_LEVEL > 0:
+		if syst3m.defaults.vars.log_level > 0:
 			print(f"Website: {self.name}")
 			print(f"Domain: {self.domain}")
 			print(f"Root: {self.root}")

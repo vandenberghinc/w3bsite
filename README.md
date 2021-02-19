@@ -44,8 +44,6 @@ from fil3s import Files, Formats
 website = Website(
 	# the root path.
 	root=Formats.FilePath(__file__).base(back=1),
-	# the root version.
-	version="v1",
 	# the website name.
 	name="My Website",
 	# the organization.
@@ -64,4 +62,22 @@ website = Website(
 	namecheap_api_key=".......",)
 if __name__ == "__main__":
 	website.cli()
+```
+
+## CLI:
+	Usage: example <mode> <options> 
+	Modes:
+	    -h / --help : Show the documentation.
+	Options:
+	Author: Daan van den Bergh 
+	Copyright: © Daan van den Bergh 2020. All rights reserved.
+
+## Python Examples.
+
+Initialize the encryption class (Leave the passphrase None if you require no passphrase).
+```python
+# initialize the encryption class.
+encryption = Encryption(
+	key='mykey/',
+	passphrase='MyPassphrase123!')
 ```

@@ -44,8 +44,6 @@ from fil3s import Files, Formats
 website = Website(
 	# the root path.
 	root=Formats.FilePath(__file__).base(back=1),
-	# the root version.
-	version="v1",
 	# the website name.
 	name="My Website",
 	# the organization.

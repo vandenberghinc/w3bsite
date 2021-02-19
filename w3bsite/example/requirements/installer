@@ -75,7 +75,6 @@ function get_argument() {
 
 # check etc dir.
 alias="api.vandenberghinc.com" # must use "" not '' for w3bsite.
-version="v1" # must use "" not '' for w3bsite.
 package="/usr/local/lib/$alias/" # must use "" not '' for w3bsite.
 database="/etc/$alias/" # must use "" not '' for w3bsite.
 pypi_package="false" # must use "" not '' for w3bsite.
@@ -84,19 +83,14 @@ website_package="true" # must use "" not '' for w3bsite.
 # defaults.
 osinfo
 requirements_dir=$(dirname "$0")
-if [[ ! "$requirements_dir" =~ "/$version/requirements" ]] ; then
-    echo "Error: Invalid installer path $requirements_dir/installer. The installer requires to be located at: /path/to/source/$version/requirements/installer"
+if [[ ! "$requirements_dir" =~ "/requirements" ]] ; then
+    echo "Error: Invalid installer path $requirements_dir/installer. The installer requires to be located at: /path/to/source/requirements/installer"
     exit 1
 fi
 current_installation=${requirements_dir///requirements/}
-current_installation=${current_installation///$version/}"/" 
 package_base=${package///$alias/}
 if [[ "$alias" == "" ]] ; then
-    echo "Error: Specify the alias variable in installer script: $current_installation/$version/requirements/installer."
-    exit 1
-fi
-if [[ "$version" == "" ]] ; then
-    echo "Error: Specify the version variable in installer script: $current_installation/$version/requirements/installer."
+    echo "Error: Specify the alias variable in installer script: $current_installation/requirements/installer."
     exit 1
 fi
 if [ $(get_argument "--user" $@) != "none" ] ; then
@@ -138,7 +132,7 @@ DEPLOY=$(argument_present "--deploy" $@)
 if [ "$CODE_UPDATE" == "true" ] ; then
     echo "Finished installing $alias code updates."
     if [ "$DEPLOY" == "true" ] ; then
-        $package/$version/deployment/installer --code-update
+        $package/deployment/installer --code-update
     fi
     # regular log for confirmation:
     echo "Successfully installed $alias."
@@ -178,9 +172,9 @@ fi
 
 # install alias.
 if [[ "$website_package" == "true" ]] || [[ "$website_package" == "True" ]] ; then
-    python3 $package/$version/website.py --create-alias $alias --sudo 
+    python3 $package/website.py --create-alias $alias --sudo 
 else 
-    python3 $package/$version --create-alias $alias --sudo
+    python3 $package/ --create-alias $alias --sudo
 fi
 
 # install pypi package.
@@ -199,7 +193,7 @@ sudo ufw allow 22
 
 # auto deploy.
 if [ "$DEPLOY" == "true" ] ; then
-    $package/$version/deployment/installer
+    $package/deployment/installer
 fi
 
 # regular log for confirmation:

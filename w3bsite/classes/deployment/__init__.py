@@ -43,7 +43,7 @@ class Deployment(_defaults_.Defaults):
 			os.system(f"rm -fr {self.root}/.secrets/tls/dhparam.pem")
 		if not os.path.exists(f"{self.root}/.secrets/tls/dhparam.pem"):
 			tmp = "/tmp/dhparam.pem"
-			os.system(f"sudo openssl dhparam -out {tmp} 4096 && sudo chown {USER}:{GROUP} {tmp} && mv {tmp} {self.root}/.secrets/tls/dhparam.pem")
+			os.system(f"sudo openssl dhparam -out {tmp} 4096 && sudo chown {syst3m.defaults.vars.user}:{syst3m.defaults.vars.group} {tmp} && mv {tmp} {self.root}/.secrets/tls/dhparam.pem")
 
 		# loader.
 		if log_level >= 0: loader = syst3m.console.Loader(f"Configuring deployment of website {self.domain} ...")
