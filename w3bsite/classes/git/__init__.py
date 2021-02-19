@@ -28,7 +28,7 @@ class Git(_defaults_.Defaults):
 
 		#
 	def installed(self):
-		return r3sponse.success_response(f"Successfully checked the installation of git repository [{self.name}].", {
+		return r3sponse.success(f"Successfully checked the installation of git repository [{self.name}].", {
 				"installed":os.path.exists(f"{self.root}/.git"),
 			})
 		#
@@ -42,7 +42,7 @@ class Git(_defaults_.Defaults):
 			git config --global user.email {self.email}
 		""")
 		if not "Initialized empty Git repository in " in response:
-			return r3sponse.error_response(f"Failed to install git repository [{self.name}].")
+			return r3sponse.error(f"Failed to install git repository [{self.name}].")
 
 		# check remote.
 		response = utils.__execute_script__(f"""
@@ -55,7 +55,7 @@ class Git(_defaults_.Defaults):
 				heroku create {self.name.lower().replace(" ","")}
 			""")
 			if not "https://" in response:
-				return r3sponse.error_response(f"Failed to create a heroku app while installing git repository [{self.name}],")
+				return r3sponse.error(f"Failed to create a heroku app while installing git repository [{self.name}],")
 
 			# double check.
 			response = utils.__execute_script__(f"""
@@ -63,9 +63,9 @@ class Git(_defaults_.Defaults):
 				git remote -v
 			""")
 			if response == "":
-				return r3sponse.error_response(f"Failed to link a remote heroku origin to git repository [{self.name}].")
+				return r3sponse.error(f"Failed to link a remote heroku origin to git repository [{self.name}].")
 
-		return r3sponse.success_response(f"Successfully installed git repository [{self.name}].")
+		return r3sponse.success(f"Successfully installed git repository [{self.name}].")
 
 		#
 	def pull(self, title="Updates", message="updates."):
@@ -76,9 +76,9 @@ class Git(_defaults_.Defaults):
 			git pull
 			""")
 		if True or "initialized empty git re" in response.lower():
-			return r3sponse.success_response(f"Successfully pulled git repository [{self.name}].")
+			return r3sponse.success(f"Successfully pulled git repository [{self.name}].")
 		else:
-			return r3sponse.error_response(f"Failed to pull git repository [{self.name}].")
+			return r3sponse.error(f"Failed to pull git repository [{self.name}].")
 
 		#
 

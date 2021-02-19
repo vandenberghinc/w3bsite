@@ -89,10 +89,10 @@ class FireStore(object):
 			success = True
 		except: success = False
 		if not success:
-			return r3sponse.error_response(f"Failed to load document [{reference}].")
+			return r3sponse.error(f"Failed to load document [{reference}].")
 		if not isinstance(doc, list):
-			return r3sponse.error_response(f"Reference [{reference}] leads to a document, not a collection.")
-		return r3sponse.success_response(f"Successfully listed the content of collection [{reference}].", {"collection":doc})
+			return r3sponse.error(f"Reference [{reference}] leads to a document, not a collection.")
+		return r3sponse.success(f"Successfully listed the content of collection [{reference}].", {"collection":doc})
 	def load(self, reference):
 		doc = self.__get_doc__(reference)
 		try:
@@ -100,14 +100,14 @@ class FireStore(object):
 			success = True
 		except: success = False
 		if not success:
-			return r3sponse.error_response(f"Failed to load document [{reference}].")
+			return r3sponse.error(f"Failed to load document [{reference}].")
 		if isinstance(doc, list):
-			return r3sponse.error_response(f"Reference [{reference}] leads to a collection, not a document.")
+			return r3sponse.error(f"Reference [{reference}] leads to a collection, not a document.")
 		if not doc.exists:
-			return r3sponse.error_response(f"Document [{reference}] does not exist.")
+			return r3sponse.error(f"Document [{reference}] does not exist.")
 		else:
 			data = doc.to_dict()
-			return r3sponse.success_response(f"Successfully loaded document [{reference}].", {"document":data})
+			return r3sponse.success(f"Successfully loaded document [{reference}].", {"document":data})
 	def load_collection(self, reference):
 		doc = self.__get_doc__(reference)
 		try:
@@ -115,14 +115,14 @@ class FireStore(object):
 			success = True
 		except: success = False
 		if not success:
-			return r3sponse.error_response(f"Failed to load document [{reference}].")
+			return r3sponse.error(f"Failed to load document [{reference}].")
 		if isinstance(doc, dict):
-			return r3sponse.error_response(f"Reference [{reference}] leads to a document, not a collection.")
+			return r3sponse.error(f"Reference [{reference}] leads to a document, not a collection.")
 		data = []
 		for i in doc:
 			if i.exists:
 				data.append(i.id)
-		return r3sponse.success_response(f"Successfully loaded the document names of collection [{reference}].", {"collection":data, "documents":doc})
+		return r3sponse.success(f"Successfully loaded the document names of collection [{reference}].", {"collection":data, "documents":doc})
 	def save(self, reference, data):
 		doc = self.__get_doc__(reference)
 		try:
@@ -130,9 +130,9 @@ class FireStore(object):
 			success = True
 		except: success = False
 		if success:
-			return r3sponse.success_response(f"Successfully saved document [{reference}].")
+			return r3sponse.success(f"Successfully saved document [{reference}].")
 		else:
-			return r3sponse.error_response(f"Failed to save document [{reference}].")
+			return r3sponse.error(f"Failed to save document [{reference}].")
 	def delete(self, reference):
 		doc = self.__get_doc__(reference)
 		try:
@@ -140,9 +140,9 @@ class FireStore(object):
 			success = True
 		except: success = False
 		if success:
-			return r3sponse.success_response(f"Successfully deleted document [{reference}].")
+			return r3sponse.success(f"Successfully deleted document [{reference}].")
 		else:
-			return r3sponse.error_response(f"Failed to delete document [{reference}].")
+			return r3sponse.error(f"Failed to delete document [{reference}].")
 	# system functions.
 	def __get_doc__(self, reference):
 		reference = reference.replace("//", "/")
@@ -195,15 +195,15 @@ class Users(_defaults_.Defaults):
 				user = auth.get_user_by_phone_number(phone_number)
 				variable = str(phone_number)
 			else:
-				return r3sponse.error_response("Invalid usage, define one of the following parameters: [uid, email, phone_number].")
+				return r3sponse.error("Invalid usage, define one of the following parameters: [uid, email, phone_number].")
 		except _auth_utils.UserNotFoundError:
-			return r3sponse.error_response("User does not exist.")
+			return r3sponse.error("User does not exist.")
 
 		# check success.
 		if user == None: 
-			return r3sponse.error_response(f"Failed to retrieve user [{variable}].")
+			return r3sponse.error(f"Failed to retrieve user [{variable}].")
 		else:
-			return r3sponse.success_response(f"Successfully retrieved user [{variable}].", {"user":user})
+			return r3sponse.success(f"Successfully retrieved user [{variable}].", {"user":user})
 
 
 		#
@@ -230,11 +230,11 @@ class Users(_defaults_.Defaults):
 		password = str(password)
 		verify_password = str(verify_password)
 		if len(password) < 8:
-			return r3sponse.error_response("The password must contain at least 8 characters.")
+			return r3sponse.error("The password must contain at least 8 characters.")
 		elif password.lower() == password:
-			return r3sponse.error_response("The password must regular and capital letters.")
+			return r3sponse.error("The password must regular and capital letters.")
 		elif password != verify_password:
-			return r3sponse.error_response("Passwords do not match.")
+			return r3sponse.error("Passwords do not match.")
 
 		# create.
 		try:
@@ -253,10 +253,10 @@ class Users(_defaults_.Defaults):
 
 		# handle error.
 		if not success:
-			return r3sponse.error_response(f"Failed to create user [{email}], error: {error}")
+			return r3sponse.error(f"Failed to create user [{email}], error: {error}")
 
 		# handle success.
-		return r3sponse.success_response(f"Successfully created user [{email}].", {
+		return r3sponse.success(f"Successfully created user [{email}].", {
 			"user":user,
 			"uid":user.uid,
 			"email":user.email,
@@ -294,11 +294,11 @@ class Users(_defaults_.Defaults):
 			password = str(password)
 			verify_password = str(verify_password)
 			if len(password) < 8:
-				return r3sponse.error_response("The password must contain at least 8 characters.")
+				return r3sponse.error("The password must contain at least 8 characters.")
 			elif password.lower() == password:
-				return r3sponse.error_response("The password must regular and capital letters.")
+				return r3sponse.error("The password must regular and capital letters.")
 			elif password != verify_password:
-				return r3sponse.error_response("Passwords do not match.")
+				return r3sponse.error("Passwords do not match.")
 
 		# create
 		try:
@@ -318,9 +318,9 @@ class Users(_defaults_.Defaults):
 
 		# handle success.
 		if success:
-			return r3sponse.success_response(f"Successfully updated user [{uid}].")
+			return r3sponse.success(f"Successfully updated user [{uid}].")
 		else:
-			return r3sponse.error_response(f"Failed to update user [{uid}], error: {error}")
+			return r3sponse.error(f"Failed to update user [{uid}], error: {error}")
 
 		#
 	def delete(self, 
@@ -339,10 +339,10 @@ class Users(_defaults_.Defaults):
 				success = False
 				error = e
 			if not success:
-				return r3sponse.error_response(f"Failed to delete user [{uid}], error: {error}")
+				return r3sponse.error(f"Failed to delete user [{uid}], error: {error}")
 			response = self.firestore.delete(f"{self.users_collection}/{uid}")
 			if not response.success: return response
-			return r3sponse.success_response(f"Successfully deleted user [{uid}].")
+			return r3sponse.success(f"Successfully deleted user [{uid}].")
 		else:
 			response = self.get(email=email)
 			if not response.success: return response
@@ -366,11 +366,11 @@ class Users(_defaults_.Defaults):
 			success = False
 			error = e
 		if not success:
-			return r3sponse.error_response(f"You are not signed in, error: {error}")
+			return r3sponse.error(f"You are not signed in, error: {error}")
 		response = self.get(uid=uid)
 		if not response.success: return response
 		user = response.user
-		return r3sponse.success_response("You are signed in.", {"uid":uid, "email":user.email})	
+		return r3sponse.success("You are signed in.", {"uid":uid, "email":user.email})	
 
 		#
 		

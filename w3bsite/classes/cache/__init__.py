@@ -34,7 +34,7 @@ class Cache(object):
 			self.__cache__[mode][key] = data
 		else:
 			self.__cache__[key] = data
-		return r3sponse.success_response(f"Successfully cached [{mode}.{key}].") 
+		return r3sponse.success(f"Successfully cached [{mode}.{key}].") 
 	def get(self, 
 		# the cache mode (example: subscriptions) (optional).
 		mode=None, 
@@ -43,17 +43,17 @@ class Cache(object):
 	):
 		if mode != None:
 			try:self.__cache__[mode]
-			except KeyError:  return r3sponse.error_response(f"No cached {mode} data available.") 
+			except KeyError:  return r3sponse.error(f"No cached {mode} data available.") 
 			try:data = self.__cache__[mode][key]
-			except KeyError:  return r3sponse.error_response(f"No cached {mode}.{key} data available.") 
+			except KeyError:  return r3sponse.error(f"No cached {mode}.{key} data available.") 
 		else:
 			try:data = self.__cache__[key]
-			except KeyError:  return r3sponse.error_response(f"No cached {key} data available.") 
+			except KeyError:  return r3sponse.error(f"No cached {key} data available.") 
 		if isinstance(data["reset"], int):
 			date = Formats.Date()
 			increased = date.increase(data["timestamp"], minutes=data["reset"])
 			if date.compare(increased, date.timestamp) in ["past", "present"]:
-				return r3sponse.error_response(f"Cache refresh required for {mode}.{key}.") 
-		return r3sponse.success_response(f"Successfully retrieved cache [{mode}.{key}].", {
+				return r3sponse.error(f"Cache refresh required for {mode}.{key}.") 
+		return r3sponse.success(f"Successfully retrieved cache [{mode}.{key}].", {
 			"value":data["value"],
 		}) 

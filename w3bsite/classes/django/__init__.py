@@ -78,7 +78,7 @@ class Django(_defaults_.Defaults):
 			file.file_path.delete(forced=True)
 
 		# handlers.
-		return r3sponse.success_response(f"Successfully stopped website [{self.root}].")
+		return r3sponse.success(f"Successfully stopped website [{self.root}].")
 
 		#
 	def create(self):
@@ -96,7 +96,7 @@ class Django(_defaults_.Defaults):
 		# secrets.
 		path = f"{self.root}/website/settings.py"
 		if not os.path.exists(path):
-			return r3sponse.error_response(f"Failed to create django project [{self.root}].")
+			return r3sponse.error(f"Failed to create django project [{self.root}].")
 		data = utils.__load_file__(path)
 		secret_key = data.split("SECRET_KEY = '")[1].split("'")[0]
 		if not os.path.exists(f"{self.root}/.secrets"):
@@ -159,19 +159,19 @@ class Django(_defaults_.Defaults):
 		utils.__save_file__(path, data.replace("#!/usr/bin/env python", "#!/usr/bin/env python3"))
 
 		# handlers.
-		return r3sponse.success_response(f"Successfully created django website [{self.root}].")
+		return r3sponse.success(f"Successfully created django website [{self.root}].")
 	def create_app(self, name="home"):
 
 		# checks.
 		path = f"{self.root}/apps/{name}"
 		if os.path.exists(path):
-			return r3sponse.error_response(f"App [{name}] already exists.")
+			return r3sponse.error(f"App [{name}] already exists.")
 
 		# copy.
 		os.system(f"cp -r {SOURCE_PATH}/example/app {path}")
 
 		# handlers.
-		return r3sponse.success_response(f"Successfully created app [{name}].")
+		return r3sponse.success(f"Successfully created app [{name}].")
 
 # the django database users.
 class Users(_defaults_.Defaults):
@@ -212,12 +212,12 @@ class Users(_defaults_.Defaults):
 			django_user.save()
 
 			# success.
-			return r3sponse.success_response(f"Successfully created django user {username}.", {
+			return r3sponse.success(f"Successfully created django user {username}.", {
 				"user":django_user,
 			})
 
 		# error.
-		#except Exception as e:  return r3sponse.error_response(f"Failed to create django user {username}, error: {e}.")
+		#except Exception as e:  return r3sponse.error(f"Failed to create django user {username}, error: {e}.")
 
 		#
 	def update(self,
@@ -257,12 +257,12 @@ class Users(_defaults_.Defaults):
 			if edits > 0: django_user.save()
 
 			# success.
-			return r3sponse.success_response(f"Successfully updated django user {username}.", {
+			return r3sponse.success(f"Successfully updated django user {username}.", {
 				#"user":django_user,
 			})
 
 		# error.
-		except Exception as e:  return r3sponse.error_response(f"Failed to update django user {username}, error: {e}.")
+		except Exception as e:  return r3sponse.error(f"Failed to update django user {username}, error: {e}.")
 
 		#
 	def authenticate(self, 
@@ -295,11 +295,11 @@ class Users(_defaults_.Defaults):
 				_login_(request, user)
 
 			# success.
-			return r3sponse.success_response(f"Successfully authenticated user {username}.", {
+			return r3sponse.success(f"Successfully authenticated user {username}.", {
 				#"user":django_user,
 			})
 		# error.
-		except Exception as e:  return r3sponse.error_response(f"Failed to login user {username}, error: {e}.")
+		except Exception as e:  return r3sponse.error(f"Failed to login user {username}, error: {e}.")
 
 		#
 	def delete(self, username=None):
@@ -315,12 +315,12 @@ class Users(_defaults_.Defaults):
 			django_user.delete()
 
 			# success.
-			return r3sponse.success_response(f"Successfully deleted django user {username}.", {
+			return r3sponse.success(f"Successfully deleted django user {username}.", {
 				#"user":django_user,
 			})
 
 		# error.
-		except Exception as e:  return r3sponse.error_response(f"Failed to delete django user {username}, error: {e}.")
+		except Exception as e:  return r3sponse.error(f"Failed to delete django user {username}, error: {e}.")
 
 		#
 	def get(self, 
@@ -339,7 +339,7 @@ class Users(_defaults_.Defaults):
 				django_user = DjangoUser.objects.get(username=username)
 
 			# error.
-			except Exception as e:  return r3sponse.error_response(f"Failed to retrieve django user {username}, error: {e}.")
+			except Exception as e:  return r3sponse.error(f"Failed to retrieve django user {username}, error: {e}.")
 
 		# by email.
 		elif email != None:
@@ -350,13 +350,13 @@ class Users(_defaults_.Defaults):
 				django_user = DjangoUser.objects.get(email=email)
 
 			# error.
-			except Exception as e:  return r3sponse.error_response(f"Failed to retrieve django user {email}, error: {e}.")
+			except Exception as e:  return r3sponse.error(f"Failed to retrieve django user {email}, error: {e}.")
 
 		# invalid.
-		else: return r3sponse.error_response(f"Define one of the following parameters: [username, email].")
+		else: return r3sponse.error(f"Define one of the following parameters: [username, email].")
 
 		# success.
-		return r3sponse.success_response(f"Successfully retrieved django user {identifier}.", {
+		return r3sponse.success(f"Successfully retrieved django user {identifier}.", {
 			"user":django_user,
 			"username":django_user.username,
 			"email":django_user.email,
@@ -384,12 +384,12 @@ class Users(_defaults_.Defaults):
 				exists = DjangoUser.objects.filter(username=username).exists()
 
 				# success.
-				return r3sponse.success_response(f"Successfully checked the existsance of django user {username}.", {
+				return r3sponse.success(f"Successfully checked the existsance of django user {username}.", {
 					"exists":exists,
 				})
 
 			# error.
-			except Exception as e:  return r3sponse.error_response(f"Failed to check the existsance of django user {username}, error: {e}.")
+			except Exception as e:  return r3sponse.error(f"Failed to check the existsance of django user {username}, error: {e}.")
 
 		# by email.
 		elif email != None:
@@ -400,12 +400,12 @@ class Users(_defaults_.Defaults):
 			response = self.get(email=email)
 			if response.error != None and "User matching query does not exist" not in response.error: return response
 			elif response.error != None and "User matching query does not exist" in response.error: exists = False
-			return r3sponse.success_response(f"Successfully checked the existsance of django user {identifier}.", {
+			return r3sponse.success(f"Successfully checked the existsance of django user {identifier}.", {
 				"exists":exists,
 			})
 
 		# invalid.
-		else: return r3sponse.error_response(f"Define one of the following parameters: [username, email].")
+		else: return r3sponse.error(f"Define one of the following parameters: [username, email].")
 
 
 		#

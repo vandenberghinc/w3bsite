@@ -43,7 +43,7 @@ class Security(_defaults_.Defaults):
 
 		# check duplicate.
 		if os.path.exists(f"{base}/tls.key") or os.path.exists(f"{base}/server.crt"):
-			return r3sponse.error_response("The tls certificate already exists.")
+			return r3sponse.error("The tls certificate already exists.")
 
 		# generate.
 		print("Generating a tls certificate ...")
@@ -73,9 +73,9 @@ class Security(_defaults_.Defaults):
 		# handler.
 		if not os.path.exists(f"{self.root}/.secrets/tls/server.key") or not os.path.exists(f"{self.root}/.secrets/tls/server.crt"):
 			os.system(f"rm -fr {base}")
-			return r3sponse.error_response(f"Failed to generate a tls certificate.")
+			return r3sponse.error(f"Failed to generate a tls certificate.")
 		else:
-			return r3sponse.success_response(f"Successfully generated a tls certificate.")
+			return r3sponse.success(f"Successfully generated a tls certificate.")
 
 		#
 	def set_secret_env(self, key, value):
@@ -202,7 +202,7 @@ class Security(_defaults_.Defaults):
 			if "\n\n" in env: env = env.replace("\n\n","\n")
 			else: break
 		utils.__save_file__(f"{self.root}/.secrets/env.sh", env)
-		return r3sponse.success_response(f"Successfully setted the secret environment variable [{key}].")
+		return r3sponse.success(f"Successfully setted the secret environment variable [{key}].")
 	def get_secret_env(self, key, default=None):
 		value = syst3m.env.get_string(key, default=default)
 		if value == "None": value = None

@@ -82,9 +82,9 @@ class Request(syst3m.objects.Object):
 	def view(self, request):
 		return self.error_response("Define the self.view function.")
 	def success_response(self, message, arguments={}):
-		return r3sponse.success_response(message, arguments, django=True)
+		return r3sponse.success(message, arguments, django=True)
 	def error_response(self, error):
-		return r3sponse.error_response(error, django=True)
+		return r3sponse.error(error, django=True)
 	def response(self, response):
 		try:
 			return JsonResponse(response.dict(), safe=False)
@@ -95,7 +95,7 @@ class Request(syst3m.objects.Object):
 	def get_parameters(self, request, identifiers=[], optional=False):
 		return r3sponse.get_request_parameters(request, identifiers, optional=optional)
 	def maintenance(self, request=None):
-		return r3sponse.error_response("Domain is under maintenance.")
+		return r3sponse.error("Domain is under maintenance.")
 	def permission_denied(self, request=None):
 		return self.error_response("Permission denied.")
 

@@ -104,33 +104,33 @@ class Requests(_defaults_.Defaults):
 			# post sign up.
 			"""
 			_response_ = self.users.load_data(email=parameters["email"])
-			if not r3sponse.success(_response_): return self.response(_response_)
+			if not _response_.success: return self.response(_response_)
 			data = _response_["data"]
 			rsa = w3bsite.rsa.RSA()
 			_response_ = rsa.generate_keys()
-			if not r3sponse.success(_response_): return self.response(_response_)
+			if not _response_.success: return self.response(_response_)
 			_response_ = self.aes.encrypt(rsa.public_key_pem)
-			if not r3sponse.success(_response_): return self.response(_response_)
+			if not _response_.success: return self.response(_response_)
 			public_key = _response_["encrypted"]
 			_response_ = self.aes.encrypt(rsa.private_key_pem)
-			if not r3sponse.success(_response_): return self.response(_response_)
+			if not _response_.success: return self.response(_response_)
 			private_key = _response_["encrypted"]
 			data["rsa"] = {
 				"public_key":public_key.decode(),
 				"private_key":private_key.decode(),
 			}
 			_response_ = self.aes.encrypt(parameters["password"])
-			if not r3sponse.success(_response_): return self.response(_response_)
+			if not _response_.success: return self.response(_response_)
 			data["account"] = {
 				"password":_response_["encrypted"].decode(),
 			}
 			_response_ = self.users.save_data(email=parameters["email"], data=data)
-			if not r3sponse.success(_response_): return self.response(_response_)
+			if not _response_.success: return self.response(_response_)
 			"""
 
 			# send activation code.
 			_response_ = SendCode().send_code(email=parameters["email"], mode="activation", request=request)
-			if not r3sponse.success(_response_): return self.response(_response_)
+			if not _response_.success: return self.response(_response_)
 
 			# return create response.
 			if response.success:

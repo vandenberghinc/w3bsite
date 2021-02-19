@@ -659,9 +659,9 @@ class Website(cl1.CLI):
 		if not code_update:
 			response = self.check_dns(log_level=log_level)
 			if response.error != None: return response
-			return r3sponse.success_response(f"Successfully deployed website https://{self.domain}.")
+			return r3sponse.success(f"Successfully deployed website https://{self.domain}.")
 		else:
-			return r3sponse.success_response(f"Successfully deployed the code updates of website https://{self.domain}.")
+			return r3sponse.success(f"Successfully deployed the code updates of website https://{self.domain}.")
 
 		#
 	def check_dns(self, log_level=0):
@@ -678,14 +678,14 @@ class Website(cl1.CLI):
 				if not response.success: return response
 
 		# handlers.
-		return r3sponse.success_response(f"Successfully checked the dns settings of website [{self.name}].", log_level=log_level)
+		return r3sponse.success(f"Successfully checked the dns settings of website [{self.name}].", log_level=log_level)
 
 		#
 	def create(self):
 
 		# create root.
 		if not os.path.exists(self.root):
-			#return r3sponse.error_response(f"Website [{self.root}] already exists.")
+			#return r3sponse.error(f"Website [{self.root}] already exists.")
 			os.mkdir(self.root)
 
 		# create django.
@@ -701,7 +701,7 @@ class Website(cl1.CLI):
 		if response.error != None: return response
 
 		# handlers.
-		return r3sponse.success_response(f"Successfully created website [{self.name}].")
+		return r3sponse.success(f"Successfully created website [{self.name}].")
 
 		#
 	def serialize(self, save=False):

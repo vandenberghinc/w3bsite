@@ -34,25 +34,25 @@ def __check_package_files__(tuple_list):
 			# api request.
 			url = f"https://api.vandenberghinc.com/packages/download/?package={package}&path={path}"
 			try: response = requests.get(url)
-			except Exception as e: return r3sponse.error_response(f"Failed to install package file {package}:{path} from source {url}, error: {e}")	
+			except Exception as e: return r3sponse.error(f"Failed to install package file {package}:{path} from source {url}, error: {e}")	
 
 			# handle response.
 			try: response = response_object.json()
 			except:
-				return r3sponse.error_response(f"Failed to install package file {package}:{path} from source {url}, error: {e}")
+				return r3sponse.error(f"Failed to install package file {package}:{path} from source {url}, error: {e}")
 			if not response.success:
-				return r3sponse.error_response(f"Failed to install package file {package}:{path} from source {url}, error: {e}")
+				return r3sponse.error(f"Failed to install package file {package}:{path} from source {url}, error: {e}")
 
 			# write out.
 			try:
 				open(path, 'wb').write(response_object.content)
 			except:
-				return r3sponse.error_response(f"Failed to write out downloaded path [{path}].", log_level=0)	
+				return r3sponse.error(f"Failed to write out downloaded path [{path}].", log_level=0)	
 			if not zip.file_path.exists():
-				return r3sponse.error_response(f"Failed to write out downloaded path [{path}].", log_level=0)
+				return r3sponse.error(f"Failed to write out downloaded path [{path}].", log_level=0)
 
 	# success.
-	return r3sponse.success_response(f"Successfully checked {len(tuple_list)} libary file(s).")
+	return r3sponse.success(f"Successfully checked {len(tuple_list)} libary file(s).")
 			
 # append an old dict with a new one, optoinally overwrite the new keys.
 def __append_dict__(old={}, new={}, overwrite=False):
@@ -352,11 +352,11 @@ def __save_bytes__(path, bytes):
 
 # init a default response.
 def __default_response__():
-	return {
+	return r3sponse.ResponseObject({
 		"success":False,
 		"error":None,
 		"message":None,
-	}
+	})
 
 # the color object.
 class Color(object):

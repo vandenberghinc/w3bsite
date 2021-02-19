@@ -39,7 +39,7 @@ class RateLimit(_defaults_.Defaults):
 	):
 		
 		# check options.
-		if email == None and ip == None: return r3sponse.error_response("Specify parameter [email] or [ip].")
+		if email == None and ip == None: return r3sponse.error("Specify parameter [email] or [ip].")
 		response = r3sponse.check_parameters({
 			"mode":mode,})
 		if not response.success: return response
@@ -82,7 +82,7 @@ class RateLimit(_defaults_.Defaults):
 		document["rate_limits"] = rate_limits
 		response = self.firebase.firestore.save(reference, document)
 		if not response.success: return response
-		return r3sponse.success_response("Successfully incremented the rate limit.")
+		return r3sponse.success("Successfully incremented the rate limit.")
 
 		#
 	def verify(self, 
@@ -102,7 +102,7 @@ class RateLimit(_defaults_.Defaults):
 		increment_count=1,
 	):
 		# check options.
-		if email == None and ip == None: return r3sponse.error_response("Specify parameter [email] or [ip].")
+		if email == None and ip == None: return r3sponse.error("Specify parameter [email] or [ip].")
 		response = r3sponse.check_parameters({
 			"mode":mode,})
 		if not response.success: return response
@@ -154,8 +154,8 @@ class RateLimit(_defaults_.Defaults):
 				document["rate_limits"] = rate_limits
 				response = self.firebase.firestore.save(reference, document)
 				if not response.success: return response
-			return r3sponse.success_response(f"Successfully verified the {mode} rate limit.")
+			return r3sponse.success(f"Successfully verified the {mode} rate limit.")
 		else:
-			return r3sponse.error_response(f"You have exhausted your {mode} rate limit.")
+			return r3sponse.error(f"You have exhausted your {mode} rate limit.")
 
 		

@@ -51,12 +51,12 @@ class Deployment(_defaults_.Defaults):
 		# check remote.
 		if self.remote in ["heroku"]:
 			if log_level >= 0: loader.stop(success=False)
-			return r3sponse.error_response(f"You can not execute function <Website.deployment.configure> with remote [{self.remote}].")
+			return r3sponse.error(f"You can not execute function <Website.deployment.configure> with remote [{self.remote}].")
 
 		# os.
 		if OS not in ["macos", "linux"]: 
 			if log_level >= 0: loader.stop(success=False)
-			return r3sponse.error_response(f"Unsupported operating system [{OS}].")
+			return r3sponse.error(f"Unsupported operating system [{OS}].")
 
 		# requirements.
 		if not os.path.exists(f"{self.root}/requirements"): os.mkdir(f"{self.root}/requirements")
@@ -98,7 +98,7 @@ class Deployment(_defaults_.Defaults):
 		
 		# success.
 		if log_level >= 0: loader.stop()
-		return r3sponse.success_response(f"Successfully configured the deployment of domain {self.domain}.")
+		return r3sponse.success(f"Successfully configured the deployment of domain {self.domain}.")
 
 		#
 	# deploy is for remote:local only. 
@@ -116,17 +116,17 @@ class Deployment(_defaults_.Defaults):
 				return response
 			elif not response["exists"]:
 				if log_level >= 0: loader.stop(success=False)
-				return r3sponse.error_response(f"Specified domain [{self.namecheap.post_domain}] is not owned by namecheap user [{self.namecheap.username}].", log_level=log_level)
+				return r3sponse.error(f"Specified domain [{self.namecheap.post_domain}] is not owned by namecheap user [{self.namecheap.username}].", log_level=log_level)
 
 		# check remote.
 		if self.remote in ["vps"] and not self.live:
 			if log_level >= 0: loader.stop(success=False)
-			return r3sponse.error_response(f"You can not execute function <Website.deployment.deploy> with remote [{self.remote}].")
+			return r3sponse.error(f"You can not execute function <Website.deployment.deploy> with remote [{self.remote}].")
 
 		# os.
 		if OS not in ["linux"]: 
 			if log_level >= 0: loader.stop(success=False)
-			return r3sponse.error_response(f"Unsupported operating system [{OS}].")
+			return r3sponse.error(f"Unsupported operating system [{OS}].")
 		
 		# configure.
 		response = self.configure(reinstall=reinstall, log_level=log_level)
@@ -139,18 +139,18 @@ class Deployment(_defaults_.Defaults):
 		tls_domain = syst3m.utils.__load_file__(f"{self.root}/.secrets/tls/.domain").replace('\n',"")
 		if tls_domain != self.domain:
 			if log_level >= 0: loader.stop(success=False)
-			return r3sponse.error_response(f"TLS Certificate mis match. Installed tls certificate [{self.root}/.secrets/tls] is linked to domain {tls_domain}, not specified domain {self.domain}.", log_level=0)
+			return r3sponse.error(f"TLS Certificate mis match. Installed tls certificate [{self.root}/.secrets/tls] is linked to domain {tls_domain}, not specified domain {self.domain}.", log_level=0)
 		
 		# checks.
 		if not os.path.exists(f"{self.root}/.secrets/tls/server.key") or not os.path.exists(f"{self.root}/.secrets/tls/server.crt"):
 			if log_level >= 0: loader.stop(success=False)
-			return r3sponse.error_response("No tls certificate exists.\nExecute the following command to generate a tls certificate:\n$ ./website.py --generate-tls", log_level=log_level)
+			return r3sponse.error("No tls certificate exists.\nExecute the following command to generate a tls certificate:\n$ ./website.py --generate-tls", log_level=log_level)
 		if not os.path.exists(f"{self.root}/.secrets/tls/signed.server.crt"):
 			if log_level >= 0: loader.stop(success=False)
-			return r3sponse.error_response("No activated tls certificate exists. \nExecute the following command to activate the generated tls certificate:\n$ ./website.py --activate-tls", log_level=log_level)
+			return r3sponse.error("No activated tls certificate exists. \nExecute the following command to activate the generated tls certificate:\n$ ./website.py --activate-tls", log_level=log_level)
 		if not os.path.exists(f"{self.root}/.secrets/tls/server.ca-bundle"):
 			if log_level >= 0: loader.stop(success=False)
-			return r3sponse.error_response("No bundled tls certificate exists. \nDownload the signed certificate send to your email, extr the zip to a directory and execute \n$ ./website.py --bundle-tls /path/to/extracted/directory/", log_level=log_level)
+			return r3sponse.error("No bundled tls certificate exists. \nDownload the signed certificate send to your email, extr the zip to a directory and execute \n$ ./website.py --bundle-tls /path/to/extracted/directory/", log_level=log_level)
 		
 		# arguments.
 		arguments = ""
@@ -163,10 +163,10 @@ class Deployment(_defaults_.Defaults):
 		if "Error:" in output or ("nginx: the configuration file /etc/nginx/nginx.conf syntax is ok" not in output and "nginx: configuration file /etc/nginx/nginx.conf test is successful" not in output): #"Successfully deployed domain " not in output
 			print(output)
 			if log_level >= 0: loader.stop(success=False)
-			return r3sponse.error_response(f"Failed to deploy website {self.domain}.", log_level=log_level)
+			return r3sponse.error(f"Failed to deploy website {self.domain}.", log_level=log_level)
 		else:
 			if log_level >= 0: loader.stop()
-			return r3sponse.success_response(f"Successfully deployed domain https://{self.domain}.", log_level=log_level)
+			return r3sponse.success(f"Successfully deployed domain https://{self.domain}.", log_level=log_level)
 
 		#
 	def generate_tls(self, log_level=0):
@@ -180,7 +180,7 @@ class Deployment(_defaults_.Defaults):
 
 		# check duplicate.
 		if os.path.exists(f"{self.root}/.secrets/tls/server.key") or os.path.exists(f"{self.root}/.secrets/tls/server.crt"):
-			return r3sponse.error_response("The tls certificate already exists.", log_level=log_level)
+			return r3sponse.error("The tls certificate already exists.", log_level=log_level)
 
 		# generate.
 		if log_level >= 0: loader = syst3m.console.Loader("Generating a tls certificate ...")
@@ -211,22 +211,22 @@ class Deployment(_defaults_.Defaults):
 		if not os.path.exists(f"{self.root}/.secrets/tls/server.key") or not os.path.exists(f"{self.root}/.secrets/tls/server.crt"):
 			if log_level >= 0: loader.stop(success=False)
 			os.system(f"rm -fr {base}")
-			return r3sponse.error_response(f"Failed to generate a tls certificate.", log_level=log_level)
+			return r3sponse.error(f"Failed to generate a tls certificate.", log_level=log_level)
 		else:
 			if log_level >= 0: loader.stop()
 			syst3m.utils.__save_file__(f"{self.root}/.secrets/tls/.domain", self.domain)
-			return r3sponse.success_response(f"Successfully generated a tls certificate.", log_level=log_level)
+			return r3sponse.success(f"Successfully generated a tls certificate.", log_level=log_level)
 
 		#
 	def activate_tls(self, log_level=0):
 
 		# check existsance.
 		if not os.path.exists(f"{self.root}/.secrets/tls/server.key") or not os.path.exists(f"{self.root}/.secrets/tls/server.crt"):
-			return r3sponse.error_response("No generated tls certificate exists.", log_level=log_level)
+			return r3sponse.error("No generated tls certificate exists.", log_level=log_level)
 
 		# check duplicate.
 		if os.path.exists(f"{self.root}/.secrets/tls/signed.server.key"):
-			return r3sponse.error_response("A signed tls certificate already exists.", log_level=log_level)
+			return r3sponse.error("A signed tls certificate already exists.", log_level=log_level)
 
 		response = self.namecheap.get_tls()
 		if response.error != None: 
@@ -299,26 +299,26 @@ class Deployment(_defaults_.Defaults):
 			if response.error != None: return response
 			
 		# handlers.
-		return r3sponse.success_response(f"Successfully activated the tls certificate of domain [{self.domain}]. Wait for the CA to send you a .zip file with your signed certificate. Extract the zip & bundle the certificate with: $ ./website.py --bundle-tls /path/to/extracted/directory/certificate/", log_level=log_level)
+		return r3sponse.success(f"Successfully activated the tls certificate of domain [{self.domain}]. Wait for the CA to send you a .zip file with your signed certificate. Extract the zip & bundle the certificate with: $ ./website.py --bundle-tls /path/to/extracted/directory/certificate/", log_level=log_level)
 
 		#
 	def bundle_tls(self, directory, log_level=0):
 		
 		# check dir.
 		if not os.path.exists(directory):
-			return r3sponse.error_response(f"Specified directory [{directory}] does not exist.", log_level=log_level)
+			return r3sponse.error(f"Specified directory [{directory}] does not exist.", log_level=log_level)
 		if ".zip" in directory:
-			return r3sponse.error_response(f"Specified directory [{directory}] is zip format, extract the zip first.", log_level=log_level)
+			return r3sponse.error(f"Specified directory [{directory}] is zip format, extract the zip first.", log_level=log_level)
 		if not os.path.isdir(directory):
-			return r3sponse.error_response(f"Specified directory [{directory}] is not a directory.", log_level=log_level)
+			return r3sponse.error(f"Specified directory [{directory}] is not a directory.", log_level=log_level)
 		
 		# move x.crt to server.crt
 		if not os.path.exists(f"{directory}/server.crt") and not os.path.exists(f'{directory}/{self.domain.replace(".","_")}.crt'):
-			return r3sponse.success_response(f'You must rename the [{directory}/{self.domain.replace(".","_")}.crt] file manually to [{directory}/server.crt] in order to proceed.', log_level=log_level)
+			return r3sponse.success(f'You must rename the [{directory}/{self.domain.replace(".","_")}.crt] file manually to [{directory}/server.crt] in order to proceed.', log_level=log_level)
 		if not os.path.exists(f"{directory}/server.crt") and os.path.exists(f'{directory}/{self.domain.replace(".","_")}.crt'):
 			os.system(f'mv {directory}/{self.domain.replace(".","_")}.crt {directory}/server.crt')
 		if not os.path.exists(f"{directory}/server.crt"):
-			return r3sponse.success_response(f'Failed to rename the [{directory}/{self.domain.replace(".","_")}.crt] file to [{directory}/server.crt].', log_level=log_level)
+			return r3sponse.success(f'Failed to rename the [{directory}/{self.domain.replace(".","_")}.crt] file to [{directory}/server.crt].', log_level=log_level)
 
 		# bundle ca.
 		syst3m.utils.__execute_script__(f"""
@@ -328,9 +328,9 @@ class Deployment(_defaults_.Defaults):
 			cp {self.root}/.secrets/tls/signed.server.crt {self.root}/.secrets/tls/server.crt
 			""")
 		if os.path.exists(f"{self.root}/.secrets/tls/signed.server.crt"):
-			return r3sponse.success_response(f"Successfully bundled ssl certificate [{directory}].", log_level=log_level)
+			return r3sponse.success(f"Successfully bundled ssl certificate [{directory}].", log_level=log_level)
 		else:
-			return r3sponse.error_response(f"Failed to bundle ssl certificate [{directory}].", log_level=log_level)
+			return r3sponse.error(f"Failed to bundle ssl certificate [{directory}].", log_level=log_level)
 	def check_dns(self, log_level=0):
 
 		# loader.
@@ -344,7 +344,7 @@ class Deployment(_defaults_.Defaults):
 			return response
 		elif not response["exists"]:
 			if log_level >= 0: loader.stop(success=False)
-			return r3sponse.error_response(f"Specified domain [{self.namecheap.post_domain}] is not owned by namecheap user [{self.namecheap.username}].", log_level=log_level)
+			return r3sponse.error(f"Specified domain [{self.namecheap.post_domain}] is not owned by namecheap user [{self.namecheap.username}].", log_level=log_level)
 
 		# add dns records.
 		ip = NETWORK_INFO["public_ip"]
@@ -387,7 +387,7 @@ class Deployment(_defaults_.Defaults):
 		
 		# handlers.
 		if log_level >= 0: loader.stop()
-		return r3sponse.success_response(f"Successfully checked the deployment dns settings for domain {self.domain}.", log_level=log_level)
+		return r3sponse.success(f"Successfully checked the deployment dns settings for domain {self.domain}.", log_level=log_level)
 
 		#
 

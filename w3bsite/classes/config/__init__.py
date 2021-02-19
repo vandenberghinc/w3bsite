@@ -19,5 +19,5 @@ LOG_LEVEL = syst3m.defaults.log_level(default=0)
 
 # network info.
 NETWORK_INFO = netw0rk.network.info()
-if not r3sponse.success(NETWORK_INFO): raise ValueError(NETWORK_INFO["error"])
+if not NETWORK_INFO["success"]: raise ValueError(NETWORK_INFO["error"])
 

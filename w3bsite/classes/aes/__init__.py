@@ -17,7 +17,7 @@ class AES(object):
 		self.passphrase = passphrase
 	def encrypt(self, raw):
 		if raw in ["", b"", None, False]:
-			return r3sponse.error_response("Can not encrypt null data.")
+			return r3sponse.error("Can not encrypt null data.")
 		response = self.get_key()
 		if not response.success: return response
 		key = response["key"]
@@ -29,13 +29,13 @@ class AES(object):
 		cipher = _AES_.new(key, _AES_.MODE_CBC, iv)
 		encrypted = base64.b64encode(iv + salt + cipher.encrypt(raw.encode()))
 		if raw != b"" and encrypted == b"":
-			return r3sponse.error_response("Failed to encrypt the specified data with the current passphrase / salt.")
-		return r3sponse.success_response("Successfully encrypted the specified data.", {
+			return r3sponse.error("Failed to encrypt the specified data with the current passphrase / salt.")
+		return r3sponse.success("Successfully encrypted the specified data.", {
 			"encrypted":encrypted,
 		})
 	def decrypt(self, enc):
 		if enc in ["", b"", None, False]:
-			return r3sponse.error_response("Can not decrypt null data.")
+			return r3sponse.error("Can not decrypt null data.")
 		if isinstance(enc, str):
 			enc = enc.encode()
 		enc = base64.b64decode(enc)
@@ -48,8 +48,8 @@ class AES(object):
 		cipher = _AES_.new(key, _AES_.MODE_CBC, iv)
 		decrypted = self.unpad(cipher.decrypt(enc[32:]))
 		if enc != b"" and decrypted == b"":
-			return r3sponse.error_response("Failed to decrypt the specified data with the current passphrase / salt.")
-		return r3sponse.success_response("Successfully decrypted the specified data.", {
+			return r3sponse.error("Failed to decrypt the specified data with the current passphrase / salt.")
+		return r3sponse.success("Successfully decrypted the specified data.", {
 			"decrypted":decrypted,
 		})
 	def get_key(self, salt=None):
@@ -59,7 +59,7 @@ class AES(object):
 			salt = salt.encode()
 		kdf = PBKDF2(self.passphrase, salt, 64, 1000)
 		key = kdf[:32]
-		return r3sponse.success_response("Successfully loaded the aes key.", {
+		return r3sponse.success("Successfully loaded the aes key.", {
 			"key":key,
 			"salt":salt,
 		})
@@ -67,6 +67,6 @@ class AES(object):
 		length=16
 		chars = ''.join([string.ascii_uppercase, string.ascii_lowercase, string.digits])
 		salt = ''.join(random.choice(chars) for x in range(length))
-		return r3sponse.success_response("Successfully generated a salt.", {
+		return r3sponse.success("Successfully generated a salt.", {
 			"salt":salt,
 		})

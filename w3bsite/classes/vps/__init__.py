@@ -45,13 +45,13 @@ class VPS(_defaults_.Defaults):
 
 		# autocheck.
 		response = self.configure(log_level=-1)
-		if not r3sponse.success(response) and "VPS is already live in production." not in response.error: raise ValueError(response.error)
+		if not response.success and "VPS is already live in production." not in response.error: raise ValueError(response.error)
 
 		#
 	def configure(self, reinstall=False, log_level=0):
 
 		# check already live.
-		#if self.live: return r3sponse.error_response("VPS is already live in production.", log_level=log_level)
+		#if self.live: return r3sponse.error("VPS is already live in production.", log_level=log_level)
 
 		# loader.
 		if log_level >= 0: loader = syst3m.console.Loader(f"Configuring vps settings of website {self.domain} ...")
@@ -62,7 +62,7 @@ class VPS(_defaults_.Defaults):
 			# ssh key.
 			if not os.path.exists(f"{self.root}/.secrets/ssh"): 
 				response = ssht00ls.key.generate(directory=f"{self.root}/.secrets/ssh", comment=f"SSH key for domain {self.domain}", passphrase=None)
-				if not r3sponse.success(response): 
+				if not response.success: 
 					if log_level >= 0: loader.stop(success=False)
 					return response
 
@@ -74,13 +74,13 @@ class VPS(_defaults_.Defaults):
 				ip=self.ip,
 				port=self.port,
 				key=f"{self.root}/.secrets/ssh/private_key",)
-			if not r3sponse.success(response): 
+			if not response.success: 
 				if log_level >= 0: loader.stop(success=False)
 				return response
 
 		# handler.
 		if log_level >= 0: loader.stop()
-		return r3sponse.success_response("Successfully configured the vps settings.", log_level=log_level)
+		return r3sponse.success("Successfully configured the vps settings.", log_level=log_level)
 
 		#
 	def deploy(self, code_update=False, reinstall=False, log_level=0):
@@ -95,15 +95,15 @@ class VPS(_defaults_.Defaults):
 		# check already live.
 		if self.live: 
 			if log_level >= 0: loader.stop(success=False)
-			return r3sponse.error_response("VPS is already live in production.", log_level=log_level)
+			return r3sponse.error("VPS is already live in production.", log_level=log_level)
 
 		# check installer & requirements file.
 		if not os.path.exists(f"{self.root}/requirements/installer"):
 			if log_level >= 0: loader.stop(success=False)
-			return r3sponse.error_response(f"Required requirements file {self.root}/requirements/installer does not exist.", log_level=log_level)
+			return r3sponse.error(f"Required requirements file {self.root}/requirements/installer does not exist.", log_level=log_level)
 		if not os.path.exists(f"{self.root}/requirements/requirements.pip"):
 			if log_level >= 0: loader.stop(success=False)
-			return r3sponse.error_response(f"Required requirements file {self.root}/requirements/requirements.txt does not exist.", log_level=log_level)
+			return r3sponse.error(f"Required requirements file {self.root}/requirements/requirements.txt does not exist.", log_level=log_level)
 		data = syst3m.utils.__load_file__(f"{self.root}/requirements/installer")
 		installed_alias = data.split('alias="')[1].split('"')[0]
 		#installed_location = data.split('package="')[1].split('"')[0].replace("$alias", installed_alias)
@@ -115,10 +115,10 @@ class VPS(_defaults_.Defaults):
 		if "Permission denied (publickey)" in output:
 			if log_level >= 0:  loader.stop(success=False)
 			data = syst3m.utils.__load_file__(f'{self.root}/.secrets/ssh/public_key').replace('\n','')
-			return r3sponse.error_response(f"Unable to connect with {self.domain} over ssh (permission denied). Did you install public key {data} into the vps server?", log_level=log_level)
+			return r3sponse.error(f"Unable to connect with {self.domain} over ssh (permission denied). Did you install public key {data} into the vps server?", log_level=log_level)
 		elif "Hello World" not in output:
 			if log_level >= 0:  loader.stop(success=False)
-			return r3sponse.error_response(f"Unable to connect with {self.domain} over ssh, ssh output: \n{output}.", log_level=log_level)
+			return r3sponse.error(f"Unable to connect with {self.domain} over ssh, ssh output: \n{output}.", log_level=log_level)
 
 		# installer arguments.
 		installer_arguments = ""
@@ -134,7 +134,7 @@ class VPS(_defaults_.Defaults):
 				break
 		if version == None:
 			if log_level >= 0: loader.stop(success=False)
-			return r3sponse.error_response("Unable to find the source version, does the root path include a ../source-name/ version hierarchy? (required)", log_level=log_level)
+			return r3sponse.error("Unable to find the source version, does the root path include a ../source-name/ version hierarchy? (required)", log_level=log_level)
 		base = Formats.FilePath(self.root).base()
 		package_name = Formats.FilePath(base).name()
 		tmp = f"/tmp/{package_name}"
@@ -152,10 +152,10 @@ class VPS(_defaults_.Defaults):
 			print(output)
 			if "Error: " in output:
 				if log_level >= 0: loader.stop(success=False)
-				return r3sponse.error_response(output.split("Error: ")[1], log_level=log_level)
+				return r3sponse.error(output.split("Error: ")[1], log_level=log_level)
 			else:
 				if log_level >= 0: loader.stop(success=False)
-				return r3sponse.error_response(f"Failed to deploy website {self.domain} on vps {self.ip}.", log_level=log_level)
+				return r3sponse.error(f"Failed to deploy website {self.domain} on vps {self.ip}.", log_level=log_level)
 
 		# deploy.
 		if log_level >= 0: loader.mark(new_message=f"Deploying domain {self.domain} on vps {self.ip}")
@@ -165,10 +165,10 @@ class VPS(_defaults_.Defaults):
 		if not "Successfully deployed domain https://" in output:
 			print(output)
 			if log_level >= 0: loader.stop(success=False)
-			return r3sponse.error_response(f"Failed to deploy website {self.domain} on vps {self.ip}.", log_level=log_level)
+			return r3sponse.error(f"Failed to deploy website {self.domain} on vps {self.ip}.", log_level=log_level)
 
 		# handler.
 		if log_level >= 0: loader.stop()
-		return r3sponse.success_response(f"Successfully deployed website {self.domain} on vps {self.ip}.", log_level=log_level)
+		return r3sponse.success(f"Successfully deployed website {self.domain} on vps {self.ip}.", log_level=log_level)
 
 		#

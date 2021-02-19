@@ -98,11 +98,11 @@ class Users(_defaults_.Defaults):
 		password = str(password)
 		verify_password = str(verify_password)
 		if len(password) < 8:
-			return r3sponse.error_response("The password must contain at least 8 characters.")
+			return r3sponse.error("The password must contain at least 8 characters.")
 		elif password.lower() == password:
-			return r3sponse.error_response("The password must regular and capital letters.")
+			return r3sponse.error("The password must regular and capital letters.")
 		elif password != verify_password:
-			return r3sponse.error_response("Passwords do not match.")
+			return r3sponse.error("Passwords do not match.")
 
 		# create firebase user ! must be first !
 		"""
@@ -131,7 +131,7 @@ class Users(_defaults_.Defaults):
 		data["timestamps"]["signed_up"] = Formats.Date().date
 		data["api_key"] = Formats.String("").generate(length=68, capitalize=True, digits=True)
 		_response_ = self.aes.encrypt(password)
-		if not r3sponse.success(_response_): return self.response(_response_)
+		if not _response_.success: return self.response(_response_)
 		try:data["account"]
 		except: data["account"] = {}
 		data["account"]["username"] = username
@@ -148,7 +148,7 @@ class Users(_defaults_.Defaults):
 			}
 
 		# handle success.
-		return r3sponse.success_response(f"Successfully created user [{email}].", {
+		return r3sponse.success(f"Successfully created user [{email}].", {
 			"user":user,
 			"email":user.email,
 			"data":data,
@@ -175,15 +175,15 @@ class Users(_defaults_.Defaults):
 
 		# check password.
 		if password != None:
-			if verify_password == None: return r3sponse.error_response("Specify parameter: verify_password.")
+			if verify_password == None: return r3sponse.error("Specify parameter: verify_password.")
 			password = str(password)
 			verify_password = str(verify_password)
 			if len(password) < 8:
-				return r3sponse.error_response("The password must contain at least 8 characters.")
+				return r3sponse.error("The password must contain at least 8 characters.")
 			elif password.lower() == password:
-				return r3sponse.error_response("The password must regular and capital letters.")
+				return r3sponse.error("The password must regular and capital letters.")
 			elif password != verify_password:
-				return r3sponse.error_response("Passwords do not match.")
+				return r3sponse.error("Passwords do not match.")
 		
 		# create firebase user ! must be first !
 		"""
@@ -227,7 +227,7 @@ class Users(_defaults_.Defaults):
 			if not response.success: return response
 
 		# handle success.
-		return r3sponse.success_response(f"Successfully updated user [{email}].")
+		return r3sponse.success(f"Successfully updated user [{email}].")
 		
 		#
 	def delete(self, 
@@ -253,7 +253,7 @@ class Users(_defaults_.Defaults):
 		if not response.success: return response
 
 		# handle success.
-		return r3sponse.success_response(f"Successfully deleted user [{email}].")
+		return r3sponse.success(f"Successfully deleted user [{email}].")
 
 		#
 	def authenticate(self,
@@ -287,10 +287,10 @@ class Users(_defaults_.Defaults):
 
 				# send code.
 				l_response = self.send_verification_code(username, ip=ip, mode="authentication")
-				if not r3sponse.success(l_response): return l_response
+				if not l_response.success: return l_response
 
 				# handler for sign in.
-				return r3sponse.error_response(f"Authentication verification code required.")
+				return r3sponse.error(f"Authentication verification code required.")
 
 			# verify code.
 			response = self.verify_verification_code(username, code=_2fa_code, mode="authentication")
@@ -308,7 +308,7 @@ class Users(_defaults_.Defaults):
 
 		# by request user filled (django).
 		if request.user.is_authenticated:
-			return r3sponse.success_response(f"User {request.user.username} is authenticated.", {
+			return r3sponse.success(f"User {request.user.username} is authenticated.", {
 				"api_key":None,
 				"email":request.user.email,
 				"username":request.user.username,
@@ -323,7 +323,7 @@ class Users(_defaults_.Defaults):
 			return self.verify_api_key(api_key=optional_parameters["api_key"])
 
 		# error.
-		return r3sponse.error_response("User is not authenticated, please specify your api key or login.")
+		return r3sponse.error("User is not authenticated, please specify your api key or login.")
 
 		#
 	def load_data(self,
@@ -336,7 +336,7 @@ class Users(_defaults_.Defaults):
 		if not response.success: return response
 		response = self.firestore.load(f"{self.users_collection}/{email}/")
 		if response.error != None: return response
-		return r3sponse.success_response(f"Successfully loaded the data of user [{email}].", {
+		return r3sponse.success(f"Successfully loaded the data of user [{email}].", {
 			"data":response["document"],
 		})
 	def save_data(self,
@@ -351,7 +351,7 @@ class Users(_defaults_.Defaults):
 		if not response.success: return response
 		response = self.firestore.save(f"{self.users_collection}/{email}/", data)
 		if response.error != None: return response
-		return r3sponse.success_response(f"Successfully saved the data of user [{email}].")
+		return r3sponse.success(f"Successfully saved the data of user [{email}].")
 	def send_email(self, 
 		# define email to retrieve user.
 		email=None, 
@@ -389,7 +389,7 @@ class Users(_defaults_.Defaults):
 			if response.error != None: return response
 
 		# success.
-		return r3sponse.success_response(f"Successfully send an email to user [{user.email}].")
+		return r3sponse.success(f"Successfully send an email to user [{user.email}].")
 
 		#
 	def send_code(self, 
@@ -444,7 +444,7 @@ class Users(_defaults_.Defaults):
 			if response.error != None: return response
 
 		# success.
-		return r3sponse.success_response(f"Successfully send a verification code to user [{user.email}].")
+		return r3sponse.success(f"Successfully send a verification code to user [{user.email}].")
 
 		#
 	def verify_code(self, 
@@ -471,13 +471,13 @@ class Users(_defaults_.Defaults):
 
 		# handle.
 		if fail: 
-			return r3sponse.error_response("Incorrect verification code.")
+			return r3sponse.error("Incorrect verification code.")
 		elif not success: 
 			self.verification_codes[mode][user.email]["attempts"] -= 1
-			return r3sponse.error_response("Incorrect verification code.")
+			return r3sponse.error("Incorrect verification code.")
 		else:
 			del self.verification_codes[mode][user.email]
-			return r3sponse.success_response("Successfull verification.")
+			return r3sponse.success("Successfull verification.")
 
 		#
 	def verify_api_key(self, api_key=None, request=None):
@@ -499,13 +499,13 @@ class Users(_defaults_.Defaults):
 			# check api key.
 			for _api_key_, info in api_keys.items():
 				if _api_key_ == api_key: 
-					return r3sponse.success_response(f"Successfully verified api key [{api_key}].", {
+					return r3sponse.success(f"Successfully verified api key [{api_key}].", {
 						"email":info["email"],
 						"api_key":api_key,
 					})
 
 			# error.
-			return r3sponse.error_response(f"Unable to verify api key [{api_key}].")
+			return r3sponse.error(f"Unable to verify api key [{api_key}].")
 
 			#
 	def verify_subscription(self,
@@ -570,7 +570,7 @@ class Users(_defaults_.Defaults):
 
 		# handlers.
 		if verified:
-			return r3sponse.success_response(f"Successfully verified subscription {product} for user {id}.", {
+			return r3sponse.success(f"Successfully verified subscription {product} for user {id}.", {
 				"email":email,
 				"api_key":api_key,
 				"product":product,
@@ -581,7 +581,7 @@ class Users(_defaults_.Defaults):
 			for i in required_plans: 
 				if _required_plans_ == "": _required_plans_ = i
 				else: _required_plans_ += ", "+i
-			return r3sponse.error_response(f"Permission denied ({email}). This request requires at least one of the following plans for {product} [{_required_plans_}].")
+			return r3sponse.error(f"Permission denied ({email}). This request requires at least one of the following plans for {product} [{_required_plans_}].")
 
 		#
 	def create_subscription(self,
@@ -605,7 +605,7 @@ class Users(_defaults_.Defaults):
 	):
 
 		# checkparameters.
-		if email == None and api_key == None: return r3sponse.error_response("Define one of the following parameters: [email, api_key].")
+		if email == None and api_key == None: return r3sponse.error("Define one of the following parameters: [email, api_key].")
 		response = r3sponse.check_parameters({
 			"product":product,
 			"plan":plan,})
@@ -668,7 +668,7 @@ class Users(_defaults_.Defaults):
 
 		# check already subscribed.
 		if plan_id in plan_ids:
-			return r3sponse.error_response(f"User {email} is already subscribed to plan {plan} from product {product}.")
+			return r3sponse.error(f"User {email} is already subscribed to plan {plan} from product {product}.")
 
 		# create card when card is not blinded (aka retrieved from user).
 		if not blinded:
@@ -691,7 +691,7 @@ class Users(_defaults_.Defaults):
 		if not response.success: return response
 		
 		# handlers.
-		return r3sponse.success_response(f"Successfully created subscription {product} {plan} for user {id}.")
+		return r3sponse.success(f"Successfully created subscription {product} {plan} for user {id}.")
 
 		#
 	def get_api_key(self, email=None, username=None):
@@ -708,17 +708,17 @@ class Users(_defaults_.Defaults):
 			response = self.get(username=username)
 			if not response.success: return response
 			id = response["user"].email
-		else: return r3sponse.error_response("Define parameter email or username.")
+		else: return r3sponse.error("Define parameter email or username.")
 		for _api_key_, info in api_keys.items():
 			if info["email"] == id: 
 				api_key = _api_key_
 				break
 		if api_key != None:
-			return r3sponse.success_response(f"Successfully retrieved the api key [{id}].", {
+			return r3sponse.success(f"Successfully retrieved the api key [{id}].", {
 				"api_key":api_key,
 			})
 		else:
-			return r3sponse.error_response(f"Unable to find api key [{id}].")
+			return r3sponse.error(f"Unable to find api key [{id}].")
 
 		#
 	def set_permission(self, email, permission_id, permission=True):
@@ -736,7 +736,7 @@ class Users(_defaults_.Defaults):
 		if response.error != None: return response
 
 		# handlers.
-		return r3sponse.success_response(f"Successfully set the {permission_id} permission of user [{email}] to [{permission}].")
+		return r3sponse.success(f"Successfully set the {permission_id} permission of user [{email}] to [{permission}].")
 		#
 	def load_password(self, email=None):
 		response = r3sponse.check_parameters({
@@ -746,9 +746,9 @@ class Users(_defaults_.Defaults):
 		if not response.success: return response
 		data = response.data
 		_response_ = self.aes.decrypt(data["account"]["password"])
-		if not r3sponse.success(_response_): return self.response(_response_)
+		if not _response_.success: return self.response(_response_)
 		password = _response_["decrypted"].decode()
-		return r3sponse.success_response(f"Successfully retrieved the password of user {email}.",{
+		return r3sponse.success(f"Successfully retrieved the password of user {email}.",{
 			"password":password,
 			"data":data,
 		})
@@ -761,13 +761,13 @@ class Users(_defaults_.Defaults):
 		if not response.success: return response
 		data = response.data
 		_response_ = self.aes.encrypt(password)
-		if not r3sponse.success(_response_): return self.response(_response_)
+		if not _response_.success: return self.response(_response_)
 		try:data["account"]
 		except: data["account"] = {}
 		data["account"]["password"] = _response_["encrypted"].decode()
 		response = self.save_data(email, data)
 		if not response.success: return response
-		return r3sponse.success_response(f"Successfully saved the password of user {email}.")
+		return r3sponse.success(f"Successfully saved the password of user {email}.")
 	def iterate(self, emails=False, firestore=False, combined=False):
 		if combined:
 			firestore = self.iterate(emails=emails, firestore=True)
@@ -850,14 +850,14 @@ class Users(_defaults_.Defaults):
 				if not response.success: return response
 
 		# success.
-		return r3sponse.success_response(f"Successfully synchronized {len(emails)} user(s).")
+		return r3sponse.success(f"Successfully synchronized {len(emails)} user(s).")
 
 		#
 	# system functions.
 	def __initialize_email__(self):
 		# the email object.
 		if self.email_address == None or self.email_password == None:
-			return r3sponse.error_response("Define the firebase.users.email_address & firebase.users.email_password variables to send emails.")
+			return r3sponse.error("Define the firebase.users.email_address & firebase.users.email_password variables to send emails.")
 		self.email = utils.Email(
 			email=self.email_address,
 			password=self.email_password,
@@ -866,7 +866,7 @@ class Users(_defaults_.Defaults):
 			visible_email=self.visible_email,)
 		response = self.email.login()
 		if response["success"]:
-			return r3sponse.success_response("Successfully initialized the mail object.")
+			return r3sponse.success("Successfully initialized the mail object.")
 		else: 
 			self.email = None
 			return response
@@ -892,7 +892,7 @@ class Users(_defaults_.Defaults):
 			if not response.success: return response
 
 		# handler.
-		return r3sponse.success_response("Successfully retrieved the stripe subscriptions cache.", {
+		return r3sponse.success("Successfully retrieved the stripe subscriptions cache.", {
 			"subscriptions":subscriptions,
 		})
 
@@ -924,7 +924,7 @@ class Users(_defaults_.Defaults):
 			if not response.success: return response
 
 		# handler.
-		return r3sponse.success_response("Successfully retrieved the api keys cache.", {
+		return r3sponse.success("Successfully retrieved the api keys cache.", {
 			"api_keys":api_keys,
 		})
 
