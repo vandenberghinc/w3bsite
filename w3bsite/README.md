@@ -3,12 +3,17 @@ Author(s):  Daan van den Bergh<br>
 Copyright:  © 2020 Daan van den Bergh All Rights Reserved<br>
 <br>
 <br>
+<br>
 <p align="center">
   <img src="https://raw.githubusercontent.com/vandenberghinc/public-storage/master/vandenberghinc/icon/icon.png" alt="Bergh-Encryption" width="50"/>
 </p>
 
 ## Installation
 	pip3 install w3bsite --upgrade && python3 -c "import w3bsite"
+### Troubleshooting:
+#### Apple Silicon M1:
+##### Failed to install grpcio
+	arch -arch x86_64 /usr/bin/python3 -m pip install firebase-admin
 
 ## Setup.
 
@@ -28,33 +33,37 @@ Copyright:  © 2020 Daan van den Bergh All Rights Reserved<br>
 Create a file named "website.py" in your websites root directory.
 	
 	my-website/
+		website.py
 		/
-			website.py
 
 Add the following code to the file.
 ```python
-	#!/usr/bin/env python3
-	from w3bsite import Website
-	from fil3s import Files, Formats
-	website = Website(
-		# the root path.
-		root=Formats.FilePath(__file__).base(back=1),
-		# the website name.
-		name="My Website",
-		# the organization.
-		organization="My Business",
-		# the organization unit.
-		organization_unit="Information Technology",
-		# the organization country code.
-		country_code="NL",
-		# the root domain.
-		domain="mydomain.com",
-		# your namecheap username.
-		namecheap_username="myusername",
-		# your namecheap api key.
-		namecheap_api_key=".......",)
-	if __name__ == "__main__":
-		website.cli()
+#!/usr/bin/env python3
+from w3bsite import Website
+from fil3s import Files, Formats
+website = Website(
+	# the root path.
+	root=Formats.FilePath(__file__).base(back=1),
+	# the root version.
+	version="v1",
+	# the website name.
+	name="My Website",
+	# the organization.
+	organization="My Business",
+	# the organization unit.
+	organization_unit="Information Technology",
+	# the organization country code.
+	country_code="NL",
+	# the root domain.
+	domain="mydomain.com",
+	# the sub domains.
+	sub_domains=[],
+	# your namecheap username.
+	namecheap_username="myusername",
+	# your namecheap api key.
+	namecheap_api_key=".......",)
+if __name__ == "__main__":
+	website.cli()
 ```
 
 ## CLI:
