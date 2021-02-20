@@ -18,7 +18,8 @@ LOG_LEVEL = syst3m.defaults.log_level(default=0)
 #syst3m.defaults.alias(alias=ALIAS, executable=SOURCE_PATH)
 
 # version.
-version = Files.load(f"{SOURCE_PATH}/.version")
+try: version = Files.load(f"{SOURCE_PATH}/.version")
+except: version = "unkown"
 
 # network info.
 NETWORK_INFO = netw0rk.network.info()
