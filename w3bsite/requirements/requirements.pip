@@ -1,7 +1,7 @@
-syst3m>=2.3.9
+syst3m>=2.4.0
 cl1>=1.6.6
 fil3s>=2.2.9
 r3sponse>=2.2.1
 netw0rk>=1.2.6
-ssht00ls>=3.4.9
+ssht00ls>=3.5.0
 
