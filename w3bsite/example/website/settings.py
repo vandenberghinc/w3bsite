@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 # imports.
 import os, sys, syst3m, w3bsite
-from fil3s import Files, Formats
+from fil3s import *
 
 # SECURITY WARNING: don't run with PRODUCTION enabled in production!
 # environment variables due to circular import.

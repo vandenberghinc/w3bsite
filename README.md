@@ -40,7 +40,7 @@ Add the following code to the file.
 ```python
 #!/usr/bin/env python3
 from w3bsite import Website
-from fil3s import Files, Formats
+from fil3s import *
 website = Website(
 	# the root path.
 	root=Formats.FilePath(__file__).base(back=1),

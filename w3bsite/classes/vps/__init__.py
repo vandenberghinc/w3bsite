@@ -61,19 +61,22 @@ class VPS(_defaults_.Defaults):
 
 			# ssh key.
 			if not os.path.exists(f"{self.root}/.secrets/ssh"): 
-				response = ssht00ls.key.generate(directory=f"{self.root}/.secrets/ssh", comment=f"SSH key for domain {self.domain}", passphrase=None)
+				response = ssht00ls.key.generate(path=f"{self.root}/.secrets/ssh", comment=f"SSH key for domain {self.domain}", passphrase="")
 				if not response.success: 
 					if log_level >= 0: loader.stop(success=False)
 					return response
 
 			# ssh config.
-			response = ssht00ls.config.create_alias(
-				server=self.domain,
+			response = ssht00ls.aliases.create(
 				alias=self.domain, 
 				username=self.username, 
-				ip=self.ip,
-				port=self.port,
-				key=f"{self.root}/.secrets/ssh/private_key",)
+				public_ip=self.ip,
+				private_ip=self.ip,
+				public_port=self.port,
+				private_port=self.port,
+				private_key=f"{self.root}/.secrets/ssh/private_key",
+				public_key=f"{self.root}/.secrets/ssh/public_key",
+				passphrase="",)
 			if not response.success: 
 				if log_level >= 0: loader.stop(success=False)
 				return response
@@ -127,14 +130,6 @@ class VPS(_defaults_.Defaults):
 
 		# copy current source to vps & installer script.
 		name = Formats.FilePath(self.root).name()
-		version = None
-		for i in range(100):
-			if f"v{i}" in name: 
-				version = f"v{i}"
-				break
-		if version == None:
-			if log_level >= 0: loader.stop(success=False)
-			return r3sponse.error("Unable to find the source version, does the root path include a ../source-name/ version hierarchy? (required)", log_level=log_level)
 		base = Formats.FilePath(self.root).base()
 		package_name = Formats.FilePath(base).name()
 		tmp = f"/tmp/{package_name}"

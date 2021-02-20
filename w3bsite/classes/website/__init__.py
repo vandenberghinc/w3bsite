@@ -10,7 +10,7 @@ class Website(cl1.CLI):
 	def __init__(self,
 		#
 		# General.
-		# 	the root path (must include version).
+		# 	the root path.
 		root=None, # example: Formats.FilePath(__file__).base(back=1).replace("./","")
 		#
 		# Website.
@@ -153,7 +153,6 @@ class Website(cl1.CLI):
 
 		# w3bsite values.
 		self.SOURCE_PATH = SOURCE_PATH
-		self.VERSION = VERSION
 
 		# argurments.
 		if root != None:
@@ -164,7 +163,7 @@ class Website(cl1.CLI):
 			if firebase_admin != None:
 				if isinstance(firebase_admin, str) and firebase_admin[:len(".secrets")] == ".secrets":
 					firebase_admin = f"{root}/{firebase_admin}".replace("//","/").replace("//","/")
-		self.root = root # root includes version.
+		self.root = root
 		self.name = name
 		self.author = author
 		self.email = email
@@ -254,10 +253,9 @@ class Website(cl1.CLI):
 			if not response.success: raise ValueError(response.error)
 
 		# set variables.
-		self.version = Formats.FilePath(self.root).name().replace("/","").replace("/","").replace("/","").replace("/","")
 		self.library = f"/usr/local/lib/{self.domain}/"
 		self.database = f"/etc/{self.domain}/"
-		self.live = utils.equalize_path(self.root, striplast=True) == utils.equalize_path(f"{self.library}/{self.version}", striplast=True)
+		self.live = utils.equalize_path(self.root, striplast=True) == utils.equalize_path(self.library, striplast=True)
 		self.http_domain = f"http://{self.domain}"
 		self.https_domain = f"https://{self.domain}"
 
@@ -338,7 +336,6 @@ class Website(cl1.CLI):
 		self.cache = cache.Cache()
 		self.defaults = defaults.Defaults(
 			root=self.root,
-			version=self.version,
 			library=self.library,
 			database=self.database,
 			name=self.name,

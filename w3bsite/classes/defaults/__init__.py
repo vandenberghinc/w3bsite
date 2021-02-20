@@ -9,7 +9,6 @@ class Defaults(syst3m.objects.Object):
 	def __init__(self,
 		# info.
 		root=None,
-		version=None,
 		library=None,
 		database=None,
 		name=None,
@@ -40,7 +39,6 @@ class Defaults(syst3m.objects.Object):
 
 		# defaults.
 		self.root = root
-		self.version = version
 		self.library = library
 		self.database = database
 		self.name = name

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # imports.
+from syst3m.classes.config import version
 from w3bsite.classes.config import SOURCE_PATH, BASE
 from w3bsite.classes.website import Website
 from w3bsite.classes import views, utils, daemons

@@ -9,7 +9,7 @@ from django.http import HttpResponse, HttpResponseNotAllowed, JsonResponse
 # inc imports.
 import r3stapi
 from r3sponse import r3sponse
-from fil3s import Files, Formats
+from fil3s import *
 
 # fyunctions.
 def __get_file_path_base__(path, back=1):

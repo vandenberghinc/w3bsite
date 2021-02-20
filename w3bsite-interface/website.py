@@ -2,7 +2,7 @@
 import json
 from r3sponse import r3sponse
 from w3bsite import Website
-from fil3s import Files, Formats
+from fil3s import *
 website = Website(
 	# the root path.
 	root=Formats.FilePath(__file__).base(back=2),

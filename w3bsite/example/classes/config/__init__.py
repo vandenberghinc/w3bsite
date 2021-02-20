@@ -9,14 +9,13 @@ from django.http import HttpResponse, HttpResponseNotAllowed, JsonResponse
 # inc imports.
 import syst3m, w3bsite
 from r3sponse import r3sponse
-from fil3s import Files, Formats
+from fil3s import *
 
 # source.
 SOURCE_NAME = ALIAS = "api.vandenberghinc.com"
-VERSION = "v1"
 SOURCE_PATH = syst3m.defaults.source_path(__file__, back=3)
 OS = syst3m.defaults.operating_system(supported=["linux", "macos"])
-syst3m.defaults.alias(alias=ALIAS, executable=f"{SOURCE_PATH}", sudo=True)
+#syst3m.defaults.alias(alias=ALIAS, executable=SOURCE_PATH, sudo=True)
 
 # production settings.
 # do not deploy to heroku with production disabled.

@@ -78,7 +78,7 @@ class Deployment(_defaults_.Defaults):
 
 		# deployment.
 		if not os.path.exists(f"{self.root}/deployment"): os.mkdir(f"{self.root}/deployment")
-		clean_root = f"{self.library}/{self.version}" # <== note the library change instead of root.
+		clean_root = gfp.clean(self.library) # <== note the library change instead of root.
 		replacements = {
 			"***ROOT***":clean_root, 
 			"***DOMAIN***":self.domain,
