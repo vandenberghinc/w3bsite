@@ -60,7 +60,7 @@ class VPS(_defaults_.Defaults):
 		if not self.live:
 
 			# ssh key.
-			if not os.path.exists(f"{self.root}/.secrets/ssh"): 
+			if not Files.exists(f"{self.root}/.secrets/ssh"): 
 				response = ssht00ls.key.generate(path=f"{self.root}/.secrets/ssh", comment=f"SSH key for domain {self.domain}", passphrase="")
 				if not response.success: 
 					if log_level >= 0: loader.stop(success=False)
@@ -102,13 +102,13 @@ class VPS(_defaults_.Defaults):
 			return r3sponse.error("VPS is already live in production.", log_level=log_level)
 
 		# check installer & requirements file.
-		if not os.path.exists(f"{self.root}/requirements/installer"):
+		if not Files.exists(f"{self.root}/requirements/installer"):
 			if log_level >= 0: loader.stop(success=False)
 			return r3sponse.error(f"Required requirements file {self.root}/requirements/installer does not exist.", log_level=log_level)
-		if not os.path.exists(f"{self.root}/requirements/requirements.pip"):
+		if not Files.exists(f"{self.root}/requirements/requirements.pip"):
 			if log_level >= 0: loader.stop(success=False)
 			return r3sponse.error(f"Required requirements file {self.root}/requirements/requirements.txt does not exist.", log_level=log_level)
-		data = syst3m.utils.__load_file__(f"{self.root}/requirements/installer")
+		data = syst3m.Files.load(f"{self.root}/requirements/installer")
 		installed_alias = data.split('alias="')[1].split('"')[0]
 		#installed_location = data.split('package="')[1].split('"')[0].replace("$alias", installed_alias)
 		installed_location = self.library
@@ -118,7 +118,7 @@ class VPS(_defaults_.Defaults):
 		output = syst3m.utils.__execute_script__(f"printf 'yes\n' | ssh {self.domain} ' echo Hello World ' ").replace('\n\n','\n')
 		if "Permission denied (publickey)" in output:
 			if log_level >= 0:  loader.stop(success=False)
-			data = syst3m.utils.__load_file__(f'{self.root}/.secrets/ssh/public_key').replace('\n','')
+			data = syst3m.Files.load(f'{self.root}/.secrets/ssh/public_key').replace('\n','')
 			return r3sponse.error(f"Unable to connect with {self.domain} over ssh (permission denied). Did you install public key {data} into the vps server?", log_level=log_level)
 		elif "Hello World" not in output:
 			if log_level >= 0:  loader.stop(success=False)

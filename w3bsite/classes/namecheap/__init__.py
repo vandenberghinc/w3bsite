@@ -478,9 +478,9 @@ class Namecheap(_defaults_.Defaults):
 
 		# check csr.
 		csr = f"{self.root}/.secrets/tls/server.csr"
-		if not os.path.exists(csr):
+		if not Files.exists(csr):
 			return r3sponse.error(f"There is no tls certificate present.")
-		csr = utils.__load_file__(csr)
+		csr = Files.load(csr)
 
 		# api request.
 		response = self.__request__("namecheap.ssl.activate", {

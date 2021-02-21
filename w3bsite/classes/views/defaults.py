@@ -22,12 +22,12 @@ def include_apps(apps=[], auto_include=False):
 	for name in apps:
 		_path_ = f"apps/{name}/"
 		#try:
-		if os.path.exists(f"{_path_}/views.py"):
+		if Files.exists(f"{_path_}/views.py"):
 			l_path = f"{_path_}/views.py"
 			urlpatterns.append(
 				path('', include(f"apps.{name}.views"))
 			)
-		if os.path.exists(f"{_path_}/requests.py"):
+		if Files.exists(f"{_path_}/requests.py"):
 			l_path = f"{_path_}/requests.py"
 			urlpatterns.append(
 				path('', include(f"apps.{name}.requests"))
@@ -143,9 +143,9 @@ class View(syst3m.objects.Object):
 		# check html.
 		if self.type.lower() in ["view"]:
 			fp = FilePath(f"{SOURCE_PATH}/example/")
-			if not os.path.exists(f"templates/{self.html}"):
+			if not Files.exists(f"templates/{self.html}"):
 				base = utils.__clean_url__(FilePath(self.html).base(back=1), strip_first_slash=True)
-				if not os.path.exists(base): os.system(f"mkdir -p templates/{base}")
+				if not Files.exists(base): os.system(f"mkdir -p templates/{base}")
 				os.system(f"cp {SOURCE_PATH}/example/view.html templates/{self.html}")
 
 		#

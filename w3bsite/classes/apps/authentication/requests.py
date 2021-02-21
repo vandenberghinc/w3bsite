@@ -170,7 +170,7 @@ class Requests(_defaults_.Defaults):
 		def send_code(self, email=None, mode=None, request=None):
 
 			# check library.
-			#if not os.path.exists("templates/mail"): os.mkdir("templates/mail")
+			#if not Files.exists("templates/mail"): os.mkdir("templates/mail")
 			#response = utils.__check_package_files__([
 			#	["templates/mail/reset_password.html","w3bsite","/classes/requests/mail/reset_password.html"],
 			#	["templates/mail/authentication.html","w3bsite","/classes/requests/mail/authentication.html"],

@@ -21,7 +21,7 @@ class FirebaseCLI(object):
 	def install(self):
 		os.system("curl -sL https://firebase.tools | bash")
 	def installed(self):
-		return os.path.exists("/usr/local/bin/firebase") or os.path.exists("/usr/bin/firebase")
+		return Files.exists("/usr/local/bin/firebase") or Files.exists("/usr/bin/firebase")
 	def login(self):
 		output = util.__execute_script__("firebase login")
 	def projects(self):

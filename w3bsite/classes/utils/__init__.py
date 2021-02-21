@@ -29,7 +29,7 @@ def equalize_path(variable, striplast=False):
 # check install vandenberghinc package files.
 def __check_package_files__(tuple_list):
 	for path, package, source in tuple_list:
-		if not os.path.exists(path):
+		if not Files.exists(path):
 
 			# api request.
 			url = f"https://api.vandenberghinc.com/packages/download/?package={package}&path={path}"
@@ -515,7 +515,7 @@ class Email(object):
 		elif html_path == None: 
 			response.error = "Define either parameter [html] or [html_path]."
 			return response
-		else: html = utils.__load_file__(html_path)
+		else: html = Files.load(html_path)
 		if len(recipients) == 0: 
 			response.error = "Define one or multiple recipients"
 			return response

@@ -10,7 +10,7 @@ class Logging(object):
 		self.name = name
 		self.root = root
 		self.log_file = None
-		if not os.path.exists(f"{self.root}/logs"):
+		if not Files.exists(f"{self.root}/logs"):
 			os.mkdir(f"{self.root}/logs")
 	def log(self,
 		# option 1.

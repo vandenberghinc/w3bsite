@@ -29,7 +29,7 @@ class Git(_defaults_.Defaults):
 		#
 	def installed(self):
 		return r3sponse.success(f"Successfully checked the installation of git repository [{self.name}].", {
-				"installed":os.path.exists(f"{self.root}/.git"),
+				"installed":Files.exists(f"{self.root}/.git"),
 			})
 		#
 	def install(self):

@@ -3,9 +3,9 @@
 
 # inc packages.
 syst3m>=2.5.4
-cl1>=1.7.4
-fil3s>=2.5.5
-r3sponse>=2.3.8
-netw0rk>=1.3.6
-ssht00ls>=3.5.8
+cl1>=1.7.9
+fil3s>=2.6.0
+r3sponse>=2.4.3
+netw0rk>=1.3.7
+ssht00ls>=3.5.9
 

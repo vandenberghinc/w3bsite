@@ -37,12 +37,12 @@ class Security(_defaults_.Defaults):
 
 		# check base.
 		base = f"{self.root}/.secrets/"
-		if not os.path.exists(base): os.mkdir(base)
+		if not Files.exists(base): os.mkdir(base)
 		base = f"{self.root}/.secrets/tls"
-		if not os.path.exists(base): os.mkdir(base)
+		if not Files.exists(base): os.mkdir(base)
 
 		# check duplicate.
-		if os.path.exists(f"{base}/tls.key") or os.path.exists(f"{base}/server.crt"):
+		if Files.exists(f"{base}/tls.key") or Files.exists(f"{base}/server.crt"):
 			return r3sponse.error("The tls certificate already exists.")
 
 		# generate.
@@ -71,7 +71,7 @@ class Security(_defaults_.Defaults):
 		""")
 
 		# handler.
-		if not os.path.exists(f"{self.root}/.secrets/tls/server.key") or not os.path.exists(f"{self.root}/.secrets/tls/server.crt"):
+		if not Files.exists(f"{self.root}/.secrets/tls/server.key") or not Files.exists(f"{self.root}/.secrets/tls/server.crt"):
 			os.system(f"rm -fr {base}")
 			return r3sponse.error(f"Failed to generate a tls certificate.")
 		else:
@@ -80,7 +80,7 @@ class Security(_defaults_.Defaults):
 		#
 	def set_secret_env(self, key, value):
 		# env.json
-		if not os.path.exists(f"{self.root}/.secrets"): os.mkdir(f"{self.root}/.secrets")
+		if not Files.exists(f"{self.root}/.secrets"): os.mkdir(f"{self.root}/.secrets")
 		try:
 			env = utils.__load_json__(f"{self.root}/.secrets/env.json")
 		except FileNotFoundError:
@@ -184,7 +184,7 @@ class Security(_defaults_.Defaults):
 		utils.__save_json__(f"{self.root}/.secrets/env.json", env)
 		# env.sh
 		try:
-			env = utils.__load_file__(f"{self.root}/.secrets/env.sh")
+			env = Files.load(f"{self.root}/.secrets/env.sh")
 		except FileNotFoundError:
 			env = ""
 		l_key = key.replace(".","-")
@@ -201,7 +201,7 @@ class Security(_defaults_.Defaults):
 		for i in range(100):
 			if "\n\n" in env: env = env.replace("\n\n","\n")
 			else: break
-		utils.__save_file__(f"{self.root}/.secrets/env.sh", env)
+		Files.save(f"{self.root}/.secrets/env.sh", env)
 		return r3sponse.success(f"Successfully setted the secret environment variable [{key}].")
 	def get_secret_env(self, key, default=None):
 		value = syst3m.env.get_string(key, default=default)

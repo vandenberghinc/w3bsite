@@ -94,6 +94,6 @@ if OS in ["macos"]: GROUP = "staff"
 
 # database.
 DATABASE = website.database
-if not os.path.exists(DATABASE): os.system(f"sudo mkdir {DATABASE} && sudo chown {syst3m.defaults.vars.user}:{syst3m.defaults.vars.group} {DATABASE}")
-if not os.path.exists(f"{DATABASE}/data/"): os.mkdir(f"{DATABASE}/data/") # for database.
-if not os.path.exists(f"{DATABASE}/packages/"): os.mkdir(f"{DATABASE}/packages/")
+if not Files.exists(DATABASE): os.system(f"sudo mkdir {DATABASE} && sudo chown {syst3m.defaults.vars.user}:{syst3m.defaults.vars.group} {DATABASE}")
+if not Files.exists(f"{DATABASE}/data/"): os.mkdir(f"{DATABASE}/data/") # for database.
+if not Files.exists(f"{DATABASE}/packages/"): os.mkdir(f"{DATABASE}/packages/")

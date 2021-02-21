@@ -41,7 +41,7 @@ class Deployment(_defaults_.Defaults):
 		# configure before loader.
 		if reinstall:
 			os.system(f"rm -fr {self.root}/.secrets/tls/dhparam.pem")
-		if not os.path.exists(f"{self.root}/.secrets/tls/dhparam.pem"):
+		if not Files.exists(f"{self.root}/.secrets/tls/dhparam.pem"):
 			tmp = "/tmp/dhparam.pem"
 			os.system(f"sudo openssl dhparam -out {tmp} 4096 && sudo chown {syst3m.defaults.vars.user}:{syst3m.defaults.vars.group} {tmp} && mv {tmp} {self.root}/.secrets/tls/dhparam.pem")
 
@@ -59,25 +59,25 @@ class Deployment(_defaults_.Defaults):
 			return r3sponse.error(f"Unsupported operating system [{OS}].")
 
 		# requirements.
-		if not os.path.exists(f"{self.root}/requirements"): os.mkdir(f"{self.root}/requirements")
-		if not os.path.exists(f"{self.root}/requirements/requirements.pip"): 
-			syst3m.utils.__save_file__(f"{self.root}/requirements/requirements.pip", "wheel\nuwsgi\ngunicorn\nwhitenoise\ndjango\npsycopg2-binary\nsyst3m\nw3bsite\ncl1")
-		if not os.path.exists(f"{self.root}/requirements/installer"): 
+		if not Files.exists(f"{self.root}/requirements"): os.mkdir(f"{self.root}/requirements")
+		if not Files.exists(f"{self.root}/requirements/requirements.pip"): 
+			syst3m.Files.save(f"{self.root}/requirements/requirements.pip", "wheel\nuwsgi\ngunicorn\nwhitenoise\ndjango\npsycopg2-binary\nsyst3m\nw3bsite\ncl1")
+		if not Files.exists(f"{self.root}/requirements/installer"): 
 			os.system(f"cp {SOURCE_PATH}/example/requirements/installer {self.root}/requirements/installer && chmod +x {self.root}/requirements/installer")
 
 		# favicon.
-		if not os.path.exists(f"{self.root}/static/favicon.ico"):
+		if not Files.exists(f"{self.root}/static/favicon.ico"):
 			output = syst3m.utils.__execute_script__(f"curl https://raw.githubusercontent.com/vandenberghinc/public-storage/master/w3bsite/favicon.ico -o {self.root}/static/favicon.ico")
 
 		# tls.
-		if not os.path.exists(f"{self.root}/.secrets/tls/server.key") and not os.path.exists(f"{self.root}/.secrets/tls/server.crt"):
+		if not Files.exists(f"{self.root}/.secrets/tls/server.key") and not Files.exists(f"{self.root}/.secrets/tls/server.crt"):
 			response = self.generate_tls(log_level=log_level)
 			if not response.success: 
 				if log_level >= 0: loader.stop(success=False)
 				return response
 
 		# deployment.
-		if not os.path.exists(f"{self.root}/deployment"): os.mkdir(f"{self.root}/deployment")
+		if not Files.exists(f"{self.root}/deployment"): os.mkdir(f"{self.root}/deployment")
 		clean_root = gfp.clean(self.library) # <== note the library change instead of root.
 		replacements = {
 			"***ROOT***":clean_root, 
@@ -88,13 +88,13 @@ class Deployment(_defaults_.Defaults):
 		for path in Files.Directory(path=f"{SOURCE_PATH}/classes/deployment/lib/").paths():
 			name = FilePath(path).name()
 			try:
-				data = syst3m.utils.__load_file__(path)
+				data = syst3m.Files.load(path)
 			except FileNotFoundError:
 				data = ""
 			new_data = str(data)
 			for key,value in replacements.items():
 				new_data = new_data.replace(key, value)
-			syst3m.utils.__save_file__(f"{self.root}/deployment/{name}", new_data)
+			syst3m.Files.save(f"{self.root}/deployment/{name}", new_data)
 		
 		# success.
 		if log_level >= 0: loader.stop()
@@ -135,20 +135,20 @@ class Deployment(_defaults_.Defaults):
 			return response
 
 		# check tls domain.
-		if not os.path.exists(f"{self.root}/.secrets/tls/.domain"): syst3m.utils.__save_file__(f"{self.root}/.secrets/tls/.domain", self.domain)
-		tls_domain = syst3m.utils.__load_file__(f"{self.root}/.secrets/tls/.domain").replace('\n',"")
+		if not Files.exists(f"{self.root}/.secrets/tls/.domain"): syst3m.Files.save(f"{self.root}/.secrets/tls/.domain", self.domain)
+		tls_domain = syst3m.Files.load(f"{self.root}/.secrets/tls/.domain").replace('\n',"")
 		if tls_domain != self.domain:
 			if log_level >= 0: loader.stop(success=False)
 			return r3sponse.error(f"TLS Certificate mis match. Installed tls certificate [{self.root}/.secrets/tls] is linked to domain {tls_domain}, not specified domain {self.domain}.", log_level=0)
 		
 		# checks.
-		if not os.path.exists(f"{self.root}/.secrets/tls/server.key") or not os.path.exists(f"{self.root}/.secrets/tls/server.crt"):
+		if not Files.exists(f"{self.root}/.secrets/tls/server.key") or not Files.exists(f"{self.root}/.secrets/tls/server.crt"):
 			if log_level >= 0: loader.stop(success=False)
 			return r3sponse.error("No tls certificate exists.\nExecute the following command to generate a tls certificate:\n$ ./website.py --generate-tls", log_level=log_level)
-		if not os.path.exists(f"{self.root}/.secrets/tls/signed.server.crt"):
+		if not Files.exists(f"{self.root}/.secrets/tls/signed.server.crt"):
 			if log_level >= 0: loader.stop(success=False)
 			return r3sponse.error("No activated tls certificate exists. \nExecute the following command to activate the generated tls certificate:\n$ ./website.py --activate-tls", log_level=log_level)
-		if not os.path.exists(f"{self.root}/.secrets/tls/server.ca-bundle"):
+		if not Files.exists(f"{self.root}/.secrets/tls/server.ca-bundle"):
 			if log_level >= 0: loader.stop(success=False)
 			return r3sponse.error("No bundled tls certificate exists. \nDownload the signed certificate send to your email, extr the zip to a directory and execute \n$ ./website.py --bundle-tls /path/to/extracted/directory/", log_level=log_level)
 		
@@ -174,12 +174,12 @@ class Deployment(_defaults_.Defaults):
 
 		# check base.
 		base = f"{self.root}/.secrets/"
-		if not os.path.exists(base): os.mkdir(base)
+		if not Files.exists(base): os.mkdir(base)
 		base = f"{self.root}/.secrets/tls"
-		if not os.path.exists(base): os.mkdir(base)
+		if not Files.exists(base): os.mkdir(base)
 
 		# check duplicate.
-		if os.path.exists(f"{self.root}/.secrets/tls/server.key") or os.path.exists(f"{self.root}/.secrets/tls/server.crt"):
+		if Files.exists(f"{self.root}/.secrets/tls/server.key") or Files.exists(f"{self.root}/.secrets/tls/server.crt"):
 			return r3sponse.error("The tls certificate already exists.", log_level=log_level)
 
 		# generate.
@@ -208,24 +208,24 @@ class Deployment(_defaults_.Defaults):
 		""")
 
 		# handler.
-		if not os.path.exists(f"{self.root}/.secrets/tls/server.key") or not os.path.exists(f"{self.root}/.secrets/tls/server.crt"):
+		if not Files.exists(f"{self.root}/.secrets/tls/server.key") or not Files.exists(f"{self.root}/.secrets/tls/server.crt"):
 			if log_level >= 0: loader.stop(success=False)
 			os.system(f"rm -fr {base}")
 			return r3sponse.error(f"Failed to generate a tls certificate.", log_level=log_level)
 		else:
 			if log_level >= 0: loader.stop()
-			syst3m.utils.__save_file__(f"{self.root}/.secrets/tls/.domain", self.domain)
+			syst3m.Files.save(f"{self.root}/.secrets/tls/.domain", self.domain)
 			return r3sponse.success(f"Successfully generated a tls certificate.", log_level=log_level)
 
 		#
 	def activate_tls(self, log_level=0):
 
 		# check existsance.
-		if not os.path.exists(f"{self.root}/.secrets/tls/server.key") or not os.path.exists(f"{self.root}/.secrets/tls/server.crt"):
+		if not Files.exists(f"{self.root}/.secrets/tls/server.key") or not Files.exists(f"{self.root}/.secrets/tls/server.crt"):
 			return r3sponse.error("No generated tls certificate exists.", log_level=log_level)
 
 		# check duplicate.
-		if os.path.exists(f"{self.root}/.secrets/tls/signed.server.key"):
+		if Files.exists(f"{self.root}/.secrets/tls/signed.server.key"):
 			return r3sponse.error("A signed tls certificate already exists.", log_level=log_level)
 
 		response = self.namecheap.get_tls()
@@ -305,7 +305,7 @@ class Deployment(_defaults_.Defaults):
 	def bundle_tls(self, directory, log_level=0):
 		
 		# check dir.
-		if not os.path.exists(directory):
+		if not Files.exists(directory):
 			return r3sponse.error(f"Specified directory [{directory}] does not exist.", log_level=log_level)
 		if ".zip" in directory:
 			return r3sponse.error(f"Specified directory [{directory}] is zip format, extract the zip first.", log_level=log_level)
@@ -313,11 +313,11 @@ class Deployment(_defaults_.Defaults):
 			return r3sponse.error(f"Specified directory [{directory}] is not a directory.", log_level=log_level)
 		
 		# move x.crt to server.crt
-		if not os.path.exists(f"{directory}/server.crt") and not os.path.exists(f'{directory}/{self.domain.replace(".","_")}.crt'):
+		if not Files.exists(f"{directory}/server.crt") and not Files.exists(f'{directory}/{self.domain.replace(".","_")}.crt'):
 			return r3sponse.success(f'You must rename the [{directory}/{self.domain.replace(".","_")}.crt] file manually to [{directory}/server.crt] in order to proceed.', log_level=log_level)
-		if not os.path.exists(f"{directory}/server.crt") and os.path.exists(f'{directory}/{self.domain.replace(".","_")}.crt'):
+		if not Files.exists(f"{directory}/server.crt") and Files.exists(f'{directory}/{self.domain.replace(".","_")}.crt'):
 			os.system(f'mv {directory}/{self.domain.replace(".","_")}.crt {directory}/server.crt')
-		if not os.path.exists(f"{directory}/server.crt"):
+		if not Files.exists(f"{directory}/server.crt"):
 			return r3sponse.success(f'Failed to rename the [{directory}/{self.domain.replace(".","_")}.crt] file to [{directory}/server.crt].', log_level=log_level)
 
 		# bundle ca.
@@ -327,7 +327,7 @@ class Deployment(_defaults_.Defaults):
 			mv {self.root}/.secrets/tls/server.crt {self.root}/.secrets/tls/original.server.crt
 			cp {self.root}/.secrets/tls/signed.server.crt {self.root}/.secrets/tls/server.crt
 			""")
-		if os.path.exists(f"{self.root}/.secrets/tls/signed.server.crt"):
+		if Files.exists(f"{self.root}/.secrets/tls/signed.server.crt"):
 			return r3sponse.success(f"Successfully bundled ssl certificate [{directory}].", log_level=log_level)
 		else:
 			return r3sponse.error(f"Failed to bundle ssl certificate [{directory}].", log_level=log_level)

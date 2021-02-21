@@ -902,8 +902,8 @@ class DocumentationView(View):
 		self.website = website
 
 		# check library.
-		if not os.path.exists("static/media"): os.mkdir("static/media")
-		if not os.path.exists("static/media/docs"): os.system(f"cp -r {SOURCE_PATH}/classes/views/media/docs/ static/media/docs")
+		if not Files.exists("static/media"): os.mkdir("static/media")
+		if not Files.exists("static/media/docs"): os.system(f"cp -r {SOURCE_PATH}/classes/views/media/docs/ static/media/docs")
 
 		# add template data.
 		self.colors = {
@@ -982,7 +982,7 @@ class DocumentationView(View):
 		if self.website.maintenance: return self.maintenance(request)
 		return render(request, f"{ALIAS}/classes/views/html/documentation_view.html", template_data)
 	def include_chapters(self, chapters_library):
-		if not os.path.exists(chapters_library):
+		if not Files.exists(chapters_library):
 			raise ValueError(f"Specified DocumentationView chapters library {chapters_library} does not exist.")
 		self.chapters = {}
 		if os.path.isdir(chapters_library):

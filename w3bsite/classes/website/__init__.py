@@ -681,7 +681,7 @@ class Website(cl1.CLI):
 	def create(self):
 
 		# create root.
-		if not os.path.exists(self.root):
+		if not Files.exists(self.root):
 			#return r3sponse.error(f"Website [{self.root}] already exists.")
 			os.mkdir(self.root)
 

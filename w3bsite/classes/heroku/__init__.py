@@ -7,12 +7,12 @@ from w3bsite.classes import utils
 
 # check installation.
 """
-if os.environ.get("DJANGO_SECRET_KEY") == None and not os.path.exists("/usr/local/bin/heroku"):
+if os.environ.get("DJANGO_SECRET_KEY") == None and not Files.exists("/usr/local/bin/heroku"):
 	if OS in ["macos"]:
 		os.system("brew tap heroku/brew && brew install heroku")
 	else:
 		os.system("curl https://cli-assets.heroku.com/install.sh | sh")
-	if not os.path.exists("/usr/local/bin/heroku"):
+	if not Files.exists("/usr/local/bin/heroku"):
 		raise ImportError("Failed to install the heroku cli.")
 """
 

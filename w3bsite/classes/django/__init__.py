@@ -44,7 +44,7 @@ class Django(_defaults_.Defaults):
 
 		# check migrations.
 		migrations = ""
-		if not os.path.exists(f"{self.database}/data/db.sqlite3"):
+		if not Files.exists(f"{self.database}/data/db.sqlite3"):
 			migrations = "export MIGRATIONS=True && ./manage.py migrate"
 
 		# start django.
@@ -95,13 +95,13 @@ class Django(_defaults_.Defaults):
 
 		# secrets.
 		path = f"{self.root}/website/settings.py"
-		if not os.path.exists(path):
+		if not Files.exists(path):
 			return r3sponse.error(f"Failed to create django project [{self.root}].")
-		data = utils.__load_file__(path)
+		data = Files.load(path)
 		secret_key = data.split("SECRET_KEY = '")[1].split("'")[0]
-		if not os.path.exists(f"{self.root}/.secrets"):
+		if not Files.exists(f"{self.root}/.secrets"):
 			os.mkdir(f"{self.root}/.secrets")
-		#utils.__save_file__(f"{self.root}/.secrets/env.sh", f"# Django environment variables.\nexport DJANGO_SECRET_KEY='{secret_key}'\n")
+		#Files.save(f"{self.root}/.secrets/env.sh", f"# Django environment variables.\nexport DJANGO_SECRET_KEY='{secret_key}'\n")
 		#utils.__save_json__(f"{self.root}/.secrets/env.json", {f"DJANGO_SECRET_KEY":secret_key})
 		self.security.set_secret_env("DJANGO_SECRET_KEY", secret_key)
 
@@ -150,13 +150,13 @@ class Django(_defaults_.Defaults):
 
 		# create proc file
 		path = f"{self.root}/Procfile"
-		utils.__save_file__(path, "web: gunicorn website.wsgi")
+		Files.save(path, "web: gunicorn website.wsgi")
 		os.system(f"chmod +x {path}")
 
 		# replace manage.py
 		path = f"{self.root}/manage.py"
-		data = utils.__load_file__(path)
-		utils.__save_file__(path, data.replace("#!/usr/bin/env python", "#!/usr/bin/env python3"))
+		data = Files.load(path)
+		Files.save(path, data.replace("#!/usr/bin/env python", "#!/usr/bin/env python3"))
 
 		# handlers.
 		return r3sponse.success(f"Successfully created django website [{self.root}].")
@@ -164,7 +164,7 @@ class Django(_defaults_.Defaults):
 
 		# checks.
 		path = f"{self.root}/apps/{name}"
-		if os.path.exists(path):
+		if Files.exists(path):
 			return r3sponse.error(f"App [{name}] already exists.")
 
 		# copy.
