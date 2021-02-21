@@ -74,7 +74,7 @@ class Request(syst3m.objects.Object):
 			self.url = f"{base}/{id}/".replace("//",'/').replace("//",'/')
 		else:
 			self.url = url
-		self.base = Formats.FilePath(self.url).base(back=1)
+		self.base = FilePath(self.url).base(back=1)
 		self.url = utils.__clean_url__(self.url, strip_first_slash=True).replace(".html", "")
 		self.base = utils.__clean_url__(self.base, strip_first_slash=True)
 		self.type = "request"
@@ -130,7 +130,7 @@ class View(syst3m.objects.Object):
 			self.url = f"{base}/{id}/".replace("//",'/').replace("//",'/')
 		else:
 			self.url = url
-		self.base = Formats.FilePath(self.url).base(back=1)
+		self.base = FilePath(self.url).base(back=1)
 		if html != None:
 			self.html = html
 		else:
@@ -142,9 +142,9 @@ class View(syst3m.objects.Object):
 
 		# check html.
 		if self.type.lower() in ["view"]:
-			fp = Formats.FilePath(f"{SOURCE_PATH}/example/")
+			fp = FilePath(f"{SOURCE_PATH}/example/")
 			if not os.path.exists(f"templates/{self.html}"):
-				base = utils.__clean_url__(Formats.FilePath(self.html).base(back=1), strip_first_slash=True)
+				base = utils.__clean_url__(FilePath(self.html).base(back=1), strip_first_slash=True)
 				if not os.path.exists(base): os.system(f"mkdir -p templates/{base}")
 				os.system(f"cp {SOURCE_PATH}/example/view.html templates/{self.html}")
 

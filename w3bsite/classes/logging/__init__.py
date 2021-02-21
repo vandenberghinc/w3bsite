@@ -40,8 +40,8 @@ class Logging(object):
 
 		#
 	def __log__(self, string):
-		self.log_file = f"{self.root}/logs/{Formats.Date().date}"
-		msg = f"{Formats.Date().seconds_timestamp}: {string}"
+		self.log_file = f"{self.root}/logs/{Date().date}"
+		msg = f"{Date().seconds_timestamp}: {string}"
 		print(msg)
 		with open(self.log_file, "a") as file:
 			file.write(msg)

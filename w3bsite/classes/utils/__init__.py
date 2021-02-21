@@ -305,7 +305,7 @@ def __execute_script__(
 ):
 	path = "/tmp/shell_script.sh"
 	__save_bytes__(path, script.encode())
-	fp = Formats.FilePath(path)
+	fp = FilePath(path)
 	fp.permission.set(permission=755)
 	output = __execute__(
 		command=[f"sh", f"{path}"],

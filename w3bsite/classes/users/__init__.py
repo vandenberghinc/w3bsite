@@ -128,8 +128,8 @@ class Users(_defaults_.Defaults):
 
 		# save new user data.
 		data = dict(self.default_user_data)
-		data["timestamps"]["signed_up"] = Formats.Date().date
-		data["api_key"] = Formats.String("").generate(length=68, capitalize=True, digits=True)
+		data["timestamps"]["signed_up"] = Date().date
+		data["api_key"] = String("").generate(length=68, capitalize=True, digits=True)
 		_response_ = self.aes.encrypt(password)
 		if not _response_.success: return self.response(_response_)
 		try:data["account"]
@@ -417,7 +417,7 @@ class Users(_defaults_.Defaults):
 				
 		# save code.
 		if code == None:
-			code = Formats.Integer(0).generate(length=6)
+			code = Integer(0).generate(length=6)
 		response = self.get(email=email)
 		if response.error != None: return response
 		user = response["user"]
@@ -425,7 +425,7 @@ class Users(_defaults_.Defaults):
 		except: self.verification_codes[mode] = {}
 		self.verification_codes[mode][user.email] = {
 			"code":code,
-			"stamp":Formats.Date().timestamp,
+			"stamp":Date().timestamp,
 			"attempts":3,
 		}
 		
@@ -831,7 +831,7 @@ class Users(_defaults_.Defaults):
 			data, edits = response["data"], 0
 
 			# check user data.
-			d = Files.Dictionary(dictionary=data, path=False)
+			d = Dictionary(dictionary=data, path=False)
 			old = dict(data)
 			data = d.check(default=self.default_user_data)
 			if old != data:
@@ -841,7 +841,7 @@ class Users(_defaults_.Defaults):
 			try:
 				if data["api_key"] in [None, ""]: raise KeyError("")
 			except KeyError: 
-				data["api_key"] = Formats.String("").generate(length=68, capitalize=True, digits=True)
+				data["api_key"] = String("").generate(length=68, capitalize=True, digits=True)
 				edits += 1
 
 			# edits.

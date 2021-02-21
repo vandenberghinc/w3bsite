@@ -3,7 +3,7 @@
 from classes.config import *
 
 # app settings.
-APP_NAME = Formats.FilePath(Formats.FilePath(__file__).base()).name()
+APP_NAME = FilePath(FilePath(__file__).base()).name()
 
 # the .. view.
 class my_view():

@@ -5,7 +5,7 @@ from w3bsite import Website
 from fil3s import *
 website = Website(
 	# the root path.
-	root=Formats.FilePath(__file__).base(back=2),
+	root=FilePath(__file__).base(back=2),
 	# the root version.
 	version="v1",
 	# the website name.

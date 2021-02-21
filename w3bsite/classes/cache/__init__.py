@@ -26,7 +26,7 @@ class Cache(object):
 		data = {
 			"value":value,
 			"reset":reset,
-			"timestamp":Formats.Date().timestamp,
+			"timestamp":Date().timestamp,
 		}
 		if mode != None:
 			try:self._cache_[mode]
@@ -50,7 +50,7 @@ class Cache(object):
 			try:data = self.__cache__[key]
 			except KeyError:  return r3sponse.error(f"No cached {key} data available.") 
 		if isinstance(data["reset"], int):
-			date = Formats.Date()
+			date = Date()
 			increased = date.increase(data["timestamp"], minutes=data["reset"])
 			if date.compare(increased, date.timestamp) in ["past", "present"]:
 				return r3sponse.error(f"Cache refresh required for {mode}.{key}.") 

@@ -29,7 +29,7 @@ class Synchronize(threading.Thread):
 	def run(self):
 		last = None
 		while True:
-			date, new = Formats.Date(), False
+			date, new = Date(), False
 			if last == None: new = True
 			else:
 				increased = date.increase(last, minutes=self.synchronize_interval)

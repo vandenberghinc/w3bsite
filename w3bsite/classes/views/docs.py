@@ -764,7 +764,7 @@ class Documentations(View):
 			"element_id":self.__generate_element_id__(),
 		}
 	def __generate_element_id__(self, joiner=""):
-		return joiner+Formats.String("").generate(length=32, digits=True, capitalize=True)
+		return joiner+String("").generate(length=32, digits=True, capitalize=True)
 	def __create_word__(self, color=None, italic=False, type=None, word="", linecount=None, joiner="", language=None, styles={}):
 		colors = {
 			"red":"#FF0071",
@@ -868,7 +868,7 @@ class Documentations(View):
 
 # the documentation view.
 class DocumentationView(View):
-	# do not forget to add the template dir: Formats.FilePath(website.SOURCE_PATH).base(), in settings.py
+	# do not forget to add the template dir: FilePath(website.SOURCE_PATH).base(), in settings.py
 	def __init__(self, 
 		# the base path (required; if url path is null) [#1 argument].
 		base=None,
@@ -990,18 +990,18 @@ class DocumentationView(View):
 			replaced = chapters_library.replace('/','.').replace(".py", "")
 			for path in Files.Directory(chapters_library).paths():
 				id = self.__generate_element_id__("chapt_")
-				name = Formats.FilePath(path).name().replace(".py", "")
+				name = FilePath(path).name().replace(".py", "")
 				if ".py" in path:
 					module = importlib.import_module(f"{replaced}{name}")
 					self.chapters[id] = module.chapter
 		else:
 			replaced = chapters_library.replace('/','.').replace(".py", "")
-			name = Formats.FilePath(chapters_library).name().replace(".py", "")
+			name = FilePath(chapters_library).name().replace(".py", "")
 			module = importlib.import_module(f"{replaced}")
 			id = self.__generate_element_id__("chapt_")
 			self.chapters[id] = module.chapter
 	def __generate_element_id__(self, joiner=""):
-		return joiner+Formats.String("").generate(length=32, digits=True, capitalize=True)
+		return joiner+String("").generate(length=32, digits=True, capitalize=True)
 	
 
 # initialized docs.

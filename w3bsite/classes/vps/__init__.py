@@ -130,9 +130,9 @@ class VPS(_defaults_.Defaults):
 		if reinstall: installer_arguments += " --reinstall"
 
 		# copy current source to vps & installer script.
-		name = Formats.FilePath(self.root).name()
-		base = Formats.FilePath(self.root).base()
-		package_name = Formats.FilePath(base).name()
+		name = FilePath(self.root).name()
+		base = FilePath(self.root).base()
+		package_name = FilePath(base).name()
 		tmp = f"/tmp/{package_name}"
 		s = ""
 		for i in [

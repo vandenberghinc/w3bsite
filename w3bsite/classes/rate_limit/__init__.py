@@ -67,7 +67,7 @@ class RateLimit(_defaults_.Defaults):
 			rate_limits = {}
 
 		# check.
-		date = Formats.Date()
+		date = Date()
 		try: rate_limits[mode]
 		except KeyError: rate_limits[mode] = {}
 		try: rate_limits[mode]["timestamp"]
@@ -130,7 +130,7 @@ class RateLimit(_defaults_.Defaults):
 			rate_limits = {}
 
 		# check.
-		date = Formats.Date()
+		date = Date()
 		try: rate_limits[mode]
 		except KeyError: rate_limits[mode] = {}
 		try: rate_limits[mode]["timestamp"]

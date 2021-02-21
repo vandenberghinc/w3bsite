@@ -179,7 +179,7 @@ class Requests(_defaults_.Defaults):
 			#if not response.success: return response
 
 			# set mode.
-			code = Formats.Integer(0).generate(length=6)
+			code = Integer(0).generate(length=6)
 			if mode == "reset_password":
 				title = "Reset Password - Verification Code"
 				path = f"{SOURCE_PATH}/classes/apps/authentication/mail/reset_password.html"
@@ -194,14 +194,14 @@ class Requests(_defaults_.Defaults):
 
 			# parse html.
 			ip = utils.__get_client_ip__(request)
-			html = Files.File(path, load=True).data.format(
+			html = File(path, load=True).data.format(
 				# domain info.
 				domain=self.https_domain,
 				# code.
 				code=code,
 				# request info.
 				ip=ip,
-				timestamp=Formats.Date().seconds_timestamp,
+				timestamp=Date().seconds_timestamp,
 				# user info.
 				email=email,
 				# colors.

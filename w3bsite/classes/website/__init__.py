@@ -11,7 +11,7 @@ class Website(cl1.CLI):
 		#
 		# General.
 		# 	the root path.
-		root=None, # example: Formats.FilePath(__file__).base(back=1).replace("./","")
+		root=None, # example: FilePath(__file__).base(back=1).replace("./","")
 		#
 		# Website.
 		# 	the root domain.

@@ -86,7 +86,7 @@ class Deployment(_defaults_.Defaults):
 			"***USER***":USER,
 		}
 		for path in Files.Directory(path=f"{SOURCE_PATH}/classes/deployment/lib/").paths():
-			name = Formats.FilePath(path).name()
+			name = FilePath(path).name()
 			try:
 				data = syst3m.utils.__load_file__(path)
 			except FileNotFoundError:

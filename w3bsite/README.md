@@ -43,7 +43,7 @@ from w3bsite import Website
 from fil3s import *
 website = Website(
 	# the root path.
-	root=Formats.FilePath(__file__).base(back=1),
+	root=FilePath(__file__).base(back=1),
 	# the website name.
 	name="My Website",
 	# the organization.
