@@ -2,10 +2,10 @@
 # pip packages.
 
 # inc packages.
-syst3m>=2.5.0
+syst3m>=2.5.1
 cl1>=1.7.2
-fil3s>=2.5.0
-r3sponse>=2.3.4
-netw0rk>=1.3.2
-ssht00ls>=3.5.5
+fil3s>=2.5.1
+r3sponse>=2.3.5
+netw0rk>=1.3.3
+ssht00ls>=3.5.6
 
