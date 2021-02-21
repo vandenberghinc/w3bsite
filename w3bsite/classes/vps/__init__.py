@@ -67,8 +67,9 @@ class VPS(_defaults_.Defaults):
 					return response
 
 			# ssh config.
-			response = ssht00ls.aliases.create(
-				alias=self.domain, 
+			response = ssht00ls.aliases.check(
+				alias, 
+				create=True,
 				username=self.username, 
 				public_ip=self.ip,
 				private_ip=self.ip,
