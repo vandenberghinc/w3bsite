@@ -1,6 +1,5 @@
 
 # pip packages.
-smtplib
 
 # inc packages.
 syst3m>=2.7.6

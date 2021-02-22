@@ -97,3 +97,6 @@ class Email(object):
 			return r3sponse.success(f"Succesfully send the email to {recipients}.")
 		except:
 			return r3sponse.error(f"Failed send the email to {recipients}.")
+
+
+#
