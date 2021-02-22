@@ -138,9 +138,9 @@ class RateLimit(_defaults_.Defaults):
 		try: rate_limits[mode]["rate"]
 		except KeyError: rate_limits[mode]["rate"] = 0
 		timestamp = rate_limits[mode]["timestamp"]
-		increased = date.increase(timestamp, format="%d-%m-%y %H:%M", minutes=reset_minutes)
-		comparison = date.compare(increased, date.timestamp, format="%d-%m-%y %H:%M")
-		if comparison in ["past", "present"]:
+		increased = date.increase(timestamp, format=date.timestamp_format, minutes=reset_minutes)
+		comparison = date.compare(comparison=date.timestamp, current=increased, format=date.timestamp_format)
+		if comparison in ["future", "present"]:
 			rate_limits[mode]["rate"] = 0
 			rate_limits[mode]["timestamp"] = date.timestamp
 			document["rate_limits"] = rate_limits
