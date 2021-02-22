@@ -61,7 +61,7 @@ class VPS(_defaults_.Defaults):
 
 			# ssh key.
 			if not Files.exists(f"{self.root}/.secrets/ssh"): 
-				response = ssht00ls.key.generate(path=f"{self.root}/.secrets/ssh", comment=f"SSH key for domain {self.domain}", passphrase="")
+				response = ssht00ls.keys.generate(path=f"{self.root}/.secrets/ssh", comment=f"SSH key for domain {self.domain}", passphrase="")
 				if not response.success: 
 					if log_level >= 0: loader.stop(success=False)
 					return response
