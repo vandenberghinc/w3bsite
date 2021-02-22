@@ -108,7 +108,7 @@ class VPS(_defaults_.Defaults):
 		if not Files.exists(f"{self.root}/requirements/requirements.pip"):
 			if log_level >= 0: loader.stop(success=False)
 			return r3sponse.error(f"Required requirements file {self.root}/requirements/requirements.txt does not exist.", log_level=log_level)
-		data = syst3m.Files.load(f"{self.root}/requirements/installer")
+		data = Files.load(f"{self.root}/requirements/installer")
 		installed_alias = data.split('alias="')[1].split('"')[0]
 		#installed_location = data.split('package="')[1].split('"')[0].replace("$alias", installed_alias)
 		installed_location = self.library
@@ -118,7 +118,7 @@ class VPS(_defaults_.Defaults):
 		output = syst3m.utils.__execute_script__(f"printf 'yes\n' | ssh {self.domain} ' echo Hello World ' ").replace('\n\n','\n')
 		if "Permission denied (publickey)" in output:
 			if log_level >= 0:  loader.stop(success=False)
-			data = syst3m.Files.load(f'{self.root}/.secrets/ssh/public_key').replace('\n','')
+			data = Files.load(f'{self.root}/.secrets/ssh/public_key').replace('\n','')
 			return r3sponse.error(f"Unable to connect with {self.domain} over ssh (permission denied). Did you install public key {data} into the vps server?", log_level=log_level)
 		elif "Hello World" not in output:
 			if log_level >= 0:  loader.stop(success=False)

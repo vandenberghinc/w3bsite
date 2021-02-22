@@ -61,7 +61,7 @@ class Deployment(_defaults_.Defaults):
 		# requirements.
 		if not Files.exists(f"{self.root}/requirements"): os.mkdir(f"{self.root}/requirements")
 		if not Files.exists(f"{self.root}/requirements/requirements.pip"): 
-			syst3m.Files.save(f"{self.root}/requirements/requirements.pip", "wheel\nuwsgi\ngunicorn\nwhitenoise\ndjango\npsycopg2-binary\nsyst3m\nw3bsite\ncl1")
+			Files.save(f"{self.root}/requirements/requirements.pip", "wheel\nuwsgi\ngunicorn\nwhitenoise\ndjango\npsycopg2-binary\nsyst3m\nw3bsite\ncl1")
 		if not Files.exists(f"{self.root}/requirements/installer"): 
 			os.system(f"cp {SOURCE_PATH}/example/requirements/installer {self.root}/requirements/installer && chmod +x {self.root}/requirements/installer")
 
@@ -88,13 +88,13 @@ class Deployment(_defaults_.Defaults):
 		for path in Files.Directory(path=f"{SOURCE_PATH}/classes/deployment/lib/").paths():
 			name = FilePath(path).name()
 			try:
-				data = syst3m.Files.load(path)
+				data = Files.load(path)
 			except FileNotFoundError:
 				data = ""
 			new_data = str(data)
 			for key,value in replacements.items():
 				new_data = new_data.replace(key, value)
-			syst3m.Files.save(f"{self.root}/deployment/{name}", new_data)
+			Files.save(f"{self.root}/deployment/{name}", new_data)
 		
 		# success.
 		if log_level >= 0: loader.stop()
@@ -135,8 +135,8 @@ class Deployment(_defaults_.Defaults):
 			return response
 
 		# check tls domain.
-		if not Files.exists(f"{self.root}/.secrets/tls/.domain"): syst3m.Files.save(f"{self.root}/.secrets/tls/.domain", self.domain)
-		tls_domain = syst3m.Files.load(f"{self.root}/.secrets/tls/.domain").replace('\n',"")
+		if not Files.exists(f"{self.root}/.secrets/tls/.domain"): Files.save(f"{self.root}/.secrets/tls/.domain", self.domain)
+		tls_domain = Files.load(f"{self.root}/.secrets/tls/.domain").replace('\n',"")
 		if tls_domain != self.domain:
 			if log_level >= 0: loader.stop(success=False)
 			return r3sponse.error(f"TLS Certificate mis match. Installed tls certificate [{self.root}/.secrets/tls] is linked to domain {tls_domain}, not specified domain {self.domain}.", log_level=0)
@@ -214,7 +214,7 @@ class Deployment(_defaults_.Defaults):
 			return r3sponse.error(f"Failed to generate a tls certificate.", log_level=log_level)
 		else:
 			if log_level >= 0: loader.stop()
-			syst3m.Files.save(f"{self.root}/.secrets/tls/.domain", self.domain)
+			Files.save(f"{self.root}/.secrets/tls/.domain", self.domain)
 			return r3sponse.success(f"Successfully generated a tls certificate.", log_level=log_level)
 
 		#
