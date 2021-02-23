@@ -5,6 +5,7 @@
 from w3bsite.classes.firebase import *
 from firebase_admin import credentials, auth, firestore, _auth_utils
 from w3bsite.classes import defaults as _defaults_
+from w3bsite.classes import email
 
 # the users class.
 class Users(_defaults_.Defaults):
@@ -375,6 +376,8 @@ class Users(_defaults_.Defaults):
 		user = response["user"]
 		
 		# send email.
+		if syst3m.defaults.options.log_level >= 1:
+			r3sponse.log(f"Sending email to user [{user.username}], email [{user.email}].")
 		response = self.email.send(
 			subject=title,
 			recipients=[user.email], 
@@ -430,6 +433,8 @@ class Users(_defaults_.Defaults):
 		}
 		
 		# send email.
+		if syst3m.defaults.options.log_level >= 1:
+			r3sponse.log(f"Sending [{mode}] code to user [{user.username}], email [{user.email}].")
 		response = self.email.send(
 			subject=f'{title} - Verification Code',
 			recipients=[user.email], 
@@ -858,7 +863,7 @@ class Users(_defaults_.Defaults):
 		# the email object.
 		if self.email_address == None or self.email_password == None:
 			return r3sponse.error("Define the firebase.users.email_address & firebase.users.email_password variables to send emails.")
-		self.email = utils.Email(
+		self.email = email.Email(
 			email=self.email_address,
 			password=self.email_password,
 			smtp_host=self.smtp_host,

@@ -20,6 +20,7 @@ class Email(object):
 		smtp_host="smtp.gmail.com", 
 		smtp_port=587, 
 		use_tls=True,
+		visible_email=None,
 	):
 		self.email = str(email)
 		self.password = str(password)
@@ -27,6 +28,7 @@ class Email(object):
 		self.smtp_port = int(smtp_port)
 		self.use_tls = bool(use_tls)
 		self.smtp = None
+		self.visible_email = visible_email
 	def login(self, timeout=3):
 
 		# try.
@@ -67,9 +69,12 @@ class Email(object):
 		else: html = Files.load(html_path)
 		if len(recipients) == 0: 
 			return r3sponse.error("Define one or multiple recipients")
+		elif  recipients in [[''], [" "]]: 
+			return r3sponse.error("Define one or multiple recipients")
 
 		# create message.
-		try:
+		#try:
+		if True:
 
 			msg = MIMEMultipart('alternative')
 			msg['From'] = self.email
@@ -95,8 +100,8 @@ class Email(object):
 
 			# response.
 			return r3sponse.success(f"Succesfully send the email to {recipients}.")
-		except:
-			return r3sponse.error(f"Failed send the email to {recipients}.")
+		#except:
+		#	return r3sponse.error(f"Failed to send the email to {recipients}.")
 
 
 #

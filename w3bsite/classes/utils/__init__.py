@@ -553,5 +553,5 @@ class Email(object):
 			response["message"] = f"Succesfully send the email to {recipients}."
 			return response
 		except:
-			response.error = f"Failed send the email to {recipients}."
+			response.error = f"Failed to send the email to {recipients}."
 			return response
