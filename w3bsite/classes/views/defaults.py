@@ -91,7 +91,7 @@ class Request(syst3m.objects.Object):
 		except AttributeError:
 			return JsonResponse(response)
 	def get_parameter(self, request, identifier):
-		return r3sponse.get_request_parameter(request, identifiers)
+		return r3sponse.get_request_parameter(request, identifier)
 	def get_parameters(self, request, identifiers=[], optional=False):
 		return r3sponse.get_request_parameters(request, identifiers, optional=optional)
 	def maintenance(self, request=None):
