@@ -7,7 +7,7 @@ from w3bsite.classes import defaults as _defaults_
 class RateLimit(_defaults_.Defaults):
 	def __init__(self, 
 		# objects.
-		firebase=None,
+		database=None,
 		# defaults.
 		defaults=None,
 	):	
@@ -23,7 +23,7 @@ class RateLimit(_defaults_.Defaults):
 		#if not response.success: raise ValueError(response.error)
 		
 		# objects.
-		self.firebase = firebase
+		self.database = database
 
 		#
 	def increment(self, 
@@ -54,7 +54,7 @@ class RateLimit(_defaults_.Defaults):
 			reference = f"ips/{ip}"
 
 		# load.
-		response = self.firebase.firestore.load(reference)
+		response = self.database.load(reference, format="json")
 		if not response.success: 
 			if ip != None and "Document " in response.error and " does not exist" in response.error:
 				response["document"] = {}
@@ -80,7 +80,7 @@ class RateLimit(_defaults_.Defaults):
 		
 		# save.
 		document["rate_limits"] = rate_limits
-		response = self.firebase.firestore.save(reference, document)
+		response = self.database.save(reference, document, format="json")
 		if not response.success: return response
 		return r3sponse.success("Successfully incremented the rate limit.")
 
@@ -117,7 +117,7 @@ class RateLimit(_defaults_.Defaults):
 			reference = f"ips/{ip}"
 
 		# check reset timestamp.
-		response = self.firebase.firestore.load(reference)
+		response = self.database.load(reference, format="json")
 		if not response.success: 
 			if ip != None and "Document " in response.error and " does not exist" in response.error:
 				response["document"] = {}
@@ -144,7 +144,7 @@ class RateLimit(_defaults_.Defaults):
 			rate_limits[mode]["rate"] = 0
 			rate_limits[mode]["timestamp"] = date.timestamp
 			document["rate_limits"] = rate_limits
-			response = self.firebase.firestore.save(reference, document)
+			response = self.database.save(reference, document, format="json")
 			if not response.success: return response
 
 		# check rate.
@@ -152,7 +152,7 @@ class RateLimit(_defaults_.Defaults):
 			if increment:
 				rate_limits[mode]["rate"] += increment_count
 				document["rate_limits"] = rate_limits
-				response = self.firebase.firestore.save(reference, document)
+				response = self.database.save(reference, document, format="json")
 				if not response.success: return response
 			return r3sponse.success(f"Successfully verified the {mode} rate limit.")
 		else:

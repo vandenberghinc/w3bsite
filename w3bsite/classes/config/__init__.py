@@ -17,10 +17,6 @@ OS = syst3m.defaults.operating_system(supported=["linux", "macos"])
 LOG_LEVEL = syst3m.defaults.log_level(default=0)
 #syst3m.defaults.alias(alias=ALIAS, executable=SOURCE_PATH)
 
-# version.
-try: version = Files.load(f"{SOURCE_PATH}/.version.py")
-except: version = "unkown"
-
 # network info.
 NETWORK_INFO = netw0rk.network.info()
 if not NETWORK_INFO["success"]: raise ValueError(NETWORK_INFO["error"])

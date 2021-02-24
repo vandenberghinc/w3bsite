@@ -16,6 +16,7 @@ class Users(_defaults_.Defaults):
 		smtp_host="smtp.gmail.com", 
 		smtp_port=587, 
 		# objects.
+		database=None,
 		firestore=None, 
 		stripe=None, 
 		django=None,
@@ -42,6 +43,7 @@ class Users(_defaults_.Defaults):
 		self.visible_email = None
 
 		# objects.
+		self.database = database
 		self.firestore = firestore
 		self.logging = logging
 		self.stripe = stripe
@@ -82,9 +84,6 @@ class Users(_defaults_.Defaults):
 		# optionals:
 		name=None,
 		superuser=False,
-		#phone_number=None,
-		#photo_url=None,
-		#email_verified=False,
 	):
 
 		# check parameters.
@@ -104,18 +103,6 @@ class Users(_defaults_.Defaults):
 			return r3sponse.error("The password must regular and capital letters.")
 		elif password != verify_password:
 			return r3sponse.error("Passwords do not match.")
-
-		# create firebase user ! must be first !
-		"""
-		response = self.firebase.users.create(
-			email=email,
-			phone_number=phone_number,
-			password=password,
-			display_name=name,
-			photo_url=photo_url,
-			email_verified=email_verified,)
-		if not response.success: return response
-		"""
 
 		# create django user.
 		response = self.django.users.create(
@@ -186,18 +173,6 @@ class Users(_defaults_.Defaults):
 			elif password != verify_password:
 				return r3sponse.error("Passwords do not match.")
 		
-		# create firebase user ! must be first !
-		"""
-		response = self.firebase.users.update(
-			email=email,
-			phone_number=phone_number,
-			password=password,
-			display_name=name,
-			photo_url=photo_url,
-			email_verified=email_verified,)
-		if not response.success: return response
-		"""
-
 		# create django user.
 		response = self.django.users.update(
 			email=email,
@@ -241,16 +216,12 @@ class Users(_defaults_.Defaults):
 			"email":email,})
 		if not response.success: return response
 
-		# delete firebase user ! must be first !
-		#response = self.firebase.users.delete(email=email,)
-		#if not response.success: return response
-
 		# delete django user.
 		response = self.django.users.delete(email=email,)
 		if not response.success: return response
 
 		# delete firestore data.
-		response = self.firestore.delete(f"{self.users_collection}/{email}/")
+		response = self.database.delete(f"{self.users_collection}/{email}/")
 		if not response.success: return response
 
 		# handle success.
@@ -335,7 +306,7 @@ class Users(_defaults_.Defaults):
 		response = r3sponse.check_parameters({
 			"email":email,})
 		if not response.success: return response
-		response = self.firestore.load(f"{self.users_collection}/{email}/")
+		response = self.database.load(f"{self.users_collection}/{email}/", format="json")
 		if response.error != None: return response
 		return r3sponse.success(f"Successfully loaded the data of user [{email}].", {
 			"data":response["document"],
@@ -350,7 +321,7 @@ class Users(_defaults_.Defaults):
 		response = r3sponse.check_parameters({
 			"email":email,})
 		if not response.success: return response
-		response = self.firestore.save(f"{self.users_collection}/{email}/", data)
+		response = self.database.save(f"{self.users_collection}/{email}/", data, format="json")
 		if response.error != None: return response
 		return r3sponse.success(f"Successfully saved the data of user [{email}].")
 	def send_email(self, 

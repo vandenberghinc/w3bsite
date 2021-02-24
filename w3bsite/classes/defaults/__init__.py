@@ -65,4 +65,5 @@ class Defaults(syst3m.objects.Object):
 		self.logging = logging
 
 		#
+
 	

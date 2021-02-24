@@ -3,7 +3,8 @@
 
 # imports.
 from w3bsite.classes.config import *
-from w3bsite.classes import security, heroku, namecheap, utils, git, firebase, users, stripe, logging, rate_limit, aes, deployment, vps, cache, defaults, apps, views
+from w3bsite.classes import security, heroku, namecheap, utils, git, users, stripe, logging, rate_limit, aes, deployment, vps, cache, defaults, apps, views
+from w3bsite.classes import database as _database_
 
 # the main website class.
 class Website(cl1.CLI):
@@ -22,6 +23,10 @@ class Website(cl1.CLI):
 		# Deployment.
 		# 	remote depoyment, options: [local, vps, heroku].
 		remote="local",
+		#
+		# Database.
+		#	the local database path (leave None to use firebase).
+		database=None,
 		#
 		# Developers.
 		#	the developer users (emails).
@@ -199,6 +204,7 @@ class Website(cl1.CLI):
 		self.interactive = interactive
 		self.production = production
 		self.maintenance = maintenance
+		self.database_ = database
 		if self.domain != None:
 			self.domain = utils.naked_url(self.domain)
 		if serialized == None or serialized == {}:
@@ -362,10 +368,19 @@ class Website(cl1.CLI):
 		# objects.
 		self.security = security.Security(
 			defaults=self.defaults,)
-		self.firebase = firebase.Firebase(
-			key=self.firebase_admin,
-			firebase_js=self.firebase_js,
-			defaults=self.defaults)
+		if self.database_ == None:
+			from w3bsite.classes import firebase
+			self.firebase = firebase.Firebase(
+				key=self.firebase_admin,
+				firebase_js=self.firebase_js,
+				defaults=self.defaults)
+			self.firestore = self.firebase.firestore
+			self.database = _database_.Database(
+				firestore=self.firebase.firestore)
+		else:
+			self.firebase = None
+			self.firestore = None
+			self.database = _database_.Database(path=self.database_)
 		self.stripe = stripe.Stripe(
 			secret_key=self.stripe_secret_key,
 			publishable_key=self.stripe_publishable_key,
@@ -373,7 +388,7 @@ class Website(cl1.CLI):
 			products=self.stripe_products,
 			defaults=self.defaults)
 		self.rate_limit = rate_limit.RateLimit(
-			firebase=self.firebase,
+			database=self.database,
 			defaults=self.defaults,)
 		#from django.conf import settings
 		#settings.configure()
@@ -392,7 +407,8 @@ class Website(cl1.CLI):
 			email_password=self.email_password,
 			smtp_host=self.email_smtp_host,
 			smtp_port=self.email_smtp_port,
-			firestore=self.firebase.firestore,
+			firestore=self.firestore,
+			database=self.database,
 			stripe=self.stripe,
 			django=self.django,
 			defaults=self.defaults,)
@@ -737,6 +753,7 @@ class Website(cl1.CLI):
 			"vps_port":self.vps_port,
 			"vps_username":self.vps_username,
 			"_2fa":self._2fa,
+			"database":self.database_,
 		}
 
 		# save all secret variables in secrets.
@@ -834,7 +851,7 @@ class Website(cl1.CLI):
 		self.vps_port = serialized["vps_port"]
 		self.vps_username = serialized["vps_username"]
 		self._2fa = serialized["_2fa"]
-
+		self.database_ = serialized["database"]
 
 		# load secrets.
 		local_security = security.Security(
