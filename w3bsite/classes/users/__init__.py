@@ -2,8 +2,11 @@
 # -*- coding: utf-8 -*-
 
 # imports.
-from w3bsite.classes.firebase import *
-from firebase_admin import credentials, auth, firestore, _auth_utils
+from w3bsite.classes.config import *
+try:
+	from w3bsite.classes.firebase import *
+	from firebase_admin import credentials, auth, firestore, _auth_utils
+except ModuleNotFoundError: a=1
 from w3bsite.classes import defaults as _defaults_
 from w3bsite.classes import email
 

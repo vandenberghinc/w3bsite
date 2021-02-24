@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # imports.
-from w3bsite.classes.firebase import *
+from w3bsite.classes.config import *
 
 # the users class.
 class Logging(object):
