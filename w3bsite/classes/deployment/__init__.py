@@ -81,7 +81,7 @@ class Deployment(_defaults_.Defaults):
 		clean_root = gfp.clean(self.library, remove_last_slash=True, remove_double_slash=True) # <== note the library change instead of root.
 		replacements = {
 			"***ROOT***":clean_root, 
-			"***USER***":self.user, 
+			"***USER***":self.username, 
 			"***DOMAIN***":self.domain,
 			"***DATABASE***":self.database_path,
 			"***syst3m.defaults.vars.user***":syst3m.defaults.vars.user,
