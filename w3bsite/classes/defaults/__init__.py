@@ -10,7 +10,7 @@ class Defaults(syst3m.objects.Object):
 		# info.
 		root=None,
 		library=None,
-		database=None,
+		database_path=None,
 		name=None,
 		domain=None,
 		https_domain=None,
@@ -40,7 +40,7 @@ class Defaults(syst3m.objects.Object):
 		# defaults.
 		self.root = root
 		self.library = library
-		self.database = database
+		self.database_path = database_path
 		self.name = name
 		self.author = author
 		self.email = email

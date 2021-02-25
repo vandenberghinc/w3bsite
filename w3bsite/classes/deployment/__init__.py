@@ -82,7 +82,7 @@ class Deployment(_defaults_.Defaults):
 		replacements = {
 			"***ROOT***":clean_root, 
 			"***DOMAIN***":self.domain,
-			"***DATABASE***":self.database,
+			"***DATABASE***":self.database_path,
 			"***syst3m.defaults.vars.user***":syst3m.defaults.vars.user,
 		}
 		for path in Files.Directory(path=f"{SOURCE_PATH}/classes/deployment/lib/").paths():

@@ -94,6 +94,10 @@ class VPS(_defaults_.Defaults):
 		#
 	def deploy(self, code_update=False, reinstall=False, log_level=0):
 
+		# configure vps.
+		response = self.configure(reinstall=reinstall, log_level=log_level)
+		if not response.success: return response
+
 		# configure deployment.
 		response = self.deployment.configure(reinstall=reinstall, log_level=log_level)
 		if not response.success: return response
@@ -134,39 +138,40 @@ class VPS(_defaults_.Defaults):
 		if code_update: installer_arguments += " --code-update"
 		if reinstall: installer_arguments += " --reinstall"
 
-		# copy current source to vps & installer script.
-		name = FilePath(self.root).name()
-		base = FilePath(self.root).base()
-		package_name = FilePath(base).name()
-		tmp = f"/tmp/{package_name}"
-		s = ""
-		for i in [
-			f"ssh {self.domain} ' rm -fr {tmp} ' ",
-			f"scp -r {base} {self.domain}:{tmp}",
-			f"ssh {self.domain} ' chmod +x {tmp}/requirements/installer && bash {tmp}/requirements/installer{installer_arguments} ' ",
-		]:
-			if s == "": s = i
-			else: s += " && "+i
+		# copy current source to vps & installer script.		
 		if log_level >= 0: loader.mark(new_message=f"Installing source code of website {self.domain} on vps {self.ip}")
-		output = syst3m.utils.__execute_script__(s).replace('\n\n','\n').replace('\n\n','\n').replace('\n\n','\n').replace('\n\n','\n')
-		if not "Successfully installed " in output:
-			print(output)
-			if "Error: " in output:
-				if log_level >= 0: loader.stop(success=False)
-				return r3sponse.error(output.split("Error: ")[1], log_level=log_level)
-			else:
-				if log_level >= 0: loader.stop(success=False)
-				return r3sponse.error(f"Failed to deploy website {self.domain} on vps {self.ip}.", log_level=log_level)
+		package_name = gfp.name(path=self.root)
+		tmp = f"/tmp/{package_name}/"
+		response = ssht00ls.ssync.push(
+			alias=self.domain,
+			path=self.root,
+			remote=tmp,
+			checks=False,
+			directory=True,
+			delete=True,
+			check_base=False,)
+		if not response.success: 
+			if log_level >= 0: loader.stop(success=False)
+			return r3sponse.error(f"Failed to deploy website {self.domain} on vps {self.ip}, error: {response.error}.", log_level=log_level)
+
+		# execute installer script.
+		if log_level >= 0: loader.mark(new_message=f"Executing installer script of website {self.domain} on vps {self.ip}")
+		response = ssht00ls.ssh.command(
+			alias=self.domain,
+			command=f"chmod +x {tmp}/requirements/installer && bash {tmp}/requirements/installer{installer_arguments}")
+		if not response.success: 
+			if log_level >= 0: loader.stop(success=False)
+			return r3sponse.error(f"Failed to deploy website {self.domain} on vps {self.ip}, error: {response.error}.", log_level=log_level)
 
 		# deploy.
 		if log_level >= 0: loader.mark(new_message=f"Deploying domain {self.domain} on vps {self.ip}")
-		output = syst3m.utils.__execute_script__(f"ssh {self.domain} ' python3 {installed_location}/website.py --deploy{installer_arguments} ' ").replace('\n\n','\n').replace('\n\n','\n').replace('\n\n','\n').replace('\n\n','\n')
-		#if f"Deploying domain " in output and f" ... {syst3m.color.red}failed{syst3m.color.end}" in output:
-		#	output = output.split(f"Deploying domain {self.domain} ... {syst3m.color.red}failed{syst3m.color.end}")[0]
-		if not "Successfully deployed domain https://" in output:
-			print(output)
+		response = ssht00ls.ssh.command(
+			alias=self.domain,
+			command=f"python3 {installed_location}/website.py --deploy{installer_arguments}")
+		if not response.success or not "Successfully deployed domain https://" in response.output:
+			print(response)
 			if log_level >= 0: loader.stop(success=False)
-			return r3sponse.error(f"Failed to deploy website {self.domain} on vps {self.ip}.", log_level=log_level)
+			return r3sponse.error(f"Failed to deploy website {self.domain} on vps {self.ip}, error: {response.error}.", log_level=log_level)
 
 		# handler.
 		if log_level >= 0: loader.stop()

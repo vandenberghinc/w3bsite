@@ -8,10 +8,15 @@ from w3bsite.classes.config import *
 class Database(object):
 	def __init__(self, firestore=None, path=None):
 		self.firestore = firestore
-		self.path = path
+		self.path = gfp.clean(path)
+		self.file_path = self.fp = FilePath(self.path)
+		if not self.fp.exists():
+			r3sponse.log(f"&ORANGE&Root permission&END& required to create database [{self.path}].")
+			os.system(f"sudo mkdir {self.path}")
+			Files.chmod(path=self.path, permission=700, sudo=True)
+			Files.chown(path=self.path, owner=syst3m.defaults.vars.user, group=syst3m.defaults.vars.group, sudo=True)
 		self.cache = None
-		if self.path != None:
-			self.path = gfp.clean(self.path)
+		if self.firestore != None:
 			self.cache = syst3m.cache.Cache(path=self.path)
 	def load(self, path=None, format="str"):
 		if self.firestore != None:
@@ -28,5 +33,8 @@ class Database(object):
 			return self.firebase.firestore.delete(reference)
 		elif self.cache != None:
 			return self.cache.delete(group=reference)
+	# str representation.
+	def __str__(self):
+		return str(self.fp.path)
 	
 			

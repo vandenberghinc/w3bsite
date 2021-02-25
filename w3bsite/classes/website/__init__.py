@@ -24,10 +24,6 @@ class Website(cl1.CLI):
 		# 	remote depoyment, options: [local, vps, heroku].
 		remote="local",
 		#
-		# Database.
-		#	the local database path (leave None to use firebase).
-		database=None,
-		#
 		# Developers.
 		#	the developer users (emails).
 		developers=[],
@@ -69,6 +65,8 @@ class Website(cl1.CLI):
 		namecheap_api_key=None,
 		#
 		# Firebase.
+		#	firebase enabled.
+		firebase_enabled=True,
 		# 	your firebase admin service account key, (dict) [https://console.firebase.google.com > Service Accounts > Firebase admin].
 		firebase_admin={},
 		# 	your firebase sdk javascript configuration, (dict) [https://console.firebase.google.com > Settings > General > Web JS SDK].
@@ -204,11 +202,11 @@ class Website(cl1.CLI):
 		self.interactive = interactive
 		self.production = production
 		self.maintenance = maintenance
-		self.database_ = database
+		self.firebase_enabled = firebase_enabled
 		if self.domain != None:
 			self.domain = utils.naked_url(self.domain)
 		if serialized == None or serialized == {}:
-			self.database = f"/etc/{self.domain}/" # set also over here.
+			self.database_path = f"/etc/{self.domain}/" # set also over here.
 			self.serialize(save=True)
 		else:
 			if isinstance(serialized, str):
@@ -260,7 +258,7 @@ class Website(cl1.CLI):
 
 		# set variables.
 		self.library = f"/usr/local/lib/{self.domain}/"
-		self.database = f"/etc/{self.domain}/"
+		self.database_path = f"/etc/{self.domain}/"
 		self.live = utils.equalize_path(self.root, striplast=True) == utils.equalize_path(self.library, striplast=True)
 		self.http_domain = f"http://{self.domain}"
 		self.https_domain = f"https://{self.domain}"
@@ -270,7 +268,7 @@ class Website(cl1.CLI):
 		secrets = utils.__load_json__(".secrets/env.json")
 		os.environ["PRODUCTION"] = str(self.production)
 		os.environ["DOMAIN"] = self.domain
-		os.environ["DATABASE"] = self.database
+		os.environ["DATABASE"] = self.database_path
 		try:
 			os.environ["DJANGO_SECRET_KEY"] = secrets["DJANGO_SECRET_KEY"]
 		except KeyError: a=1
@@ -343,7 +341,7 @@ class Website(cl1.CLI):
 		self.defaults = defaults.Defaults(
 			root=self.root,
 			library=self.library,
-			database=self.database,
+			database_path=self.database_path,
 			name=self.name,
 			author=self.author,
 			email=self.email,
@@ -368,7 +366,7 @@ class Website(cl1.CLI):
 		# objects.
 		self.security = security.Security(
 			defaults=self.defaults,)
-		if self.database_ == None:
+		if self.firebase_enabled:
 			from w3bsite.classes import firebase
 			self.firebase = firebase.Firebase(
 				key=self.firebase_admin,
@@ -376,11 +374,12 @@ class Website(cl1.CLI):
 				defaults=self.defaults)
 			self.firestore = self.firebase.firestore
 			self.database = _database_.Database(
-				firestore=self.firebase.firestore)
+				firestore=self.firebase.firestore,
+				path=self.database_path,)
 		else:
 			self.firebase = None
 			self.firestore = None
-			self.database = _database_.Database(path=self.database_)
+			self.database = _database_.Database(path=self.database_path)
 		self.stripe = stripe.Stripe(
 			secret_key=self.stripe_secret_key,
 			publishable_key=self.stripe_publishable_key,
@@ -483,14 +482,12 @@ class Website(cl1.CLI):
 		)
 
 		# logs.
-		#if not self.arguments.present("-c"):
-		#	os.system("clear")
-		if syst3m.defaults.options.log_level > 0:
+		if syst3m.defaults.options.log_level >= 1:
 			print(f"Website: {self.name}")
 			print(f"Domain: {self.domain}")
 			print(f"Root: {self.root}")
 			print(f"Library: {self.library}")
-			print(f"Database: {self.database}")
+			print(f"Database: {self.database_path}")
 			print(f"Remote: {self.remote}")
 			print(f"Live: {self.live}")
 
@@ -764,7 +761,7 @@ class Website(cl1.CLI):
 			"vps_port":self.vps_port,
 			"vps_username":self.vps_username,
 			"_2fa":self._2fa,
-			"database":self.database_,
+			"firebase_enabled":self.firebase_enabled,
 		}
 
 		# save all secret variables in secrets.
@@ -810,11 +807,11 @@ class Website(cl1.CLI):
 				"PASSWORD":self.email_password,
 			},
 			"AES_MASTER_KEY":self.aes_master_key,
-			"NAMECHEAP_syst3m.defaults.vars.userNAME":self.namecheap_username,
+			"NAMECHEAP_USERNAME":self.namecheap_username,
 			"NAMECHEAP_API_KEY":self.namecheap_api_key,
 			# add these for the settings.py
 			"DOMAIN":self.domain,
-			"DATABASE":self.database,
+			"DATABASE":self.database_path,
 			"PRODUCTION":self.production,
 			"MAINTENANCE":self.maintenance,
 			"LOG_LEVEL":LOG_LEVEL,
@@ -862,7 +859,7 @@ class Website(cl1.CLI):
 		self.vps_port = serialized["vps_port"]
 		self.vps_username = serialized["vps_username"]
 		self._2fa = serialized["_2fa"]
-		self.database_ = serialized["database"]
+		self.firebase_enabled = serialized["firebase_enabled"]
 
 		# load secrets.
 		local_security = security.Security(
@@ -895,7 +892,7 @@ class Website(cl1.CLI):
 		self.email_address = local_security.get_secret_env("EMAIL_ADDRESS", default=None)
 		self.email_password = local_security.get_secret_env("EMAIL_PASSWORD", default=None)
 		self.aes_master_key = local_security.get_secret_env("AES_MASTER_KEY", default=None)
-		self.namecheap_username = local_security.get_secret_env("NAMECHEAP_syst3m.defaults.vars.userNAME", default=None)
+		self.namecheap_username = local_security.get_secret_env("NAMECHEAP_USERNAME", default=None)
 		self.namecheap_api_key = local_security.get_secret_env("NAMECHEAP_API_KEY", default=None)
 
 		# success.

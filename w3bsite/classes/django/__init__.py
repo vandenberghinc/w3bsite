@@ -44,7 +44,7 @@ class Django(_defaults_.Defaults):
 
 		# check migrations.
 		migrations = ""
-		if not Files.exists(f"{self.database}/data/db.sqlite3"):
+		if not Files.exists(f"{self.database_path}/data/db.sqlite3"):
 			migrations = "export MIGRATIONS=True && ./manage.py migrate"
 
 		# start django.
