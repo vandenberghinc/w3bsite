@@ -122,6 +122,8 @@ else
 	echo "Error: missing requirements file [$SOURCE/requirements/requirements.txt]."
 	exit 1
 fi
+# fuck face wont overwrite requiremnts for some reason while it says it does but all old versions remain installed.
+sudo rm -fr /www-data/venv
 if [ ! -d "/www-data/venv" ]; then
 	log "Installing virtual environment"
 	python3 -m venv /www-data/venv
