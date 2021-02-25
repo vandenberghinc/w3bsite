@@ -3,6 +3,7 @@
 from w3bsite.classes.config import *
 from w3bsite.classes import utils
 from w3bsite.classes import defaults as _defaults_
+import ssht00ls
 
 # the vps object class.
 class VPS(_defaults_.Defaults):
