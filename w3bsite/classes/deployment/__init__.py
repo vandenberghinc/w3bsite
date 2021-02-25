@@ -12,6 +12,7 @@ class Deployment(_defaults_.Defaults):
 	def __init__(self,
 		# the vps ip (if remote is vps else leave default).
 		vps_ip=None,
+		vps_username=None,
 		# objects.
 		namecheap=None,
 		# defaults.
@@ -30,6 +31,7 @@ class Deployment(_defaults_.Defaults):
 		
 		# arguments.
 		self.vps_ip = vps_ip
+		self.vps_username = vps_username
 
 		# objects.
 		self.namecheap = namecheap
@@ -81,7 +83,7 @@ class Deployment(_defaults_.Defaults):
 		clean_root = gfp.clean(self.library, remove_last_slash=True, remove_double_slash=True) # <== note the library change instead of root.
 		replacements = {
 			"***ROOT***":clean_root, 
-			"***USER***":self.username, 
+			"***USER***":self.vps_username, 
 			"***DOMAIN***":self.domain,
 			"***DATABASE***":self.database_path,
 			"***syst3m.defaults.vars.user***":syst3m.defaults.vars.user,

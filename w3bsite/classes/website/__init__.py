@@ -426,6 +426,7 @@ class Website(cl1.CLI):
 		if self.remote in ["local", "vps"]:
 			self.deployment = deployment.Deployment(
 				vps_ip=self.vps_ip,
+				vps_username=self.vps_username,
 				namecheap=self.namecheap,
 				defaults=self.defaults,)
 			if self.remote in ["vps"]:
