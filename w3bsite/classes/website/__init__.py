@@ -498,12 +498,13 @@ class Website(cl1.CLI):
 		self.arguments.check()
 
 		# activate enc.
-		if not ssht00ls.encryption.generated:
-			response = ssht00ls.encryption.generate()
-			if not response.success: self.stop(response=response, json=syst3m.defaults.options.json)
-		elif not ssht00ls.encryption.activated:
-			response = ssht00ls.encryption.activate()
-			if not response.success: self.stop(response=response, json=syst3m.defaults.options.json)
+		if self.remote in ["vps"] and not self.vps.live:
+			if not ssht00ls.encryption.generated:
+				response = ssht00ls.encryption.generate()
+				if not response.success: self.stop(response=response, json=syst3m.defaults.options.json)
+			elif not ssht00ls.encryption.activated:
+				response = ssht00ls.encryption.activate()
+				if not response.success: self.stop(response=response, json=syst3m.defaults.options.json)
 
 		# help.
 		if self.arguments.present("-h"):
