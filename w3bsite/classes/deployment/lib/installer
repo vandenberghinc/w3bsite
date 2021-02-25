@@ -104,9 +104,9 @@ fi
 sudo usermod -a -G $USER www-data
 if [ ! -d "/www-data" ] ; then
 	sudo mkdir /www-data
-	sudo chmod 770 /www-data
-	sudo chown -R $USER:www-data /www-data
 fi
+sudo chmod 770 /www-data
+sudo chown -R $USER:www-data /www-data
 
 # venv.
 if [[ "$REINSTALL" == "true" ]] ; then
@@ -211,6 +211,10 @@ sudo systemctl daemon-reload
 sudo systemctl restart nginx
 sudo nginx -t && echo "Successfully deployed domain $DOMAIN."
 echo "Deploying nginx ... done"
+
+# www-data.
+sudo chmod -R 770 /www-data
+sudo chown -R $USER:www-data /www-data
 
 # code update finish.
 if [[ "$CODE_UPDATE" == "true" ]] ; then
