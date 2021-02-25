@@ -455,24 +455,24 @@ class Website(cl1.CLI):
 		# defaults.
 		cl1.CLI.__init__(self,
 			modes={
-				"Development":"",
+				"Development":"*chapter*",
 				"    --create":"Create the website.",
 				"    --create-app dashboard":"Create a new application.",
 				"    --start --developer":"Start the production webserver.",
-				"Production":"",
+				"Production":"*chapter*",
 				"    --start":"Start the nginx webserver.",
 				"    --stop":"Stop the nginx webserver.",
 				"    --restart":"Restart the nginx webserver.",
 				"    --status":"Retrieve the status of the nginx webserver.",
-				"Deployment":"",
+				"Deployment":"*chapter*",
 				"    --generate-aes":"Generate an aes passphrase.",
 				"    --generate-tls":"Generate a tls certificate.",
 				"    --activate-tls":"Activate the generated tls certificate.",
 				"    --bundle-tls /path/to/downloaded/cert/":"Bundle the downloaded signed certificate from the CA.",
 				"    --deploy":"Deploy the website.",
-				"Logs":"",
+				"Logs":"*chapter*",
 				"    --tail [optional: --nginx]":"Tail the (deployed) website.",
-				"Documentation":"",
+				"Documentation":"*chapter*",
 				"    -h / --help":"Show the documentation.",
 			},
 			options={
@@ -483,7 +483,7 @@ class Website(cl1.CLI):
 		)
 
 		# logs.
-		#if not self.argument_present("-c"):
+		#if not self.arguments.present("-c"):
 		#	os.system("clear")
 		if syst3m.defaults.options.log_level > 0:
 			print(f"Website: {self.name}")
@@ -497,18 +497,32 @@ class Website(cl1.CLI):
 		#
 	def cli(self):
 
+		# check args.
+		self.arguments.check()
+
+		# activate enc.
+		if not ssht00ls.encryption.generated:
+			response = ssht00ls.encryption.generate(interactive=True)
+			if not response.success: self.stop(response=response, json=syst3m.defaults.options.json)
+		elif not ssht00ls.encryption.activated:
+			response = ssht00ls.encryption.activate(interactive=True)
+			if not response.success: self.stop(response=response, json=syst3m.defaults.options.json)
+
 		# help.
-		if self.argument_present("-h"):
-			print(self.documentation)
-			sys.exit(1)
+		if self.arguments.present("-h"):
+			self.docs(success=True)
+
+		# version.
+		elif self.arguments.present(['--version']):
+			self.stop(message=f"{ALIAS} version:"+Files.load(f"{SOURCE_PATH}/.version.py").replace("\n",""), json=syst3m.defaults.options.json)
 
 		# developer start.
-		elif self.argument_present("--start") and self.argument_present("--developer"):
+		elif self.arguments.present("--start") and self.arguments.present("--developer"):
 			response = self.django.start()
 			r3sponse.log(response=response)
 
 		# start.
-		elif self.argument_present('--start'):
+		elif self.arguments.present('--start'):
 			if not self.live: 
 				r3sponse.log(error="The executing library is not live.")
 				sys.exit(1)
@@ -524,7 +538,7 @@ class Website(cl1.CLI):
 				print(f"Failed to started {self.domain};\n{output}")
 
 		# stop.
-		elif self.argument_present('--stop'):
+		elif self.arguments.present('--stop'):
 			if not self.live: 
 				r3sponse.log(error="The executing library is not live.")
 				sys.exit(1)
@@ -540,7 +554,7 @@ class Website(cl1.CLI):
 				print(f"Failed to stopped {self.domain};\n{output}")
 
 		# restart.
-		elif self.argument_present('--restart'):
+		elif self.arguments.present('--restart'):
 			if not self.live: 
 				r3sponse.log(error="The executing library is not live.")
 				sys.exit(1)
@@ -556,7 +570,7 @@ class Website(cl1.CLI):
 				print(f"Failed to restarted {self.domain};\n{output}")
 
 		# status.
-		elif self.argument_present('--status'):
+		elif self.arguments.present('--status'):
 			if not self.live: 
 				r3sponse.log(error="The executing library is not live.")
 				sys.exit(1)
@@ -564,7 +578,7 @@ class Website(cl1.CLI):
 			os.system("sudo systemctl status gunicorn")
 
 		# reset logs.
-		elif self.argument_present('--reset-logs'):
+		elif self.arguments.present('--reset-logs'):
 			if not self.live: 
 				r3sponse.log(error="The executing library is not live.")
 				sys.exit(1)
@@ -572,12 +586,12 @@ class Website(cl1.CLI):
 			r3sponse.log("Successfully resetted the logs.", log_level=0, save=True)
 
 		# tail.
-		elif self.argument_present('--tail'):
+		elif self.arguments.present('--tail'):
 			if not self.live: 
 				r3sponse.log(error="The executing library is not live.")
 				sys.exit(1)
-			if self.arguments_present(["--nginx", "-n"]):
-				if self.arguments_present(["--debug", "-d"]):
+			if self.arguments.present(["--nginx", "-n"]):
+				if self.arguments.present(["--debug", "-d"]):
 					os.system(f"cat /var/log/nginx/{self.domain}.debug")
 				else:
 					os.system(f"cat /var/log/nginx/{self.domain}")
@@ -585,47 +599,44 @@ class Website(cl1.CLI):
 				os.system(f"cat {self.database}/logs/logs.txt")
 
 		# deploy.
-		elif self.argument_present("--deploy"):
+		elif self.arguments.present("--deploy"):
 			response = self.deploy(
-				code_update=self.get_argument("--code-update", required=False, default=False),
-				reinstall=self.get_argument("--reinstall", required=False, default=False),
+				code_update=self.arguments.get("--code-update", required=False, default=False),
+				reinstall=self.arguments.get("--reinstall", required=False, default=False),
 			)
 			r3sponse.log(response=response)
 
 		# generate tls.
-		elif self.argument_present("--generate-tls"):
+		elif self.arguments.present("--generate-tls"):
 			response = self.deployment.generate_tls()
 			r3sponse.log(response=response)
 
 		# activate tls.
-		elif self.argument_present("--activate-tls"):
+		elif self.arguments.present("--activate-tls"):
 			response = self.deployment.activate_tls()
 			r3sponse.log(response=response)
 
 		# bundle tls.
-		elif self.argument_present("--bundle-tls"):
-			response = self.deployment.bundle_tls(directory=self.get_argument("--bundle-tls"))
+		elif self.arguments.present("--bundle-tls"):
+			response = self.deployment.bundle_tls(directory=self.arguments.get("--bundle-tls"))
 			r3sponse.log(response=response)
 		
 		# create.
-		elif self.argument_present("--create"):
+		elif self.arguments.present("--create"):
 			response = self.create()
 			r3sponse.log(response=response)
 
 		# create app.
-		elif self.argument_present("--create-app"):
-			response = self.django.create_app(name=self.get_argument("--create-app"))
+		elif self.arguments.present("--create-app"):
+			response = self.django.create_app(name=self.arguments.get("--create-app"))
 			r3sponse.log(response=response)
 
 		# generate aes passphrase.
-		elif self.argument_present("--generate-aes"):
+		elif self.arguments.present("--generate-aes"):
 			print(f"Generated AES Passphrase: {utils.__generate__(length=64, capitalize=True, digits=True)}")
 
 		# invalid.
-		else:
-			print(self.documentation)
-			print("Selected an invalid mode.")
-			sys.exit(1)
+		else: self.invalid()
 
 		#
 	def deploy(self, code_update=False, reinstall=False, log_level=0):
@@ -799,7 +810,7 @@ class Website(cl1.CLI):
 				"PASSWORD":self.email_password,
 			},
 			"AES_MASTER_KEY":self.aes_master_key,
-			"NAMECHEAP_USERNAME":self.namecheap_username,
+			"NAMECHEAP_syst3m.defaults.vars.userNAME":self.namecheap_username,
 			"NAMECHEAP_API_KEY":self.namecheap_api_key,
 			# add these for the settings.py
 			"DOMAIN":self.domain,
@@ -884,7 +895,7 @@ class Website(cl1.CLI):
 		self.email_address = local_security.get_secret_env("EMAIL_ADDRESS", default=None)
 		self.email_password = local_security.get_secret_env("EMAIL_PASSWORD", default=None)
 		self.aes_master_key = local_security.get_secret_env("AES_MASTER_KEY", default=None)
-		self.namecheap_username = local_security.get_secret_env("NAMECHEAP_USERNAME", default=None)
+		self.namecheap_username = local_security.get_secret_env("NAMECHEAP_syst3m.defaults.vars.userNAME", default=None)
 		self.namecheap_api_key = local_security.get_secret_env("NAMECHEAP_API_KEY", default=None)
 
 		# success.

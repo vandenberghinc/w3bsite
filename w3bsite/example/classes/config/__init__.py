@@ -86,12 +86,6 @@ COLORS = {
 website.template_data["colors"] = COLORS
 website.template_data["COLORS"] = COLORS
 
-# defaults.
-USER = syst3m.env.get_string("USER")
-GROUP = "root"
-HOME = syst3m.env.get_string("HOME")
-if OS in ["macos"]: GROUP = "staff"
-
 # database.
 DATABASE = website.database
 if not Files.exists(DATABASE): os.system(f"sudo mkdir {DATABASE} && sudo chown {syst3m.defaults.vars.user}:{syst3m.defaults.vars.group} {DATABASE}")

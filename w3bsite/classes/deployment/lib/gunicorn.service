@@ -1,0 +1,13 @@
+[Unit]
+Description=gunicorn daemon
+Requires=gunicorn.socket
+After=network.target
+
+[Service]
+User=***USER***
+Group=www-data
+WorkingDirectory=***ROOT***/
+ExecStart=bash ***ROOT***/deployment/start
+
+[Install]
+WantedBy=multi-user.target

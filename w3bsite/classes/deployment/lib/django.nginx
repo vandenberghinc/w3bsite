@@ -1,0 +1,78 @@
+# location: /etc/nginx/sites-available/django
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+
+    # ssl cert.
+    ssl_certificate ***DATABASE***/tls/server.crt;
+    ssl_certificate_key ***DATABASE***/tls/server.key;
+
+    # ssl params.
+    ssl_protocols TLSv1.2;
+    ssl_prefer_server_ciphers on;
+    ssl_dhparam ***DATABASE***/tls/dhparam.pem;
+    ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384;
+    ssl_ecdh_curve secp384r1; # Requires nginx >= 1.1.0
+    ssl_session_timeout  10m;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_tickets off; # Requires nginx >= 1.5.9
+    ssl_stapling on; # Requires nginx >= 1.3.7
+    ssl_stapling_verify on; # Requires nginx => 1.3.7
+    resolver 8.8.8.8 8.8.4.4 valid=300s;
+    resolver_timeout 5s;
+    # Disable strict transport security for now. You can uncomment the following
+    # line if you understand the implications.
+    #add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload";
+    add_header X-Frame-Options DENY;
+    add_header X-Content-Type-Options nosniff;
+    add_header X-XSS-Protection "1; mode=block";
+
+    # keep alive.
+    keepalive_timeout 5;
+
+    # increase timeout.
+    uwsgi_read_timeout 300s;
+
+    # domain.
+    server_name ***DOMAIN*** www.***DOMAIN***;
+
+    # logs.
+    error_log  /var/log/nginx/***DOMAIN***;
+    error_log  /var/log/nginx/***DOMAIN***.debug debug;
+
+    # favicon.
+    location = /www-data/favicon.ico { access_log off; log_not_found off; }
+    
+    # static files.
+    location /static/ {
+        root  /www-data/;  
+        expires 7d;
+    } 
+
+    # socket.
+    location / {
+        include proxy_params;
+        proxy_read_timeout 300s;
+        proxy_connect_timeout 75s;
+        proxy_pass http://unix:/www-data/gunicorn.sock;
+    }
+}
+server {
+    listen 80;
+    listen [::]:80;
+
+    # keep alive.
+    keepalive_timeout 5;
+
+    # increase timeout.
+    uwsgi_read_timeout 300s;
+
+    # logs.
+    error_log  /var/log/nginx/***DOMAIN***;
+    error_log  /var/log/nginx/***DOMAIN***.debug debug;
+
+    # domain.
+    server_name ***DOMAIN*** www.***DOMAIN***;
+
+    return 301 https://$server_name$request_uri;
+}

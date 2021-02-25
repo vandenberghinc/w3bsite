@@ -1,0 +1,240 @@
+#!/usr/bin/bash
+
+# Notes.
+# 	script bust be run as executing user with sudo.
+# 	virtual env must be created from the executing user!
+
+# project settings.
+DOMAIN="***DOMAIN***"
+SOURCE="***ROOT***" 
+DATABASE="***DATABASE***"
+USER="***USER***"
+
+# functions.
+function log() {
+	if [ "$2" == "done" ]; then
+		echo "$1 ... done"
+		echo ""
+	elif [ "$2" == "failed" ]; then
+		echo "$1 ... failed"
+	elif [ "$2" == "error" ]; then
+		echo "$1 ... failed"
+	else
+		echo "$1 ..."
+	fi
+}
+function argument_present() {
+	c=0
+	success="false"
+	for var in "$@"
+	do
+		if (( c > 0 )) ; then
+			if [ "$var" == "$1" ] ; then
+				success="true"
+				break
+			fi
+		fi
+		((c=c+1))
+	done
+	echo $success
+}
+function get_argument() {
+	c=0
+	success="false"
+	value="none"
+	for var in "$@"
+	do
+		if (( c > 0 )) ; then
+			if [ "$var" == "$1" ] ; then
+				success="true"
+			elif [ "$success" == "true" ] ; then
+				value=$var
+				break
+			fi
+		fi
+		((c=c+1))
+	done
+	echo $value
+}
+
+# help.
+HELP1=$(argument_present "--help" $@)
+HELP2=$(argument_present "-h" $@)
+if [[ "$HELP1" == "true" ]]  || [[ "$HELP2" == "true" ]] ; then
+	echo """Description: Deploy a django application over https with nginx & gunicorn.
+Usage: ./installer <mode> <options> 
+Modes:
+    *** Select no mode to use the default installer. ***
+    --code-update  		Update the source code & restart the web server.
+    -h / --help  		Show the documentaton.
+Options:
+    --reinstall 		Reinstall for troubleshooting.
+Author: Daan van den Bergh. 
+Copyright: © Daan van den Bergh 2021. All rights reserved."""
+	exit 0
+fi
+
+# logs.
+echo ""
+echo "**************************"
+echo "Django deployment installer."
+echo "Domain: $DOMAIN"
+echo "Soure: $SOURCE"
+echo ""
+
+# options.
+REINSTALL=$(argument_present "--reinstall" $@)
+CODE_UPDATE=$(argument_present "--code-update" $@)
+
+# reinstalling nginx.
+if [[ "$REINSTALL" == "true" ]] ; then
+	sudo apt-get -y purge nginx nginx-common nginx-full  
+	sudo apt-get -y install nginx
+fi
+
+# apt requirements.
+if [[ "$CODE_UPDATE" == "false" ]] ; then
+	log "Installing apt requirements"
+	sudo apt-get -y update
+	sudo apt-get -y install python3-pip python3-dev libpq-dev postgresql postgresql-contrib nginx curl
+	log "Installing requirements" "done"
+fi
+
+# www-data.
+sudo usermod -a -G $USER www-data
+if [ ! -d "/www-data" ] ; then
+	sudo mkdir /www-data
+	sudo chmod 770 /www-data
+	sudo chown -R $USER:www-data /www-data
+fi
+
+# venv.
+if [[ "$REINSTALL" == "true" ]] ; then
+	sudo rm -fr /www-data/venv
+fi
+requirements_file=""
+if [[ -f "$SOURCE/requirements.pip" ]] ; then
+	requirements_file="$SOURCE/requirements.pip"
+elif [[ -f "$SOURCE/requirements/requirements.pip" ]] ; then
+	requirements_file="$SOURCE/requirements/requirements.pip"
+else
+	ls $SOURCE/requirements/requirements.txt
+	echo "Error: missing requirements file [$SOURCE/requirements/requirements.txt]."
+	exit 1
+fi
+if [ ! -d "/www-data/venv" ]; then
+	log "Installing virtual environment"
+	python3 -m venv /www-data/venv
+	/www-data/venv/bin/pip3 install wheel
+	/www-data/venv/bin/pip3 install uwsgi gunicorn whitenoise django psycopg2-binary
+	/www-data/venv/bin/pip3 install syst3m w3bsite cl1
+	/www-data/venv/bin/pip3 install -r $requirements_file
+	chown -R $USER:www-data /www-data/venv
+	log "Installing requirements" "done"
+else
+	log "Activating virtual environment"
+	source /www-data/venv/bin/activate
+	/www-data/venv/bin/pip3 install -r $requirements_file
+	log "Activating virtual environment" "done"
+fi
+
+# pwd.
+cd $SOURCE
+
+# checks.
+if [ ! -f "$SOURCE/.secrets/tls/server.key" ] || [ ! -f "$SOURCE/.secrets/tls/server.crt" ] || [ ! -f "$SOURCE/.secrets/tls/server.csr" ] ; then
+	echo "Error: tls certificate does not exist [$SOURCE/.secrets/tls]."
+	exit 1
+fi
+if [ ! -f "$SOURCE/.secrets/tls/dhparam.pem" ] ; then
+	echo "Error: tls dhparam does not exist [$SOURCE/.secrets/tls/dhparam.pem]."
+	exit 1
+fi
+
+# install ssl certificate.
+if [[ "$REINSTALL" == "true" ]] ; then
+	rm -fr $DATABASE/tls/dhparam.pem
+	rm -fr $DATABASE/tls/server.key
+	rm -fr $DATABASE/tls/server.crt
+fi
+if [ ! -f "$DATABASE/tls/dhparam.pem" ] ; then
+	cp $SOURCE/.secrets/tls/dhparam.pem $DATABASE/tls/dhparam.pem
+fi
+if [ ! -f "$DATABASE/tls/server.key" ] ; then
+	cp $SOURCE/.secrets/tls/server.key $DATABASE/tls/server.key
+fi
+if [ ! -f "$DATABASE/tls/server.crt" ] ; then
+	cp $SOURCE/.secrets/tls/server.crt $DATABASE/tls/server.crt
+fi
+
+# static files.
+log "Collecting static files"
+export MIGRATIONS="true"
+source $SOURCE/.secrets/env.sh
+sudo rm -fr /www-data/static
+python3 $SOURCE/manage.py collectstatic --no-input
+sudo rm -fr /www-data/favicon.ico
+cp $SOURCE/static/favicon.ico /www-data/favicon.ico
+export MIGRATIONS="false"
+sudo chmod -R 770 /www-data
+sudo chown -R $USER:www-data /www-data
+log "Configuring gunicorn socket" "done"
+
+# gunicorn socket.
+log "Deploying gunicorn socket"
+sudo rm -fr /etc/systemd/system/gunicorn.socket
+sudo cp $SOURCE/deployment/gunicorn.socket /etc/systemd/system/gunicorn.socket
+sudo systemctl daemon-reload
+sudo systemctl enable gunicorn.socket
+sudo systemctl restart gunicorn.socket
+sudo chown -R $USER:www-data /www-data
+log "Deploying gunicorn socket" "done"
+
+# gunicorn service.
+log "Deploying gunicorn service"
+sudo rm -fr /etc/systemd/system/gunicorn.service
+sudo cp $SOURCE/deployment/gunicorn.service /etc/systemd/system/gunicorn.service
+sudo systemctl daemon-reload
+sudo systemctl enable gunicorn
+sudo systemctl restart gunicorn
+log "Deploying gunicorn service" "done"
+
+# nginx.
+log "Deploying nginx"
+sudo usermod -a -G www-data $USER
+sudo rm -fr /etc/nginx/sites-available/django
+sudo cp $SOURCE/deployment/django.nginx /etc/nginx/sites-available/django
+sudo ln -sf /etc/nginx/sites-available/django /etc/nginx/sites-enabled
+sudo ufw delete allow 8000
+sudo ufw allow 'Nginx Full'
+sudo systemctl daemon-reload
+sudo systemctl restart nginx
+sudo nginx -t && echo "Successfully deployed domain $DOMAIN."
+echo "Deploying nginx ... done"
+
+# code update finish.
+if [[ "$CODE_UPDATE" == "true" ]] ; then
+	sudo systemctl daemon-reload
+	sudo systemctl restart gunicorn.socket
+	sudo systemctl restart gunicorn
+	sudo systemctl restart nginx
+	echo "Finished installing the website code updates."
+
+# default finish.
+else
+	echo ""
+	echo "**************************"
+	echo "Finished installling."
+	echo "Some testing Commands:"
+	echo " $ sudo systemctl status nginx"
+	echo " $ sudo nginx -t"
+	echo " $ sudo systemctl status gunicorn.service"
+	echo " $ sudo systemctl status gunicorn.socket"
+	echo " $ curl --unix-socket /www-data/gunicorn.sock localhost"
+	echo " $ sudo tail -F /var/log/nginx/error.log"
+fi
+
+# success identification; DO NOT REMOVE THESE LINES.
+echo ""
+echo "Successfully deployed domain $DOMAIN."
+echo ""

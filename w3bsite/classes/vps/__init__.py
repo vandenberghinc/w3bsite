@@ -3,7 +3,6 @@
 from w3bsite.classes.config import *
 from w3bsite.classes import utils
 from w3bsite.classes import defaults as _defaults_
-import ssht00ls
 
 # the vps object class.
 class VPS(_defaults_.Defaults):
@@ -45,8 +44,8 @@ class VPS(_defaults_.Defaults):
 		self.namecheap = namecheap
 
 		# autocheck.
-		response = self.configure(log_level=-1)
-		if not response.success and "VPS is already live in production." not in response.error: raise ValueError(response.error)
+		#response = self.configure(log_level=-1)
+		#if not response.success and "VPS is already live in production." not in response.error: raise ValueError(response.error)
 
 		#
 	def configure(self, reinstall=False, log_level=0):
@@ -62,23 +61,28 @@ class VPS(_defaults_.Defaults):
 
 			# ssh key.
 			if not Files.exists(f"{self.root}/.secrets/ssh"): 
-				response = ssht00ls.keys.generate(path=f"{self.root}/.secrets/ssh", comment=f"SSH key for domain {self.domain}", passphrase="")
+				response = ssht00ls.keys.generate(
+					path=f"{self.root}/.secrets/ssh", 
+					comment=f"SSH key for domain {self.domain}", 
+					passphrase="",)
 				if not response.success: 
 					if log_level >= 0: loader.stop(success=False)
 					return response
 
 			# ssh config.
 			response = ssht00ls.aliases.check(
-				alias, 
+				alias=self.domain, 
 				create=True,
-				username=self.username, 
-				public_ip=self.ip,
-				private_ip=self.ip,
-				public_port=self.port,
-				private_port=self.port,
-				private_key=f"{self.root}/.secrets/ssh/private_key",
-				public_key=f"{self.root}/.secrets/ssh/public_key",
-				passphrase="",)
+				info={
+					"username":self.username, 
+					"public_ip":self.ip,
+					"private_ip":self.ip,
+					"public_port":self.port,
+					"private_port":self.port,
+					"private_key":f"{self.root}/.secrets/ssh/private_key",
+					"public_key":f"{self.root}/.secrets/ssh/public_key",
+					"passphrase":"",
+				})
 			if not response.success: 
 				if log_level >= 0: loader.stop(success=False)
 				return response

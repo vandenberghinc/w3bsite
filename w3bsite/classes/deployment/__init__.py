@@ -83,7 +83,7 @@ class Deployment(_defaults_.Defaults):
 			"***ROOT***":clean_root, 
 			"***DOMAIN***":self.domain,
 			"***DATABASE***":self.database,
-			"***USER***":USER,
+			"***syst3m.defaults.vars.user***":syst3m.defaults.vars.user,
 		}
 		for path in Files.Directory(path=f"{SOURCE_PATH}/classes/deployment/lib/").paths():
 			name = FilePath(path).name()
@@ -322,7 +322,7 @@ class Deployment(_defaults_.Defaults):
 
 		# bundle ca.
 		syst3m.utils.__execute_script__(f"""
-			cat {directory}/AAACertificateServices.crt {directory}/SectigoRSADomainValidationSecureServerCA.crt {directory}/USERTrustRSAAAACA.crt > {self.root}/.secrets/tls/server.ca-bundle
+			cat {directory}/AAACertificateServices.crt {directory}/SectigoRSADomainValidationSecureServerCA.crt {directory}/syst3m.defaults.vars.userTrustRSAAAACA.crt > {self.root}/.secrets/tls/server.ca-bundle
 			cat {directory}/server.crt {self.root}/.secrets/tls/server.ca-bundle > {self.root}/.secrets/tls/signed.server.crt
 			mv {self.root}/.secrets/tls/server.crt {self.root}/.secrets/tls/original.server.crt
 			cp {self.root}/.secrets/tls/signed.server.crt {self.root}/.secrets/tls/server.crt

@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+#sudo pkill -9 -f gunicorn
+cd ***ROOT***/
+source .secrets/env.sh
+if [ ! -f "***DATABASE***/data/db.sqlite3" ] ; then
+	export MIGRATIONS="true"
+	python3 ***ROOT***/manage.py migrate
+fi
+export MIGRATIONS="false"
+sudo chown -R ***syst3m.defaults.vars.user***:www-data /www-data
+/www-data/venv/bin/gunicorn \
+  --timeout 86400 \
+  --access-logfile - \
+  --workers 1 \
+  --bind unix:/www-data/gunicorn.sock \
+  website.wsgi:application
