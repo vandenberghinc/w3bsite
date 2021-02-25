@@ -120,9 +120,9 @@ class Django(_defaults_.Defaults):
 		os.system(f"rm -fr {path}")
 		os.system(f"cp -r {SOURCE_PATH}/example/requirements {path}")
 
-		# create requirements.txt
+		# create requirements.pip
 		#path = f"{self.root}/requirements.pip"
-		#os.system(f"cp {SOURCE_PATH}/example/requirements.txt {path}")
+		#os.system(f"cp {SOURCE_PATH}/example/requirements.pip {path}")
 
 		# copy classes
 		path = f"{self.root}/classes/"

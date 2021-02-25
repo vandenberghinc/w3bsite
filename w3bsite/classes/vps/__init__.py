@@ -116,7 +116,7 @@ class VPS(_defaults_.Defaults):
 			return r3sponse.error(f"Required requirements file {self.root}/requirements/installer does not exist.", log_level=log_level)
 		if not Files.exists(f"{self.root}/requirements/requirements.pip"):
 			if log_level >= 0: loader.stop(success=False)
-			return r3sponse.error(f"Required requirements file {self.root}/requirements/requirements.txt does not exist.", log_level=log_level)
+			return r3sponse.error(f"Required requirements file {self.root}/requirements/requirements.pip does not exist.", log_level=log_level)
 		data = Files.load(f"{self.root}/requirements/installer")
 		installed_alias = data.split('alias="')[1].split('"')[0]
 		#installed_location = data.split('package="')[1].split('"')[0].replace("$alias", installed_alias)
