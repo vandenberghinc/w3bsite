@@ -496,7 +496,7 @@ class Website(cl1.CLI):
 	def cli(self):
 
 		# check args.
-		self.arguments.check(exceptions=["--log-level", "--non-interactive", "--create-alias", "--developer", "--nginx"])
+		self.arguments.check(exceptions=["--log-level", "--non-interactive", "--create-alias", "--developer", "--nginx", "--code-update", "--forced", "-f"])
 
 		# activate enc.
 		if self.remote in ["vps"] and not self.vps.live:
