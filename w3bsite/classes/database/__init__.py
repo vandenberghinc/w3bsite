@@ -20,17 +20,17 @@ class Database(object):
 			self.cache = syst3m.cache.Cache(path=self.path)
 	def load(self, path=None, format="str"):
 		if self.firestore != None:
-			return self.firebase.firestore.load(reference)
+			return self.firestore.load(reference)
 		elif self.cache != None:
 			return self.cache.load(group=reference, format=format)
 	def save(self, path=None, data=None, format="str"):
 		if self.firestore != None:
-			return self.firebase.firestore.load(reference, data)
+			return self.firestore.load(reference, data)
 		elif self.cache != None:
 			return self.cache.save(group=reference, data=data, format=format)
 	def delete(self, path=None, data=None, format="str"):
 		if self.firestore != None:
-			return self.firebase.firestore.delete(reference)
+			return self.firestore.delete(reference)
 		elif self.cache != None:
 			return self.cache.delete(group=reference)
 	# str representation.
