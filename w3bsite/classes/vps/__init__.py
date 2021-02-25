@@ -158,7 +158,8 @@ class VPS(_defaults_.Defaults):
 		if log_level >= 0: loader.mark(new_message=f"Executing installer script of website {self.domain} on vps {self.ip}")
 		response = ssht00ls.ssh.command(
 			alias=self.domain,
-			command=f"chmod +x {tmp}/requirements/installer && bash {tmp}/requirements/installer{installer_arguments}")
+			command=f"chmod +x {tmp}/requirements/installer && bash {tmp}/requirements/installer{installer_arguments}",
+			log_level=-1,)
 		if not response.success: 
 			if log_level >= 0: loader.stop(success=False)
 			return r3sponse.error(f"Failed to deploy website {self.domain} on vps {self.ip}, error: {response.error}.", log_level=log_level)
@@ -167,9 +168,10 @@ class VPS(_defaults_.Defaults):
 		if log_level >= 0: loader.mark(new_message=f"Deploying domain {self.domain} on vps {self.ip}")
 		response = ssht00ls.ssh.command(
 			alias=self.domain,
-			command=f"python3 {installed_location}/website.py --deploy{installer_arguments}")
+			command=f"python3 {installed_location}/website.py --deploy{installer_arguments}",
+			log_level=-1,)
 		if not response.success or not "Successfully deployed domain https://" in response.output:
-			print(response)
+			#print(response)
 			if log_level >= 0: loader.stop(success=False)
 			return r3sponse.error(f"Failed to deploy website {self.domain} on vps {self.ip}, error: {response.error}.", log_level=log_level)
 
