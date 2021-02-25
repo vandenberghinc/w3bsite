@@ -168,7 +168,7 @@ class VPS(_defaults_.Defaults):
 		if log_level >= 0: loader.mark(new_message=f"Deploying domain {self.domain} on vps {self.ip}")
 		response = ssht00ls.ssh.command(
 			alias=self.domain,
-			command=f"python3 {installed_location}/website.py --deploy{installer_arguments}",
+			command=f"python3 {installed_location}/website.py --deploy{installer_arguments} --non-interactive",
 			log_level=-1,)
 		if not response.success or not "Successfully deployed domain https://" in response.output:
 			#print(response)
