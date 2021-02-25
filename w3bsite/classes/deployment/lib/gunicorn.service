@@ -7,7 +7,7 @@ After=network.target
 User=***USER***
 Group=www-data
 WorkingDirectory=***ROOT***/
-ExecStart=/www-data/env/bin/bash ***ROOT***/deployment/start
+ExecStart=/bin/bash ***ROOT***/deployment/start
 
 [Install]
 WantedBy=multi-user.target
