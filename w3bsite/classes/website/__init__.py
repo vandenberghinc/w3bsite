@@ -7,7 +7,7 @@ from w3bsite.classes import security, heroku, namecheap, utils, git, users, stri
 from w3bsite.classes import database as _database_
 
 # the main website class.
-class Website(cl1.CLI):
+class Website(cl1.CLI,syst3m.objects.Traceback):
 	def __init__(self,
 		#
 		# General.
@@ -154,6 +154,9 @@ class Website(cl1.CLI):
 		serialized=None,
 	):	
 
+		# defaults.
+		syst3m.objects.Traceback.__init__(self, traceback="w3bsite.Website",)
+
 		# w3bsite values.
 		self.SOURCE_PATH = SOURCE_PATH
 
@@ -218,42 +221,46 @@ class Website(cl1.CLI):
 		#	raise ValueError("The ")
 
 		# overall arguments.
-		response = r3sponse.check_parameters({
-			"root":self.root,
-			"name":self.name,
-			"author":self.author,
-			"email":self.email,
-			"city":self.city,
-			"province":self.province,
-			"organization":self.organization,
-			"organization_unit":self.organization_unit,
-			"country_code":self.country_code,
-			"namecheap_username":self.namecheap_username,
-			"namecheap_api_key":self.namecheap_api_key,
-			"domain":self.domain,
-			"firebase_admin":self.firebase_admin,
-			"firebase_js":self.firebase_js,
-			"stripe_secret_key":self.stripe_secret_key,
-			"stripe_publishable_key":self.stripe_publishable_key,
-			"email_address":self.email_address,
-			"email_password":self.email_password,
-			"email_smtp_host":self.email_smtp_host,
-			"email_smtp_port":self.email_smtp_port,
-			"stripe_subscriptions":self.stripe_subscriptions,
-			"stripe_products":self.stripe_products,
-			"developers":self.developers,
-			"remote":self.remote,
-			"_2fa":self._2fa,
-		})
+		response = r3sponse.check_parameters(
+			traceback=self.__traceback__(),
+			parameters={
+				"root":self.root,
+				"name":self.name,
+				"author":self.author,
+				"email":self.email,
+				"city":self.city,
+				"province":self.province,
+				"organization":self.organization,
+				"organization_unit":self.organization_unit,
+				"country_code":self.country_code,
+				"namecheap_username":self.namecheap_username,
+				"namecheap_api_key":self.namecheap_api_key,
+				"domain":self.domain,
+				"firebase_admin":self.firebase_admin,
+				"firebase_js":self.firebase_js,
+				"stripe_secret_key":self.stripe_secret_key,
+				"stripe_publishable_key":self.stripe_publishable_key,
+				"email_address":self.email_address,
+				"email_password":self.email_password,
+				"email_smtp_host":self.email_smtp_host,
+				"email_smtp_port":self.email_smtp_port,
+				"stripe_subscriptions":self.stripe_subscriptions,
+				"stripe_products":self.stripe_products,
+				"developers":self.developers,
+				"remote":self.remote,
+				"_2fa":self._2fa,
+			})
 		if not response.success: raise ValueError(response.error)
 
 		# remote: vps arguments.
 		if self.remote in ["vps"]:
-			response = r3sponse.check_parameters({
-				"vps_ip":self.vps_ip,
-				"vps_port":self.vps_port,
-				"vps_username":self.vps_username,
-			})
+			response = r3sponse.check_parameters(
+				traceback=self.__traceback__(),
+				parameters={
+					"vps_ip":self.vps_ip,
+					"vps_port":self.vps_port,
+					"vps_username":self.vps_username,
+				})
 			if not response.success: raise ValueError(response.error)
 
 		# set variables.

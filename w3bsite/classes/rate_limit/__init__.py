@@ -13,15 +13,9 @@ class RateLimit(_defaults_.Defaults):
 	):	
 
 		# defaults.
-		_defaults_.Defaults.__init__(self)
+		_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.ratelimit",)
 		self.assign(defaults.dict())
 
-		# check arguments.
-		#response = r3sponse.check_parameters({
-		#	#"ip":ip,
-		#})
-		#if not response.success: raise ValueError(response.error)
-		
 		# objects.
 		self.database = database
 
@@ -40,8 +34,11 @@ class RateLimit(_defaults_.Defaults):
 		
 		# check options.
 		if email == None and ip == None: return r3sponse.error("Specify parameter [email] or [ip].")
-		response = r3sponse.check_parameters({
-			"mode":mode,})
+		response = r3sponse.check_parameters(
+			traceback=self.__traceback__(function="increment"),
+			parameters={
+				"mode":mode,
+			})
 		if not response.success: return response
 
 		# by email.
@@ -103,8 +100,11 @@ class RateLimit(_defaults_.Defaults):
 	):
 		# check options.
 		if email == None and ip == None: return r3sponse.error("Specify parameter [email] or [ip].")
-		response = r3sponse.check_parameters({
-			"mode":mode,})
+		response = r3sponse.check_parameters(
+			traceback=self.__traceback__(function="verify"),
+			parameters={
+				"mode":mode,
+			})
 		if not response.success: return response
 
 		# by email.

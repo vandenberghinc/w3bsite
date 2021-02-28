@@ -31,15 +31,9 @@ class Stripe(_defaults_.Defaults):
 	):
 
 		# defaults.
-		_defaults_.Defaults.__init__(self)
+		_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.stripe")
 		self.assign(defaults.dict())
 
-		# check arguments.
-		#response = r3sponse.check_parameters({
-		#	#"ip":ip,
-		#})
-		#if not response.success: raise ValueError(response.error)
-		
 		# arguments.
 		self.secret_key = secret_key
 		self.publishable_key = publishable_key
@@ -272,7 +266,7 @@ class Stripe(_defaults_.Defaults):
 		def __init__(self, defaults=None):
 			
 			# defaults.
-			syst3m.objects.Object.__init__(self)
+			syst3m.objects.Object.__init__(self, traceback="w3bsite.Website.stripe.customers")
 			self.assign(defaults.dict())
 
 			# arguments.
@@ -283,8 +277,11 @@ class Stripe(_defaults_.Defaults):
 		):
 
 			# params.
-			response = r3sponse.check_parameters({
-				"email":email,})
+			response = r3sponse.check_parameters(
+				traceback=self.__traceback__(function="check"),
+				parameters={
+					"email":email,
+				})
 			if not response.success: return response
 
 			# check customer existance.
@@ -308,8 +305,11 @@ class Stripe(_defaults_.Defaults):
 		):
 
 			# params.
-			response = r3sponse.check_parameters({
-				"email":email,})
+			response = r3sponse.check_parameters(
+				traceback=self.__traceback__(function="create"),
+				parameters={
+					"email":email,
+				})
 			if not response.success: return response
 
 			# check customer existance.
@@ -342,8 +342,11 @@ class Stripe(_defaults_.Defaults):
 		):
 
 			# params.
-			response = r3sponse.check_parameters({
-				"id":id,})
+			response = r3sponse.check_parameters(
+				traceback=self.__traceback__(function="delete"),
+				parameters={
+					"id":id,
+				})
 			if not response.success: return response
 
 			# request.
@@ -412,7 +415,9 @@ class Stripe(_defaults_.Defaults):
 		):
 
 			# params.
-			response = r3sponse.check_parameters({
+			response = r3sponse.check_parameters(
+				traceback=self.__traceback__(function="get_cards"),
+				parameters={
 				"id":id,})
 			if not response.success: return response
 
@@ -466,12 +471,15 @@ class Stripe(_defaults_.Defaults):
 		):
 
 			# params.
-			response = r3sponse.check_parameters({
-				"id":id,
-				"number":number,
-				"month":month,
-				"year":year,
-				"cvc":cvc,})
+			response = r3sponse.check_parameters(
+				traceback=self.__traceback__(function="create_card"),
+				parameters={
+					"id":id,
+					"number":number,
+					"month":month,
+					"year":year,
+					"cvc":cvc,
+				})
 			if not response.success: return response
 			number = number.replace(" ","").replace("-","").replace("_","").replace(" ","").replace(" ","").replace(" ","").replace(" ","")
 
@@ -543,8 +551,11 @@ class Stripe(_defaults_.Defaults):
 		):
 			
 			# params.
-			response = r3sponse.check_parameters({
-				"id":id,})
+			response = r3sponse.check_parameters(
+				traceback=self.__traceback__(function="delete_card"),
+				parameters={
+					"id":id,
+				})
 			if not response.success: return response
 
 			# get card id.
@@ -573,7 +584,7 @@ class Stripe(_defaults_.Defaults):
 	class Subscriptions(syst3m.objects.Object):
 		def __init__(self, defaults=None, customers=None):
 			# defaults.
-			syst3m.objects.Object.__init__(self)
+			syst3m.objects.Object.__init__(self, traceback="w3bsite.Website.stripe.subscriptions")
 			self.assign(defaults.dict())
 
 			# arguments.
@@ -741,7 +752,7 @@ class Stripe(_defaults_.Defaults):
 		def __init__(self, defaults=None, subscriptions=None):
 			
 			# defaults.
-			syst3m.objects.Object.__init__(self)
+			syst3m.objects.Object.__init__(self, traceback="w3bsite.Website.stripe.plans")
 			self.assign(defaults.dict())
 
 			# arguments.
@@ -821,11 +832,14 @@ class Stripe(_defaults_.Defaults):
 		):
 
 			# params.
-			response = r3sponse.check_parameters({
-				"id":id,
-				"product":product,
-				"price":price,
-				"currency":currency,})
+			response = r3sponse.check_parameters(
+				traceback=self.__traceback__(function="create"),
+				parameters={
+					"id":id,
+					"product":product,
+					"price":price,
+					"currency":currency,
+				})
 			if not response.success: return response
 
 			# request.
@@ -859,7 +873,7 @@ class Stripe(_defaults_.Defaults):
 		def __init__(self, defaults=None, plans=None):
 			
 			# defaults.
-			syst3m.objects.Object.__init__(self)
+			syst3m.objects.Object.__init__(self, traceback="w3bsite.Website.stripe.products")
 			self.assign(defaults.dict())
 
 			# arguments.
@@ -930,8 +944,11 @@ class Stripe(_defaults_.Defaults):
 		):
 			
 			# params.
-			response = r3sponse.check_parameters({
-				"id":id,})
+			response = r3sponse.check_parameters(
+				traceback=self.__traceback__(function="create"),
+				parameters={
+					"id":id,
+				})
 			if not response.success: return response
 			
 			# request.

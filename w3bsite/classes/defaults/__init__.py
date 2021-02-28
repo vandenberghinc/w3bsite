@@ -32,10 +32,12 @@ class Defaults(syst3m.objects.Object):
 		aes=None,
 		cache=None,
 		logging=None,
+		# defaults.
+		traceback="w3bsite.Website.defaults",
 	):
 
 		# object defaults.
-		syst3m.objects.Object.__init__(self)
+		syst3m.objects.Object.__init__(self, traceback=traceback)
 
 		# defaults.
 		self.root = root

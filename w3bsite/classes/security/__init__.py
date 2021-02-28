@@ -17,17 +17,11 @@ class Security(_defaults_.Defaults):
 		
 		# defaults.
 		if defaults != None:
-			_defaults_.Defaults.__init__(self)
+			_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.security",)
 			self.assign(defaults.dict())
 		else:
 			self.root = root
 
-		# check arguments.
-		#response = r3sponse.check_parameters({
-		#	#"ip":ip,
-		#})
-		#if not response.success: raise ValueError(response)
-		
 		# arguments.
 		# ...
 

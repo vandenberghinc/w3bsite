@@ -22,16 +22,19 @@ class VPS(_defaults_.Defaults):
 	):	
 
 		# defaults.
-		_defaults_.Defaults.__init__(self)
+		_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.vps",)
 		self.assign(defaults.dict())
 
 		# check arguments.
-		response = r3sponse.check_parameters({
-			"ip":ip,
-			"port":port,
-			"username":username,
-			"namecheap":namecheap,
-			"deployment":deployment,})
+		response = r3sponse.check_parameters(
+			traceback=self.__traceback__(),
+			parameters={
+				"ip":ip,
+				"port":port,
+				"username":username,
+				"namecheap":namecheap,
+				"deployment":deployment,
+			})
 		if not response.success: raise ValueError(response.error)
 		
 		# arguments.

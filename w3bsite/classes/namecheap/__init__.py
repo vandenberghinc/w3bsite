@@ -22,15 +22,9 @@ class Namecheap(_defaults_.Defaults):
 	):	
 
 		# defaults.
-		_defaults_.Defaults.__init__(self)
+		_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.namecheap",)
 		self.assign(defaults.dict())
-
-		# check arguments.
-		#response = r3sponse.check_parameters({
-		#	#"ip":ip,
-		#})
-		#if not response.success: raise ValueError(response.error)
-
+		
 		# arguments.
 		self.username = username
 		self.api_key = api_key

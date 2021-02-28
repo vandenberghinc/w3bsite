@@ -23,15 +23,9 @@ class Django(_defaults_.Defaults):
 	):
 
 		# defaults.
-		_defaults_.Defaults.__init__(self)
+		_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.django",)
 		self.assign(defaults.dict())
 
-		# check arguments.
-		#response = r3sponse.check_parameters({
-		#	#"ip":ip,
-		#})
-		#if not response.success: raise ValueError(response.error)
-		
 		# arguments.
 		# ...
 
@@ -181,7 +175,7 @@ class Users(_defaults_.Defaults):
 	):
 
 		# defaults.
-		_defaults_.Defaults.__init__(self)
+		_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.django.users")
 		self.assign(defaults.dict())
 
 		#
@@ -193,10 +187,13 @@ class Users(_defaults_.Defaults):
 		superuser=False,
 	):
 		# check arguments.
-		response = r3sponse.check_parameters({
-			"username":username,
-			"email":email,
-			"password":password,})
+		response = r3sponse.check_parameters(
+			traceback=self.__traceback__(function="create"),
+			parameters={
+				"username":username,
+				"email":email,
+				"password":password,
+			})
 		if not response.success: return response
 
 		# create.
@@ -230,10 +227,13 @@ class Users(_defaults_.Defaults):
 		superuser=None,
 	):
 		# check arguments.
-		response = r3sponse.check_parameters({
-			"username":username,
-			"email":email,
-			"password":password,})
+		response = r3sponse.check_parameters(
+			traceback=self.__traceback__(function="update"),
+			parameters={
+				"username":username,
+				"email":email,
+				"password":password,
+			})
 		if not response.success: return response
 
 		# create.
@@ -276,9 +276,12 @@ class Users(_defaults_.Defaults):
 	):
 
 		# check arguments.
-		response = r3sponse.check_parameters({
-			"username":username,
-			"password":password,})
+		response = r3sponse.check_parameters(
+			traceback=self.__traceback__(function="authenticate"),
+			parameters={
+				"username":username,
+				"password":password,
+			})
 		if not response.success: return response
 
 		# authenticate.
@@ -305,8 +308,11 @@ class Users(_defaults_.Defaults):
 	def delete(self, username=None):
 
 		# check arguments.
-		response = r3sponse.check_parameters({
-			"username":username,})
+		response = r3sponse.check_parameters(
+			traceback=self.__traceback__(function="delete"),
+			parameters={
+				"username":username,
+			})
 		if not response.success: return response
 
 		# create.

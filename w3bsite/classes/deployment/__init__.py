@@ -20,15 +20,9 @@ class Deployment(_defaults_.Defaults):
 	):	
 
 		# defaults.
-		_defaults_.Defaults.__init__(self)
+		_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.deployment",)
 		self.assign(defaults.dict())
 
-		# check arguments.
-		#response = r3sponse.check_parameters({
-		#	#"ip":ip,
-		#})
-		#if not response.success: raise ValueError(response.error)
-		
 		# arguments.
 		self.vps_ip = vps_ip
 		self.vps_username = vps_username
@@ -39,6 +33,15 @@ class Deployment(_defaults_.Defaults):
 		#
 	# configure also for remove:vps & remote:local.
 	def configure(self, reinstall=False, log_level=0):
+		
+		# check arguments.
+		response = r3sponse.check_parameters(
+			traceback=self.__traceback__(function="configure"),
+			parameters={
+				"vps_ip":self.vps_ip,
+				"vps_username":self.vps_username,
+			})
+		if not response.success: return response
 		
 		# configure before loader.
 		if reinstall:

@@ -9,7 +9,7 @@ class Database(syst3m.objects.Traceback):
 	def __init__(self, firestore=None, path=None):
 		
 		# traceback.
-		syst3m.objects.Traceback.__init__(self, "w3bsite.Website.database")
+		syst3m.objects.Traceback.__init__(self, traceback="w3bsite.Website.database")
 
 		# attributes.
 		self.firestore = firestore
@@ -34,7 +34,7 @@ class Database(syst3m.objects.Traceback):
 	def save(self, path=None, data=None, format="str"):
 		if path == None: return r3sponse.error(self.__traceback__(function="save")+" Define parameter: [path].")
 		if self.firestore != None:
-			return self.firestore.load(path, data)
+			return self.firestore.save(path, data)
 		elif self.cache != None:
 			return self.cache.save(group=path, data=data, format=format)
 	def delete(self, path=None, data=None, format="str"):
