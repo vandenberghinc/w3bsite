@@ -43,8 +43,7 @@ server {
     # favicon.
     location = /www-data/favicon.ico { access_log off; log_not_found off; }
     
-    # static f
-    iles.
+    # static files.
     location /static/ {
         root  /www-data/;  
         expires 7d;
