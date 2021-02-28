@@ -366,7 +366,7 @@ class Website(cl1.CLI):
 		# objects.
 		self.security = security.Security(
 			defaults=self.defaults,)
-		if self.firebase_enabled:
+		if self.firebase_enabled and syst3m.defaults.vars.os not in ["macos"]:
 			from w3bsite.classes import firebase
 			self.firebase = firebase.Firebase(
 				key=self.firebase_admin,

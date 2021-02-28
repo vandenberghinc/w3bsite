@@ -7,9 +7,9 @@ from w3bsite.classes import utils
 from w3bsite.classes import defaults as _defaults_
 
 # pip imports.
+from django.contrib.auth import authenticate, login
 import firebase_admin
 from firebase_admin import credentials, auth, firestore, _auth_utils
-from django.contrib.auth import authenticate, login
 
 class FirebaseCLI(object):
 	def __init__(self):
@@ -57,7 +57,7 @@ class Firebase(_defaults_.Defaults):
 			firebase_admin.initialize_app(cred)
 		except ValueError:a=1
 		self.firestore = FireStore()
-		self.users = Users(defaults=defaults, firestore=firestore)
+		self.users = Users(defaults=defaults, firestore=self.firestore)
 
 		# firebase template data.
 		def __handle__(dictionary={}):
