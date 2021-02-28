@@ -118,7 +118,7 @@ if [[ -f "$SOURCE/requirements.pip" ]] ; then
 elif [[ -f "$SOURCE/requirements/requirements.pip" ]] ; then
 	requirements_file="$SOURCE/requirements/requirements.pip"
 else
-	ls $SOURCE/requirements/requirements.txt
+	#ls $SOURCE/requirements/requirements.txt
 	echo "Error: missing requirements file [$SOURCE/requirements/requirements.txt]."
 	exit 1
 fi
@@ -130,12 +130,14 @@ if [ ! -d "/www-data/venv" ]; then
 	/www-data/venv/bin/pip3 install wheel
 	/www-data/venv/bin/pip3 install uwsgi gunicorn whitenoise django psycopg2-binary
 	/www-data/venv/bin/pip3 install syst3m w3bsite cl1
+	pip3 install -r $requirements_file
 	/www-data/venv/bin/pip3 install -r $requirements_file
 	chown -R $USER:www-data /www-data/venv
 	log "Installing requirements" "done"
 else
 	log "Activating virtual environment"
 	source /www-data/venv/bin/activate
+	pip3 install -r $requirements_file
 	/www-data/venv/bin/pip3 install -r $requirements_file
 	log "Activating virtual environment" "done"
 fi
@@ -218,12 +220,14 @@ echo "Deploying nginx ... done"
 sudo chmod -R 770 /www-data
 sudo chown -R $USER:www-data /www-data
 
+# final restart.
+sudo systemctl daemon-reload
+sudo systemctl restart gunicorn.socket
+sudo systemctl restart gunicorn
+sudo systemctl restart nginx
+
 # code update finish.
 if [[ "$CODE_UPDATE" == "true" ]] ; then
-	sudo systemctl daemon-reload
-	sudo systemctl restart gunicorn.socket
-	sudo systemctl restart gunicorn
-	sudo systemctl restart nginx
 	echo "Finished installing the website code updates."
 
 # default finish.
