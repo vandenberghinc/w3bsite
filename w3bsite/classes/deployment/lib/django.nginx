@@ -37,13 +37,14 @@ server {
     server_name ***DOMAIN*** www.***DOMAIN***;
 
     # logs.
-    error_log  /var/log/nginx/***DOMAIN***;
-    error_log  /var/log/nginx/***DOMAIN***.debug debug;
+    error_log  ***DATABASE***/logs/nginx;
+    error_log  ***DATABASE***/logs/nginx.debug debug;
 
     # favicon.
     location = /www-data/favicon.ico { access_log off; log_not_found off; }
     
-    # static files.
+    # static f
+    iles.
     location /static/ {
         root  /www-data/;  
         expires 7d;
@@ -68,8 +69,8 @@ server {
     uwsgi_read_timeout 300s;
 
     # logs.
-    error_log  /var/log/nginx/***DOMAIN***;
-    error_log  /var/log/nginx/***DOMAIN***.debug debug;
+    error_log  ***DATABASE***/logs/nginx;
+    error_log  ***DATABASE***/logs/nginx.debug debug;
 
     # domain.
     server_name ***DOMAIN*** www.***DOMAIN***;

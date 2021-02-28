@@ -78,6 +78,11 @@ class Deployment(_defaults_.Defaults):
 				if log_level >= 0: loader.stop(success=False)
 				return response
 
+		# database.
+		if not Files.exists(database_path): 
+			os.system(f"sudo mkdir -p {database_path} && sudo chown {syst3m.defaults.vars.user}:{syst3m.defaults.vars.group} {database_path} && sudo chmod 770 {database_path}")
+		if not Files.exists(f"{self.database_path}/logs"): os.mkdir(f"{self.database_path}/logs")
+
 		# deployment.
 		if not Files.exists(f"{self.root}/deployment"): os.mkdir(f"{self.root}/deployment")
 		clean_root = gfp.clean(self.library, remove_last_slash=True, remove_double_slash=True) # <== note the library change instead of root.

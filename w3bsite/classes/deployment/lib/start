@@ -8,7 +8,7 @@ if [ ! -f "***DATABASE***/data/db.sqlite3" ] ; then
 fi
 export MIGRATIONS="false"
 export INTERACTIVE="false"
-sudo chown -R ***syst3m.defaults.vars.user***:www-data /www-data
+sudo chown -R $USER /www-data
 /www-data/venv/bin/gunicorn \
   --timeout 86400 \
   --access-logfile - \
