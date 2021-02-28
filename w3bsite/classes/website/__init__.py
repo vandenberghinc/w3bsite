@@ -600,8 +600,8 @@ class Website(cl1.CLI):
 		# deploy.
 		elif self.arguments.present("--deploy"):
 			response = self.deploy(
-				code_update=self.arguments.get("--code-update", required=False, default=False),
-				reinstall=self.arguments.get("--reinstall", required=False, default=False),
+				code_update=self.arguments.present("--code-update"),
+				reinstall=self.arguments.present("--reinstall"),
 			)
 			r3sponse.log(response=response)
 
