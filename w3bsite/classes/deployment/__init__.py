@@ -79,8 +79,8 @@ class Deployment(_defaults_.Defaults):
 				return response
 
 		# database.
-		if not Files.exists(database_path): 
-			os.system(f"sudo mkdir -p {database_path} && sudo chown {syst3m.defaults.vars.user}:{syst3m.defaults.vars.group} {database_path} && sudo chmod 770 {database_path}")
+		if not Files.exists(self.database_path): 
+			os.system(f"sudo mkdir -p {self.database_path} && sudo chown {syst3m.defaults.vars.user}:{syst3m.defaults.vars.group} {self.database_path} && sudo chmod 770 {self.database_path}")
 		if not Files.exists(f"{self.database_path}/logs"): os.mkdir(f"{self.database_path}/logs")
 
 		# deployment.
