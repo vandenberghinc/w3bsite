@@ -155,7 +155,7 @@ class VPS(_defaults_.Defaults):
 			check_base=False,)
 		if not response.success: 
 			if log_level >= 0: loader.stop(success=False)
-			return r3sponse.error(f"Failed to deploy website {self.domain} on vps {self.ip}, error: {response.error}.", log_level=log_level)
+			return r3sponse.error(f"Failed to deploy website {self.domain} on vps {self.ip}, error (#1): {response.error}.", log_level=log_level)
 
 		# execute installer script.
 		if not code_update:
@@ -166,20 +166,20 @@ class VPS(_defaults_.Defaults):
 				log_level=-1,)
 			if not response.success: 
 				if log_level >= 0: loader.stop(success=False)
-				return r3sponse.error(f"Failed to deploy website {self.domain} on vps {self.ip}, error: {response.error}.", log_level=log_level)
+				return r3sponse.error(f"Failed to deploy website {self.domain} on vps {self.ip}, error (#2): {response.error}.", log_level=log_level)
 
 			# deploy.
 			if log_level >= 0: loader.mark(new_message=f"Deploying domain {self.domain} on vps {self.ip}")
-			output = ssht00ls.ssh.command(
+			response = ssht00ls.ssh.command(
 				alias=self.domain,
 				command=f"python3 {installed_location}/website.py --deploy{installer_arguments} --non-interactive",
 				log_level=-1,)
-			if not output.success:
+			if not response.success:
 				if log_level >= 0: loader.stop(success=False)
 				return r3sponse.error(response.error, log_level=log_level)
-			elif "Successfully deployed website https://" not in output:
+			elif "Successfully deployed website https://" not in response.output:
 				if log_level >= 0: loader.stop(success=False)
-				return r3sponse.error(f"Failed to deploy website {self.domain} on vps {self.ip}, error: {str(output)}.", log_level=log_level)
+				return r3sponse.error(f"Failed to deploy website {self.domain} on vps {self.ip}, error (#3): {response.output}.", log_level=log_level)
 
 		# handler.
 		if log_level >= 0: loader.stop()
