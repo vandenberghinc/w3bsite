@@ -19,7 +19,7 @@ class Users(_defaults_.Defaults):
 		smtp_host="smtp.gmail.com", 
 		smtp_port=587, 
 		# objects.
-		database=None,
+		db=None,
 		firestore=None, 
 		stripe=None, 
 		django=None,
@@ -40,7 +40,7 @@ class Users(_defaults_.Defaults):
 		self.visible_email = None
 
 		# objects.
-		self.database = database
+		self.db = db
 		self.firestore = firestore
 		self.logging = logging
 		self.stripe = stripe
@@ -223,7 +223,7 @@ class Users(_defaults_.Defaults):
 		if not response.success: return response
 
 		# delete firestore data.
-		response = self.database.delete(f"{self.users_collection}/{email}/")
+		response = self.db.delete(f"{self.users_collection}/{email}/")
 		if not response.success: return response
 
 		# handle success.
@@ -342,7 +342,7 @@ class Users(_defaults_.Defaults):
 				"email":email,
 			})
 		if not response.success: return response
-		response = self.database.load(f"{self.users_collection}/{email}/", format="json")
+		response = self.db.load(f"{self.users_collection}/{email}/", format="json")
 		if response.error != None: return response
 		return r3sponse.success(f"Successfully loaded the data of user [{email}].", {
 			"data":response["document"],
@@ -360,7 +360,7 @@ class Users(_defaults_.Defaults):
 				"email":email,
 			})
 		if not response.success: return response
-		response = self.database.save(f"{self.users_collection}/{email}/", data, format="json")
+		response = self.db.save(f"{self.users_collection}/{email}/", data, format="json")
 		if response.error != None: return response
 		return r3sponse.success(f"Successfully saved the data of user [{email}].")
 	def send_email(self, 

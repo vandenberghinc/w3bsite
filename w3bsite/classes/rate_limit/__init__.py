@@ -7,7 +7,7 @@ from w3bsite.classes import defaults as _defaults_
 class RateLimit(_defaults_.Defaults):
 	def __init__(self, 
 		# objects.
-		database=None,
+		db=None,
 		# defaults.
 		defaults=None,
 	):	
@@ -17,7 +17,7 @@ class RateLimit(_defaults_.Defaults):
 		self.assign(defaults.dict())
 
 		# objects.
-		self.database = database
+		self.db = db
 
 		#
 	def increment(self, 
@@ -51,7 +51,7 @@ class RateLimit(_defaults_.Defaults):
 			reference = f"ips/{ip}"
 
 		# load.
-		response = self.database.load(reference, format="json")
+		response = self.db.load(reference, format="json")
 		if not response.success: 
 			if ip != None and "Document " in response.error and " does not exist" in response.error:
 				response["document"] = {}
@@ -77,7 +77,7 @@ class RateLimit(_defaults_.Defaults):
 		
 		# save.
 		document["rate_limits"] = rate_limits
-		response = self.database.save(reference, document, format="json")
+		response = self.db.save(reference, document, format="json")
 		if not response.success: return response
 		return r3sponse.success("Successfully incremented the rate limit.")
 
@@ -117,7 +117,7 @@ class RateLimit(_defaults_.Defaults):
 			reference = f"ips/{ip}"
 
 		# check reset timestamp.
-		response = self.database.load(reference, format="json")
+		response = self.db.load(reference, format="json")
 		if not response.success: 
 			if ip != None and "Document " in response.error and " does not exist" in response.error:
 				response["document"] = {}
@@ -144,7 +144,7 @@ class RateLimit(_defaults_.Defaults):
 			rate_limits[mode]["rate"] = 0
 			rate_limits[mode]["timestamp"] = date.timestamp
 			document["rate_limits"] = rate_limits
-			response = self.database.save(reference, document, format="json")
+			response = self.db.save(reference, document, format="json")
 			if not response.success: return response
 
 		# check rate.
@@ -152,7 +152,7 @@ class RateLimit(_defaults_.Defaults):
 			if increment:
 				rate_limits[mode]["rate"] += increment_count
 				document["rate_limits"] = rate_limits
-				response = self.database.save(reference, document, format="json")
+				response = self.db.save(reference, document, format="json")
 				if not response.success: return response
 			return r3sponse.success(f"Successfully verified the {mode} rate limit.")
 		else:

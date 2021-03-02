@@ -14,14 +14,14 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		# General.
 		# 	the root path.
 		root=None, # example: FilePath(__file__).base(back=1).replace("./","")
-		#
-		# Website.
 		# 	the root domain.
 		domain=None,
 		# 	the website name.
 		name=None,
 		# 	the database path (optional).
 		database=None,
+		# 	the library path (optional).
+		library=None,
 		#
 		# Deployment.
 		# 	remote depoyment, options: [local, vps, heroku].
@@ -203,8 +203,8 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		self.vps_username = vps_username
 		self._2fa = _2fa
 		self.template_data = template_data
-		self.database_path = database
-		# cli only (aka non serialized required) arguments.
+		self.database = database
+		self.library = library
 		self.prevent_heroku_deployment = prevent_heroku_deployment
 		self.interactive = interactive
 		self.production = production
@@ -212,7 +212,8 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		self.firebase_enabled = firebase_enabled
 		self.stripe_enabled = stripe_enabled
 		# checks.
-		if self.database_path == None: self.database_path = f"/etc/{self.domain}/"
+		if self.database == None: self.database = f"/etc/{self.domain}/"
+		if self.library == None: self.library = f"/usr/local/lib/{self.domain}/"
 		if self.domain != None: self.domain = utils.naked_url(self.domain)
 
 		# serialize.
@@ -296,7 +297,6 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 			if not response.success: raise ValueError(response.error)
 
 		# set variables.
-		self.library = f"/usr/local/lib/{self.domain}/"
 		self.live = utils.equalize_path(self.root, striplast=True) == utils.equalize_path(self.library, striplast=True)
 		self.http_domain = f"http://{self.domain}"
 		self.https_domain = f"https://{self.domain}"
@@ -306,7 +306,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		secrets = utils.__load_json__(".secrets/env.json")
 		os.environ["PRODUCTION"] = str(self.production)
 		os.environ["DOMAIN"] = self.domain
-		os.environ["DATABASE"] = self.database_path
+		os.environ["DATABASE"] = self.database
 		try:
 			os.environ["DJANGO_SECRET_KEY"] = secrets["DJANGO_SECRET_KEY"]
 		except KeyError: a=1
@@ -379,7 +379,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		self.defaults = defaults.Defaults(
 			root=self.root,
 			library=self.library,
-			database_path=self.database_path,
+			database=self.database,
 			name=self.name,
 			author=self.author,
 			email=self.email,
@@ -411,13 +411,13 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 				firebase_js=self.firebase_js,
 				defaults=self.defaults)
 			self.firestore = self.firebase.firestore
-			self.database = _database_.Database(
+			self.db = _database_.Database(
 				firestore=self.firebase.firestore,
-				path=self.database_path,)
+				path=self.database,)
 		else:
 			self.firebase = None
 			self.firestore = None
-			self.database = _database_.Database(path=self.database_path)
+			self.db = _database_.Database(path=self.database)
 		if self.stripe_enabled:
 			self.stripe = stripe.Stripe(
 				secret_key=self.stripe_secret_key,
@@ -427,7 +427,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 				defaults=self.defaults)
 		else: self.stripe = None
 		self.rate_limit = rate_limit.RateLimit(
-			database=self.database,
+			db=self.db,
 			defaults=self.defaults,)
 		os.chdir(gfp.clean(self.root))
 		if not os.path.exists("website/settings.py"): raise ImportError(f"Invalid website hierarchy, unable to find: website.settings, required location: {self.root}/website/settings.py")
@@ -443,7 +443,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 			smtp_host=self.email_smtp_host,
 			smtp_port=self.email_smtp_port,
 			firestore=self.firestore,
-			database=self.database,
+			db=self.db,
 			stripe=self.stripe,
 			django=self.django,
 			defaults=self.defaults,)
@@ -464,7 +464,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 				root=self.root,
 				library=self.library,
 				domain=self.domain,
-				database_path=self.database_path,
+				database=self.database,
 				remote=self.remote,
 				vps_ip=self.vps_ip,
 				vps_username=self.vps_username,
@@ -528,7 +528,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 			print(f"Domain: {self.domain}")
 			print(f"Root: {self.root}")
 			print(f"Library: {self.library}")
-			print(f"Database: {self.database_path}")
+			print(f"Database: {self.database}")
 			print(f"Remote: {self.remote}")
 			print(f"Live: {self.live}")
 
@@ -779,7 +779,8 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		# serialize and save all non secret variables in the website.json.
 		serialized = {
 			"root":self.root,
-			"database":self.database_path,
+			"database":self.database,
+			"library":self.library,
 			"name":self.name,
 			"email":self.email,
 			"city":self.city,
@@ -858,7 +859,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 			"NAMECHEAP_API_KEY":self.namecheap_api_key,
 			# add these for the settings.py
 			"DOMAIN":self.domain,
-			"DATABASE":self.database_path,
+			"DATABASE":self.database,
 			"PRODUCTION":self.production,
 			"MAINTENANCE":self.maintenance,
 			"LOG_LEVEL":LOG_LEVEL,
@@ -879,7 +880,8 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		if serialized == None:
 			serialized = utils.__load_json__(f"{self.root}/website.json")
 		#self.root = serialized["root"]
-		self.database_path = serialized["database"]
+		self.database = serialized["database"]
+		self.library = serialized["library"]
 		self.name = serialized["name"]
 		self.author = serialized["author"]
 		self.email = serialized["email"]
