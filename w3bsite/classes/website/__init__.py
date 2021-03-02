@@ -297,7 +297,6 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 
 		# set variables.
 		self.library = f"/usr/local/lib/{self.domain}/"
-		self.database_path = f"/etc/{self.domain}/"
 		self.live = utils.equalize_path(self.root, striplast=True) == utils.equalize_path(self.library, striplast=True)
 		self.http_domain = f"http://{self.domain}"
 		self.https_domain = f"https://{self.domain}"

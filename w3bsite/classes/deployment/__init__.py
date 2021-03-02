@@ -62,7 +62,7 @@ class Deployment(syst3m.objects.Object):
 
 		#
 	# configure also for remove:vps & remote:local.
-	def configure(self, reinstall=False, log_level=0):
+	def configure(self, reinstall=False, log_level=0, loader=None):
 		
 		# check arguments.
 		if self.remote in ["vps"]:
@@ -81,8 +81,10 @@ class Deployment(syst3m.objects.Object):
 		if reinstall:
 			os.system(f"rm -fr {self.database_path}/tls/dhparam.pem")
 		if not Files.exists(f"{self.database_path}/tls/dhparam.pem"):
+			if loader != None: loader.hold()
 			tmp = "/tmp/dhparam.pem"
 			os.system(f"sudo openssl dhparam -out {tmp} 4096 && sudo chown {syst3m.defaults.vars.user}:{syst3m.defaults.vars.group} {tmp} && mv {tmp} {self.database_path}/tls/dhparam.pem && sudo chown {syst3m.defaults.vars.user}:{syst3m.defaults.vars.group} {self.database_path}/tls/dhparam.pem")
+			if loader != None: loader.release()
 
 		# loader.
 		if log_level >= 0: loader = syst3m.console.Loader(f"Configuring deployment of website {self.domain} ...")
@@ -150,6 +152,7 @@ class Deployment(syst3m.objects.Object):
 	def deploy(self, code_update=False, reinstall=False, log_level=0):
 			
 		# loader.
+		loader = None
 		if log_level >= 0: loader = syst3m.console.Loader(f"Deploying domain {self.domain} ...")
 
 		# check namecheap domain.
@@ -174,7 +177,7 @@ class Deployment(syst3m.objects.Object):
 			return r3sponse.error(f"Unsupported operating system [{OS}].")
 		
 		# configure.
-		response = self.configure(reinstall=reinstall, log_level=log_level)
+		response = self.configure(reinstall=reinstall, log_level=log_level, loader=loader)
 		if not response.success: 
 			if log_level >= 0: loader.stop(quiet=True)
 			return response
