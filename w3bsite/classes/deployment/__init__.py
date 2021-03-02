@@ -128,7 +128,7 @@ class Deployment(syst3m.objects.Object):
 			"***USER***":username, 
 			"***DOMAIN***":self.domain,
 			"***DATABASE***":self.database_path,
-			"***syst3m.defaults.vars.user***":syst3m.defaults.vars.user,
+			"***USER***":syst3m.defaults.vars.user,
 		}
 		for path in Files.Directory(path=f"{SOURCE_PATH}/classes/deployment/lib/").paths():
 			name = FilePath(path).name()
