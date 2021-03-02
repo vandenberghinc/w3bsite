@@ -197,13 +197,8 @@ class Users(_defaults_.Defaults):
 			})
 		if not response.success: return response
 
-		# create.
-		#try:
-		print("syst3m.defaults.vars.userNAME:",username)
-		print("EMAIL:",email)
-		print("PASSWORD:",password)
+		try:
 
-		if True:
 			django_user = DjangoUser.objects.create_user(username, email, password)
 			if isinstance(name, str): django_user.last_name = name
 			if isinstance(superuser, bool): django_user.is_superuser = superuser
@@ -215,7 +210,7 @@ class Users(_defaults_.Defaults):
 			})
 
 		# error.
-		#except Exception as e:  return r3sponse.error(f"Failed to create django user {username}, error: {e}.")
+		except Exception as e:  return r3sponse.error(f"Failed to create django user {username}, error: {e}.")
 
 		#
 	def update(self,
