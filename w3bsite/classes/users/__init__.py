@@ -230,6 +230,17 @@ class Users(_defaults_.Defaults):
 		return r3sponse.success(f"Successfully deleted user [{email}].")
 
 		#
+	def exists(self, 
+		# one of the user id options is required.
+		username=None,
+		email=None,
+		# the filter (django).
+		filter="django",
+	):
+		if filter == "django":
+			return DjangoUser.objects.filter(username=username, email=email).exists()
+		else: 
+			raise ValueError(f"Invalid filter [{filter}], valid options: [django].")
 	def authenticate(self,
 		# the users username.
 		username=None,
@@ -301,6 +312,23 @@ class Users(_defaults_.Defaults):
 
 		# error.
 		return r3sponse.error("User is not authenticated, please specify your api key or login.")
+
+		#
+	def root_permission(self, request):
+
+		# by request user filled (django).
+		if request.user != None and request.user.is_authenticated and request.user.is_superuser:
+			return r3sponse.success(f"Root permission granted ({request.user.username}).", {
+				"api_key":None,
+				"email":request.user.email,
+				"username":request.user.username,
+			})
+
+		# by api key.
+		# never root permission.
+
+		# error.
+		return r3sponse.error("Root permission denied.")
 
 		#
 	def load_data(self,

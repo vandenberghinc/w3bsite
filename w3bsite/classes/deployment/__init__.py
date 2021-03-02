@@ -4,28 +4,58 @@
 # imports.
 from w3bsite.classes.config import *
 from w3bsite.classes import utils
-from w3bsite.classes import defaults as _defaults_
 
 # the deployment object class.
-class Deployment(_defaults_.Defaults):
+class Deployment(syst3m.objects.Object):
+	# does not use Defaults so also accessable without Website init.
 	# deploy the website on a local ubuntu machine.
 	def __init__(self,
+		# the root path.
+		root=None,
+		# the library path.
+		library=None,
+		# the domain.
+		domain=None,
+		# the database path.
+		database_path=None,
+		# the remote.
+		remote=None,
 		# the vps ip (if remote is vps else leave default).
 		vps_ip=None,
 		vps_username=None,
+		# the organization's email.
+		email=None,
+		country_code="NL",
+		province="Amsterdam",
+		city="Amsterdam",
+		organization=None,
+		organization_unit="IT",
+		# the organization info.
 		# objects.
 		namecheap=None,
-		# defaults.
-		defaults=None,
 	):	
 
 		# defaults.
-		_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.deployment",)
-		self.assign(defaults.dict())
+		syst3m.objects.Object.__init__(self, traceback="w3bsite.Website.deployment",)
 
-		# arguments.
+		# attributes.
 		self.vps_ip = vps_ip
 		self.vps_username = vps_username
+		self.root = root
+		self.library = library
+		self.domain = domain
+		self.database_path = database_path
+		self.remote = remote
+
+		self.country_code = country_code
+		self.province = province
+		self.city = city
+		self.organization = organization
+		self.organization_unit = organization_unit
+		self.email = email
+
+		# vars.
+		self.live = ...
 
 		# objects.
 		self.namecheap = namecheap

@@ -5,6 +5,7 @@
 from w3bsite.classes.config import *
 from w3bsite.classes import security, heroku, namecheap, utils, git, users, stripe, logging, rate_limit, aes, deployment, vps, cache, defaults, apps, views
 from w3bsite.classes import database as _database_
+import django as pypi_django
 
 # the main website class.
 class Website(cl1.CLI,syst3m.objects.Traceback):
@@ -19,6 +20,8 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		domain=None,
 		# 	the website name.
 		name=None,
+		# 	the database path (optional).
+		database=None,
 		#
 		# Deployment.
 		# 	remote depoyment, options: [local, vps, heroku].
@@ -29,8 +32,6 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		developers=[],
 		#
 		# Django.
-		#	running the website on django (enable in config.py).
-		django=False,
 		#	maintenance boolean.
 		maintenance=False,
 		# 	the template data (only required when running the website) (overwrites the w3bsite template data keys).
@@ -66,13 +67,15 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		#
 		# Firebase.
 		#	firebase enabled.
-		firebase_enabled=True,
+		firebase_enabled=False,
 		# 	your firebase admin service account key, (dict) [https://console.firebase.google.com > Service Accounts > Firebase admin].
 		firebase_admin={},
 		# 	your firebase sdk javascript configuration, (dict) [https://console.firebase.google.com > Settings > General > Web JS SDK].
 		firebase_js={},
 		#
 		# Stripe.
+		# enable strip.e
+		stripe_enabled=False,
 		# 	your stripe secret key (str) [https://stripe.com > Dashboard > Developer > API Keys > Secret Key].
 		stripe_secret_key=None,
 		# 	your stripe publishable key (str) [https://stripe.com > Dashboard > Developer > API Keys > Secret Key].
@@ -169,7 +172,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 			if firebase_admin != None:
 				if isinstance(firebase_admin, str) and firebase_admin[:len(".secrets")] == ".secrets":
 					firebase_admin = f"{root}/{firebase_admin}".replace("//","/").replace("//","/")
-		self.root = root
+		self.root = gfp.clean(root)
 		self.name = name
 		self.author = author
 		self.email = email
@@ -200,16 +203,20 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		self.vps_username = vps_username
 		self._2fa = _2fa
 		self.template_data = template_data
+		self.database_path = database
 		# cli only (aka non serialized required) arguments.
 		self.prevent_heroku_deployment = prevent_heroku_deployment
 		self.interactive = interactive
 		self.production = production
 		self.maintenance = maintenance
 		self.firebase_enabled = firebase_enabled
-		if self.domain != None:
-			self.domain = utils.naked_url(self.domain)
+		self.stripe_enabled = stripe_enabled
+		# checks.
+		if self.database_path == None: self.database_path = f"/etc/{self.domain}/"
+		if self.domain != None: self.domain = utils.naked_url(self.domain)
+
+		# serialize.
 		if serialized == None or serialized == {}:
-			self.database_path = f"/etc/{self.domain}/" # set also over here.
 			self.serialize(save=True)
 		else:
 			if isinstance(serialized, str):
@@ -219,6 +226,13 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 			raise ValueError("Generate a passphrase for the aes master key with [ $ ./website.py --generate-aes] and pass it as the 'aes_master_key' parameter.")
 		#if root != syst3m.utils.__execute_script__("pwd").replace("\n",""):
 		#	raise ValueError("The ")
+
+		# init.
+		response = self.initialize()
+		if not response.success: response.crash()
+
+		#
+	def initialize(self):
 
 		# overall arguments.
 		response = r3sponse.check_parameters(
@@ -238,19 +252,37 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 				"domain":self.domain,
 				"firebase_admin":self.firebase_admin,
 				"firebase_js":self.firebase_js,
-				"stripe_secret_key":self.stripe_secret_key,
-				"stripe_publishable_key":self.stripe_publishable_key,
 				"email_address":self.email_address,
 				"email_password":self.email_password,
 				"email_smtp_host":self.email_smtp_host,
 				"email_smtp_port":self.email_smtp_port,
-				"stripe_subscriptions":self.stripe_subscriptions,
-				"stripe_products":self.stripe_products,
 				"developers":self.developers,
 				"remote":self.remote,
 				"_2fa":self._2fa,
 			})
 		if not response.success: raise ValueError(response.error)
+
+		# firebase arguments.
+		if self.firebase_enabled:
+			response = r3sponse.check_parameters(
+				traceback=self.__traceback__(),
+				parameters={
+					"firebase_admin":self.firebase_admin,
+					"firebase_js":self.firebase_js,
+				})
+			if not response.success: raise ValueError(response.error)
+
+		# stripe arguments.
+		if self.stripe_enabled:
+			response = r3sponse.check_parameters(
+				traceback=self.__traceback__(),
+				parameters={
+					"stripe_secret_key":self.stripe_secret_key,
+					"stripe_publishable_key":self.stripe_publishable_key,
+					"stripe_subscriptions":self.stripe_subscriptions,
+					"stripe_products":self.stripe_products,
+				})
+			if not response.success: raise ValueError(response.error)
 
 		# remote: vps arguments.
 		if self.remote in ["vps"]:
@@ -279,7 +311,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		try:
 			os.environ["DJANGO_SECRET_KEY"] = secrets["DJANGO_SECRET_KEY"]
 		except KeyError: a=1
-		os.environ["DJANGO_RUNNING"] = str(django)
+		os.environ["DJANGO_RUNNING"] = True
 		os.environ["leftbar_width"] = "250px"
 
 		# template data.
@@ -387,23 +419,21 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 			self.firebase = None
 			self.firestore = None
 			self.database = _database_.Database(path=self.database_path)
-		self.stripe = stripe.Stripe(
-			secret_key=self.stripe_secret_key,
-			publishable_key=self.stripe_publishable_key,
-			subscriptions=self.stripe_subscriptions,
-			products=self.stripe_products,
-			defaults=self.defaults)
+		if self.stripe_enabled:
+			self.stripe = stripe.Stripe(
+				secret_key=self.stripe_secret_key,
+				publishable_key=self.stripe_publishable_key,
+				subscriptions=self.stripe_subscriptions,
+				products=self.stripe_products,
+				defaults=self.defaults)
+		else: self.stripe = None
 		self.rate_limit = rate_limit.RateLimit(
 			database=self.database,
 			defaults=self.defaults,)
-		#from django.conf import settings
-		#settings.configure()
-		lroot = self.root.replace("//","/").replace("//","/").replace("//","/").replace("/",".")
-		if lroot[len(lroot)-1] == ".": lroot = lroot[:-1]
-		if lroot[0] == ".": lroot = lroot[1:]
-		#os.chdir(self.root)
+		os.chdir(gfp.clean(self.root))
+		if not os.path.exists("website/settings.py"): raise ImportError(f"Invalid website hierarchy, unable to find: website.settings, required location: {self.root}/website/settings.py")
 		os.environ.setdefault('DJANGO_SETTINGS_MODULE', f'website.settings')
-		#os.environ.setdefault('DJANGO_SETTINGS_MODULE', f'{lroot}.website.settings')
+		pypi_django.setup()
 		from w3bsite.classes import django
 		self.django = django.Django(
 			security=self.security,
@@ -421,21 +451,25 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		self.namecheap = namecheap.Namecheap(
 			username=self.namecheap_username,
 			api_key=self.namecheap_api_key,
-			sandbox=False,
-			defaults=self.defaults,)
+			root=self.root,
+			domain=self.domain,
+			email=self.email_address,)
 		self.git = git.Git(
-			defaults=self.defaults,
-			)#
+			defaults=self.defaults,)#
 		# mode dependend objects.
 		self.deployment = None
 		self.heroku = None
 		self.vps = None
 		if self.remote in ["local", "vps"]:
 			self.deployment = deployment.Deployment(
+				root=self.root,
+				library=self.library,
+				domain=self.domain,
+				database_path=self.database_path,
+				remote=self.remote,
 				vps_ip=self.vps_ip,
 				vps_username=self.vps_username,
-				namecheap=self.namecheap,
-				defaults=self.defaults,)
+				namecheap=self.namecheap,)
 			if self.remote in ["vps"]:
 				self.vps = vps.VPS(
 					ip=self.vps_ip,
@@ -498,6 +532,9 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 			print(f"Database: {self.database_path}")
 			print(f"Remote: {self.remote}")
 			print(f"Live: {self.live}")
+
+		# handler.
+		return r3sponse.success(f"Successfully initialized website [{self.name}].")
 
 		#
 	def cli(self):
@@ -743,6 +780,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		# serialize and save all non secret variables in the website.json.
 		serialized = {
 			"root":self.root,
+			"database":self.database_path,
 			"name":self.name,
 			"email":self.email,
 			"city":self.city,
@@ -771,6 +809,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 			"vps_username":self.vps_username,
 			"_2fa":self._2fa,
 			"firebase_enabled":self.firebase_enabled,
+			"stripe_enabled":self.stripe_enabled,
 		}
 
 		# save all secret variables in secrets.
@@ -841,6 +880,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		if serialized == None:
 			serialized = utils.__load_json__(f"{self.root}/website.json")
 		#self.root = serialized["root"]
+		self.database_path = serialized["database"]
 		self.name = serialized["name"]
 		self.author = serialized["author"]
 		self.email = serialized["email"]
@@ -869,6 +909,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		self.vps_username = serialized["vps_username"]
 		self._2fa = serialized["_2fa"]
 		self.firebase_enabled = serialized["firebase_enabled"]
+		self.stripe_enabled = serialized["stripe_enabled"]
 
 		# load secrets.
 		local_security = security.Security(

@@ -4,10 +4,10 @@
 # imports.
 from w3bsite.classes.config import *
 from w3bsite.classes import utils
-from w3bsite.classes import defaults as _defaults_
 
 # the namecheap object class.
-class Namecheap(_defaults_.Defaults):
+class Namecheap(syst3m.objects.Object):
+	# does not use Defaults so also accessable without Website init.
 	# source: https://www.namecheap.com/support/api/methods/
 	# go to [Profile > Tools > Developer > API > Manage] and enable the APi and whitelist your public ip.
 	def __init__(self,
@@ -15,19 +15,26 @@ class Namecheap(_defaults_.Defaults):
 		username=None,
 		# your namecheap api key.
 		api_key=None,
+		# the root path.
+		root=None,
+		# the domain.
+		domain=None,
+		# the organization's email.
+		email=None,
 		# sandbox boolean (does not seem to work namecheap end).
 		sandbox=False,
-		# defaults.
-		defaults=None,
 	):	
 
 		# defaults.
-		_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.namecheap",)
-		self.assign(defaults.dict())
+		syst3m.objects.Object.__init__(self, traceback="w3bsite.Website.namecheap",)
 		
 		# arguments.
 		self.username = username
 		self.api_key = api_key
+		self.domain = domain
+		self.root = root
+		self.domain = domain
+		self.email = email
 
 		# pre domain.
 		self.pre_domain, splitted = "", self.domain.split(".")

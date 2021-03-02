@@ -4,6 +4,5 @@
 # imports.
 from w3bsite.classes.config import SOURCE_PATH, BASE
 from w3bsite.classes.website import Website
-from w3bsite.classes import views, utils, daemons
 from w3bsite.classes.aes import AES
-from w3bsite.classes import rsa, aes, namecheap, email
+from w3bsite.classes import views, utils, daemons, rsa, aes, namecheap, email, deployment
