@@ -311,7 +311,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		try:
 			os.environ["DJANGO_SECRET_KEY"] = secrets["DJANGO_SECRET_KEY"]
 		except KeyError: a=1
-		os.environ["DJANGO_RUNNING"] = True
+		os.environ["DJANGO_RUNNING"] = str(True)
 		os.environ["leftbar_width"] = "250px"
 
 		# template data.
