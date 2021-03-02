@@ -145,29 +145,13 @@ fi
 cd $SOURCE
 
 # checks.
-if [ ! -f "$SOURCE/.secrets/tls/server.key" ] || [ ! -f "$SOURCE/.secrets/tls/server.crt" ] || [ ! -f "$SOURCE/.secrets/tls/server.csr" ] ; then
-	echo "Error: tls certificate does not exist [$SOURCE/.secrets/tls]."
+if [ ! -f "$DATABASE/tls/server.key" ] || [ ! -f "$DATABASE/tls/server.crt" ] || [ ! -f "$DATABASE/tls/server.csr" ] ; then
+	echo "Error: tls certificate does not exist [$DATABASE/tls]."
 	exit 1
-fi
-if [ ! -f "$SOURCE/.secrets/tls/dhparam.pem" ] ; then
-	echo "Error: tls dhparam does not exist [$SOURCE/.secrets/tls/dhparam.pem]."
-	exit 1
-fi
-
-# install ssl certificate.
-if [[ "$REINSTALL" == "true" ]] ; then
-	rm -fr $DATABASE/tls/dhparam.pem
-	rm -fr $DATABASE/tls/server.key
-	rm -fr $DATABASE/tls/server.crt
 fi
 if [ ! -f "$DATABASE/tls/dhparam.pem" ] ; then
-	cp $SOURCE/.secrets/tls/dhparam.pem $DATABASE/tls/dhparam.pem
-fi
-if [ ! -f "$DATABASE/tls/server.key" ] ; then
-	cp $SOURCE/.secrets/tls/server.key $DATABASE/tls/server.key
-fi
-if [ ! -f "$DATABASE/tls/server.crt" ] ; then
-	cp $SOURCE/.secrets/tls/server.crt $DATABASE/tls/server.crt
+	echo "Error: tls dhparam does not exist [$DATABASE/tls/dhparam.pem]."
+	exit 1
 fi
 
 # static files.

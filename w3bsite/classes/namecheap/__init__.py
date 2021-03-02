@@ -478,7 +478,7 @@ class Namecheap(syst3m.objects.Object):
 	):
 
 		# check csr.
-		csr = f"{self.root}/.secrets/tls/server.csr"
+		csr = f"{self.database_path}/tls/server.csr"
 		if not Files.exists(csr):
 			return r3sponse.error(f"There is no tls certificate present.")
 		csr = Files.load(csr)

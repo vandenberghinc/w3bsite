@@ -32,7 +32,7 @@ class Security(_defaults_.Defaults):
 		# check base.
 		base = f"{self.root}/.secrets/"
 		if not Files.exists(base): os.mkdir(base)
-		base = f"{self.root}/.secrets/tls"
+		base = f"{self.database_path}/tls"
 		if not Files.exists(base): os.mkdir(base)
 
 		# check duplicate.
@@ -65,7 +65,7 @@ class Security(_defaults_.Defaults):
 		""")
 
 		# handler.
-		if not Files.exists(f"{self.root}/.secrets/tls/server.key") or not Files.exists(f"{self.root}/.secrets/tls/server.crt"):
+		if not Files.exists(f"{self.database_path}/tls/server.key") or not Files.exists(f"{self.database_path}/tls/server.crt"):
 			os.system(f"rm -fr {base}")
 			return r3sponse.error(f"Failed to generate a tls certificate.")
 		else:
