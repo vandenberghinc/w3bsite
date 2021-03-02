@@ -73,6 +73,9 @@ class Deployment(syst3m.objects.Object):
 					"vps_username":self.vps_username,
 				})
 			if not response.success: return response
+			username = self.vps_username
+		else:
+			username = syst3m.defaults.vars.user
 		
 		# configure before loader.
 		if reinstall:
@@ -122,7 +125,7 @@ class Deployment(syst3m.objects.Object):
 		clean_root = gfp.clean(self.library, remove_last_slash=True, remove_double_slash=True) # <== note the library change instead of root.
 		replacements = {
 			"***ROOT***":clean_root, 
-			"***USER***":self.vps_username, 
+			"***USER***":username, 
 			"***DOMAIN***":self.domain,
 			"***DATABASE***":self.database_path,
 			"***syst3m.defaults.vars.user***":syst3m.defaults.vars.user,
