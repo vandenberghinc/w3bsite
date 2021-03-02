@@ -160,10 +160,9 @@ class View(syst3m.objects.Object):
 	):
 		if template_data == None: template_data = self.template_data
 		if html == None: html = self.html
-		try:
-			return render(request, html, template_data.dict())
-		except AttributeError:
-			return render(request, html, template_data)
+		if isinstance(template_data, (Dictionary, r3sponse.ResponseObject)): 
+			template_data = template_data.raw()
+		return render(request, html, template_data)
 	def get_parameter(self, request, identifier):
 		return r3sponse.get_request_parameter(request, identifiers)
 	def get_parameters(self, request, identifiers=[], optional=False):
@@ -191,22 +190,19 @@ class View(syst3m.objects.Object):
 			"redirect":redirect,
 			"redirect_button":redirect_button,
 		}
-		try:
-			return render(request, f"w3bsite/classes/apps/defaults/html/error.html", template_data.dict())
-		except AttributeError:
-			return render(request, f"w3bsite/classes/apps/defaults/html/error.html", template_data)
+		if isinstance(template_data, (Dictionary, r3sponse.ResponseObject)): 
+			template_data = template_data.raw()
+		return render(request, f"w3bsite/classes/apps/defaults/html/error.html", template_data)
 	def maintenance(self, request, template_data=None):
 		if template_data == None: template_data = self.template_data
-		try:
-			return render(request, f"w3bsite/classes/apps/defaults/html/maintenance.html", template_data.dict())
-		except AttributeError:
-			return render(request, f"w3bsite/classes/apps/defaults/html/maintenance.html", template_data)
+		if isinstance(template_data, (Dictionary, r3sponse.ResponseObject)): 
+			template_data = template_data.raw()
+		return render(request, f"w3bsite/classes/apps/defaults/html/maintenance.html", template_data)
 	def permission_denied(self, request, template_data=None):
 		if template_data == None: template_data = self.template_data
-		try:
-			return render(request, f"w3bsite/classes/apps/defaults/html/permission_denied.html", template_data.dict())
-		except AttributeError:
-			return render(request, f"w3bsite/classes/apps/defaults/html/permission_denied.html", template_data)
+		if isinstance(template_data, (Dictionary, r3sponse.ResponseObject)): 
+			template_data = template_data.raw()
+		return render(request, f"w3bsite/classes/apps/defaults/html/permission_denied.html", template_data)
 
 # template data object.
 class TemplateData(syst3m.objects.Object):
@@ -214,6 +210,9 @@ class TemplateData(syst3m.objects.Object):
 		# defaults.
 		syst3m.objects.Object.__init__(self)
 		self.assign(data)
+	# return raw data.
+	def raw(self):
+		return self.attributes()
 		
 
 #
