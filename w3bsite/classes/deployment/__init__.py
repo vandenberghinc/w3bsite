@@ -65,13 +65,14 @@ class Deployment(syst3m.objects.Object):
 	def configure(self, reinstall=False, log_level=0):
 		
 		# check arguments.
-		response = r3sponse.check_parameters(
-			traceback=self.__traceback__(function="configure"),
-			parameters={
-				"vps_ip":self.vps_ip,
-				"vps_username":self.vps_username,
-			})
-		if not response.success: return response
+		if self.remote in ["vps"]:
+			response = r3sponse.check_parameters(
+				traceback=self.__traceback__(function="configure"),
+				parameters={
+					"vps_ip":self.vps_ip,
+					"vps_username":self.vps_username,
+				})
+			if not response.success: return response
 		
 		# configure before loader.
 		if reinstall:
