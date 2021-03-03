@@ -33,10 +33,14 @@ class Database(syst3m.objects.Traceback):
 			return self.cache.load(group=path, format=format)
 	def save(self, path=None, data=None, format="str"):
 		if path == None: return r3sponse.error(self.__traceback__(function="save")+" Define parameter: [path].")
+		if data == None: return r3sponse.error(self.__traceback__(function="save")+" Define parameter: [data].")
 		if self.firestore != None:
 			return self.firestore.save(path, data)
 		elif self.cache != None:
-			return self.cache.save(group=path, data=data, format=format)
+			try:
+				self.cache.save(group=path, data=data, format=format)
+			except Exception as e: return r3sponse.error(str(e))
+			return r3sponse.success("Successfully saved [{path}].")
 	def delete(self, path=None, data=None, format="str"):
 		if path == None: return r3sponse.error(self.__traceback__(function="delete")+" Define parameter: [path].")
 		if self.firestore != None:
