@@ -246,7 +246,10 @@ class Users(_defaults_.Defaults):
 		filter="django",
 	):
 		if filter == "django":
-			return DjangoUser.objects.filter(username=username, email=email).exists()
+			if email != None:
+				return DjangoUser.objects.filter(email=email).exists()
+			elif username != None:
+				return DjangoUser.objects.filter(username=username).exists()
 		else: 
 			raise ValueError(f"Invalid filter [{filter}], valid options: [django].")
 	def authenticate(self,
