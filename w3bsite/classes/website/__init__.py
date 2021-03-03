@@ -430,7 +430,6 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		self.security = security.Security(
 			defaults=self.defaults,)
 		if self.firebase_enabled and syst3m.defaults.vars.os not in ["macos"]:
-			print("INITIALIZE FIREBASE DB")
 			from w3bsite.classes import firebase
 			self.firebase = firebase.Firebase(
 				key=self.firebase_admin,
@@ -441,7 +440,6 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 				firestore=self.firebase.firestore,
 				path=self.database,)
 		else:
-			print(f"INITIALIZE LOCAL DB [{self.database}].")
 			self.firebase = None
 			self.firestore = None
 			self.db = _database_.Database(path=self.database)
