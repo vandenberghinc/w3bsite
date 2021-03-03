@@ -3,6 +3,14 @@
 
 # imports.
 from w3bsite.classes.config import *
+if not syst3m.env.get("MIGRATIONS", format=bool, default=False):
+	try:
+		from django.contrib.auth.models import User as DjangoUser
+		from django.contrib.auth import authenticate, login
+		from django.contrib.auth import login as _login_
+	except Exception as e:
+		if syst3m.env.get_boolean("DJANGO_RUNNING") == True:
+			raise ValueError(e)
 try:
 	from w3bsite.classes.firebase import *
 	from firebase_admin import credentials, auth, firestore, _auth_utils
