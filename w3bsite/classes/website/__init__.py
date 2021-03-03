@@ -250,6 +250,8 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 			traceback=self.__traceback__(),
 			parameters={
 				"root":self.root,
+				"database":self.database,
+				"library":self.library,
 				"name":self.name,
 				"organization":self.organization,
 				"domain":self.domain,
