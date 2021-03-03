@@ -173,9 +173,6 @@ class Users(_defaults_.Defaults):
 		# objects.
 		self.firestore = firestore
 
-		# variables.
-		self.users_collection = "users/"
-
 		#
 	def get(self, 
 		# define one of the following parameters.
@@ -340,7 +337,7 @@ class Users(_defaults_.Defaults):
 				error = e
 			if not success:
 				return r3sponse.error(f"Failed to delete user [{uid}], error: {error}")
-			response = self.firestore.delete(f"{self.users_collection}/{uid}")
+			response = self.firestore.delete(f"{self.users_subpath}/{uid}")
 			if not response.success: return response
 			return r3sponse.success(f"Successfully deleted user [{uid}].")
 		else:

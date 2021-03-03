@@ -23,10 +23,12 @@ class Defaults(syst3m.objects.Object):
 		organization_unit=None,
 		developers=None,
 		remote=None,
-		live=None,
-		interactive=None,
-		_2fa=None,
+		live=True,
+		interactive=False,
+		_2fa=False,
 		maintenance=False,
+		users_subpath="users/",
+		id_by_username=False,
 		# objects.
 		template_data=None,
 		aes=None,
@@ -58,6 +60,8 @@ class Defaults(syst3m.objects.Object):
 		self.organization_unit = organization_unit
 		self._2fa = _2fa
 		self._maintenance_ = maintenance
+		self.users_subpath = users_subpath
+		self.id_by_username = id_by_username
 
 		# objects.
 		self.template_data = template_data

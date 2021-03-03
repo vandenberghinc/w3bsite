@@ -153,6 +153,10 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		interactive=False,
 		#	production mode.
 		production=True,
+		# 	the users sub path.
+		users_subpath="users/",
+		# 	id users by username.
+		id_by_username=True,
 		#
 		# the logs.
 		log_level=syst3m.defaults.options.log_level,
@@ -221,6 +225,8 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		self.namecheap_enabled = namecheap_enabled
 		self.email_enabled = email_enabled
 		self.log_level = log_level
+		self.users_subpath = users_subpath
+		self.id_by_username = id_by_username
 		# checks.
 		if self.database == None: self.database = f"/etc/{self.domain}/"
 		if self.library == None: self.library = f"/usr/local/lib/{self.domain}/"
@@ -420,6 +426,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 			interactive=self.interactive,
 			_2fa=self._2fa,
 			maintenance=self.maintenance,
+			users_subpath=self.users_subpath,
 			template_data=self.template_data,
 			aes=self.aes,
 			logging=self.logging,)
@@ -846,6 +853,8 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 			"namecheap_enabled":self.namecheap_enabled,
 			"email_enabled":self.email_enabled,
 			"log_level":self.log_level,
+			"users_subpath":self.users_subpath,
+			"id_by_username":self.id_by_username,
 		}
 
 		# save all secret variables in secrets.
@@ -950,6 +959,8 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		self.namecheap_enabled = serialized["namecheap_enabled"]
 		self.email_enabled = serialized["email_enabled"]
 		self.log_level = serialized["log_level"]
+		self.users_subpath = serialized["users_subpath"]
+		self.id_by_username = serialized["id_by_username"]
 
 		# load secrets.
 		local_security = security.Security(

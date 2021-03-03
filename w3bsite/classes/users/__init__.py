@@ -56,9 +56,6 @@ class Users(_defaults_.Defaults):
 		self.stripe = stripe
 		self.django = django
 
-		# settings for saving user data.
-		self.users_collection = "users/"
-
 		# default user data.
 		self.default_user_data = {
 			# default data.
@@ -121,8 +118,14 @@ class Users(_defaults_.Defaults):
 		if not response.success: return response
 		user = response.user
 
+		# try load existing data.
+		response = self.db.load_data(email=email, username=username)
+		if response.success:
+			data = Dictionary(data).check(default=dict(self.default_user_data))
+		else:
+			data = dict(self.default_user_data)
+
 		# save new user data.
-		data = dict(self.default_user_data)
 		data["timestamps"]["signed_up"] = Date().date
 		data["api_key"] = String("").generate(length=68, capitalize=True, digits=True)
 		_response_ = self.aes.encrypt(password)
@@ -133,7 +136,7 @@ class Users(_defaults_.Defaults):
 		data["account"]["email"] = email
 		data["account"]["name"] = name
 		data["account"]["password"] = _response_["encrypted"].decode()
-		response = self.save_data(email, data)
+		response = self.save_data(email=email, username=username, data=data)
 		if not response.success: return response
 
 		# insert api key cache.
@@ -141,6 +144,7 @@ class Users(_defaults_.Defaults):
 		except AttributeError: self.__api_keys__ = {}
 		self.__api_keys__[data["api_key"]] = {
 			"email":email,
+			"username":username
 		}
 
 		# handle success.
@@ -192,7 +196,7 @@ class Users(_defaults_.Defaults):
 		user = response.user
 
 		# update firestore.
-		response = self.load_data(email=email)
+		response = self.load_data(email=email, username=username)
 		if not response.success: return response
 		data, edits = response.data, 0
 		if email != None:
@@ -202,12 +206,12 @@ class Users(_defaults_.Defaults):
 			edits += 1
 			data["account"]["name"] = name
 		if edits > 0:
-			response = self.save_data(email=email, data=data)
+			response = self.save_data(email=email, username=username, data=data)
 			if not response.success: return response
 
 		# save pass.
 		if password != None:
-			response = self.save_password(email=user.email, password=password)
+			response = self.save_password(email=user.email, username=username, password=password)
 			if not response.success: return response
 
 		# handle success.
@@ -217,22 +221,24 @@ class Users(_defaults_.Defaults):
 	def delete(self, 
 		# the user's email.
 		email=None,
+		# the user's username.
+		username=None,
 	):
 		
 		# check parameters.
 		response = r3sponse.check_parameters(
 			traceback=self.__traceback__(function="delete"),
 			parameters={
-				"email":email,
+				#"email":email,
 			})
 		if not response.success: return response
 
 		# delete django user.
-		response = self.django.users.delete(email=email,)
+		response = self.django.users.delete(username=username, email=email)
 		if not response.success: return response
 
 		# delete firestore data.
-		response = self.db.delete(f"{self.users_collection}/{email}/")
+		response = self.db.delete(self.__get_path__(email=email, username=username))
 		if not response.success: return response
 
 		# handle success.
@@ -346,15 +352,17 @@ class Users(_defaults_.Defaults):
 	def load_data(self,
 		# the user's email.
 		email=None,
+		# the user's username.
+		username=None,
 	):	
 		# new.
 		response = r3sponse.check_parameters(
 			traceback=self.__traceback__(function="load_data"),
 			parameters={
-				"email":email,
+				#"email":email,
 			})
 		if not response.success: return response
-		response = self.db.load(f"{self.users_collection}/{email}/", format="json")
+		response = self.db.load(self.__get_path__(email=email, username=username), format="json")
 		if response.error != None: return response
 		return r3sponse.success(f"Successfully loaded the data of user [{email}].", {
 			"data":response["document"],
@@ -362,6 +370,8 @@ class Users(_defaults_.Defaults):
 	def save_data(self,
 		# the user's email.
 		email=None,
+		# the user's username.
+		username=None,
 		# the user's data.
 		data={},
 	):
@@ -369,10 +379,10 @@ class Users(_defaults_.Defaults):
 		response = r3sponse.check_parameters(
 			traceback=self.__traceback__(function="save_data"),
 			parameters={
-				"email":email,
+				#"email":email,
 			})
 		if not response.success: return response
-		response = self.db.save(f"{self.users_collection}/{email}/", data, format="json")
+		response = self.db.save(self.__get_path__(email=email, username=username), data, format="json")
 		if response.error != None: return response
 		return r3sponse.success(f"Successfully saved the data of user [{email}].")
 	def send_email(self, 
@@ -754,10 +764,10 @@ class Users(_defaults_.Defaults):
 			return r3sponse.error(f"Unable to find api key [{id}].")
 
 		#
-	def set_permission(self, email, permission_id, permission=True):
+	def set_permission(self, email=None, username=None, permission_id=None, permission=True):
 		
 		# load user data.
-		response = self.load_data(email=email) 
+		response = self.load_data(email=email, username=username) 
 		if not response.success: return response
 		data = response["data"]
 
@@ -765,20 +775,20 @@ class Users(_defaults_.Defaults):
 		data["permissions"][permission_id] = permission
 
 		# save data.
-		response = self.save_data(email=email, data=data) 
+		response = self.save_data(email=email, username=username, data=data) 
 		if response.error != None: return response
 
 		# handlers.
 		return r3sponse.success(f"Successfully set the {permission_id} permission of user [{email}] to [{permission}].")
 		#
-	def load_password(self, email=None):
+	def load_password(self, email=None, username=None):
 		response = r3sponse.check_parameters(
 			traceback=self.__traceback__(function="load_password"),
 			parameters={
-				"email":email,
+				#"email":email,
 			})
 		if not response.success: return response
-		response = self.load_data(email)
+		response = self.load_data(email=email, username=username)
 		if not response.success: return response
 		data = response.data
 		_response_ = self.aes.decrypt(data["account"]["password"])
@@ -788,15 +798,15 @@ class Users(_defaults_.Defaults):
 			"password":password,
 			"data":data,
 		})
-	def save_password(self, email=None, password=None):
+	def save_password(self, email=None, username=None, password=None):
 		response = r3sponse.check_parameters(
 			traceback=self.__traceback__(function="save_password"),
 			parameters={
-				"email":email,
+				#"email":email,
 				"password":password,
 			})
 		if not response.success: return response
-		response = self.load_data(email)
+		response = self.load_data(email=email, username=username)
 		if not response.success: return response
 		data = response.data
 		_response_ = self.aes.encrypt(password)
@@ -804,26 +814,40 @@ class Users(_defaults_.Defaults):
 		try:data["account"]
 		except: data["account"] = {}
 		data["account"]["password"] = _response_["encrypted"].decode()
-		response = self.save_data(email, data)
+		response = self.save_data(email=email, username=username, data=data)
 		if not response.success: return response
 		return r3sponse.success(f"Successfully saved the password of user {email}.")
-	def iterate(self, emails=False, firestore=False, combined=False):
+	def iterate(self, emails=False, database=False, combined=False):
 		if combined:
-			firestore = self.iterate(emails=emails, firestore=True)
-			django = self.iterate(emails=emails, firestore=False)
-			return firestore + django
+			database = self.iterate(emails=emails, database=True)
+			django = self.iterate(emails=emails, database=False)
+			return database + django
 		else:
-			if firestore:
-				response = self.firestore.load_collection("users/")
-				if not response.success: raise ValueError(response.error)
-				users = []
-				_emails_ = response["collection"]
-				if not emails:
-					for email in _emails_:
-						users.append(auth.get_user_by_email(email))
-					return users
+			if database:
+				if self.db.mode == "firestore":
+					response = self.firestore.load_collection(self.users_subpath)
+					if not response.success: raise ValueError(response.error)
+					users = []
+					_emails_ = response["collection"]
+					if not emails:
+						for email in _emails_:
+							users.append(auth.get_user_by_email(email))
+						return users
+					else:
+						return _emails_
 				else:
-					return _emails_
+					users = []
+					_emails_ = []
+					dir = 
+					for path in Directory(Files.join(self.database, self.users_subpath)).paths(dirs_only=True):
+						id = fgp.name(path=path)
+						info = self.load_data(username=id, email=id)
+						users.append(info["account"]["username"])
+						_emails_.append(info["account"]["email"])
+					if not emails:
+						return users
+					else:
+						return _emails_
 			else:
 				users, _emails_ = auth.list_users().iterate_all(), []
 				if emails:
@@ -835,45 +859,45 @@ class Users(_defaults_.Defaults):
 	def synchronize(self, 
 		# leave emails=None default to synchronize all users.
 		# optionally pass emails=[newuser@email.com] to synchronize new users.
-		emails=None, 
+		ids=None, 
 	):
 
 		# get all emails.
-		if not isinstance(emails, list):
-			emails = self.iterate(emails=True, firestore=True)
+		if not isinstance(ids, list):
+			ids = self.iterate(emails=True, database=True)
 
 		# iterate.
-		for email in emails: 
+		for id in ids: 
 
 			# check django user existance (in case of sql rebuild).
-			response = self.django.users.exists(email=email)
+			response = self.django.users.exists(email=id, username=id,)
 			if not response.success: return response
 			elif not response.exists:
-				response = self.load_password(email=email)
+				response = self.load_password(email=id, username=id)
 				if not response.success: return response
 				data, password = response.data, response.password
 				response = self.django.users.create(
-					email=email, 
+					email=data["account"]["email"], 
 					password=password, 
 					username=data["account"]["username"], 
 					name=data["account"]["name"])
 				if not response.success: return response
 
 			# get user.
-			response = self.get(email=email)
+			response = self.get(email=id, username=id)
 			if not response.success: return response
 			user = response["user"]
 
 			# load data.
-			response = self.load_data(email=email)
+			response = self.load_data(email=id, username=id)
 			if not response.success: return response
 			data, edits = response["data"], 0
 
 			# check user data.
 			d = Dictionary(dictionary=data, path=False)
 			old = dict(data)
-			data = d.check(default=self.default_user_data)
-			if old != data:
+			data = d.check(default=dict(self.default_user_data))
+			if Dictionary(old) != Dictionary(data):
 				edits += 1
 
 			# check user data.
@@ -885,11 +909,11 @@ class Users(_defaults_.Defaults):
 
 			# edits.
 			if edits > 0:
-				response = self.save_data(email=email, data=data)
+				response = self.save_data(email=id, username=id, data=data)
 				if not response.success: return response
 
 		# success.
-		return r3sponse.success(f"Successfully synchronized {len(emails)} user(s).")
+		return r3sponse.success(f"Successfully synchronized {len(ids)} user(s).")
 
 		#
 	# system functions.
@@ -953,11 +977,12 @@ class Users(_defaults_.Defaults):
 		if cache_api_keys or refresh:
 			api_keys = {}
 			for email in self.iterate(emails=True, combined=True):
-				response = self.load_data(email=email)
+				response = self.load_data(email=email, username=email,)
 				if not response.success: return response
 				_api_key_ = response["data"]["api_key"]
 				api_keys[_api_key_] = {
 					"email":email,
+					"username":username,
 				}
 
 		# set cache.
@@ -970,5 +995,22 @@ class Users(_defaults_.Defaults):
 		})
 
 		#
-
+	def __get_path__(self, email=None, username=None):
+		if self.id_by_username:
+			if username == None and email != None:
+				response = self.get(email=email)
+				if not response.success: response.crash()
+				username = response.user.username
+			id = username
+		else:
+			if email == None and username != None:
+				response = self.get(username=username)
+				if not response.success: response.crash()
+				email = response.user.email
+			id = email
+		if self.db.mode == "cache" and Files.exists(f"{self.database}/{self.users_subpath}/{id}/settings"):
+			path = f"{self.users_subpath}/{id}/settings"
+		else:
+			path = f"{self.users_subpath}/{id}"
+		return path
 	

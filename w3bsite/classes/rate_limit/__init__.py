@@ -24,6 +24,7 @@ class RateLimit(_defaults_.Defaults):
 		# user identification options (select one option):
 		#	option 1: user email.
 		email=None, 
+		username=None,
 		#	option 2: the requests ip.
 		ip=None, 
 		# rate lmit mode id.
@@ -44,7 +45,7 @@ class RateLimit(_defaults_.Defaults):
 		# by email.
 		reference = None
 		if email != None:
-			reference = f"users/{email}"
+			reference = self.__get_path__(username=username, email=email)
 
 		# by ip.
 		elif ip != None:
@@ -86,6 +87,7 @@ class RateLimit(_defaults_.Defaults):
 		# user identification options (select one option):
 		#	option 1: user email.
 		email=None, 
+		username=None,
 		#	option 2: the requests ip.
 		ip=None, 
 		# rate lmit mode id.
@@ -110,7 +112,7 @@ class RateLimit(_defaults_.Defaults):
 		# by email.
 		reference = None
 		if email != None:
-			reference = f"users/{email}"
+			reference = self.__get_path__(username=username, email=email)
 
 		# by ip.
 		elif ip != None:
@@ -157,5 +159,23 @@ class RateLimit(_defaults_.Defaults):
 			return r3sponse.success(f"Successfully verified the {mode} rate limit.")
 		else:
 			return r3sponse.error(f"You have exhausted your {mode} rate limit.")
+	def __get_path__(self, email=None, username=None):
+		if self.id_by_username:
+			if username == None and email != None:
+				response = self.get(email=email)
+				if not response.success: response.crash()
+				username = response.user.username
+			id = username
+		else:
+			if email == None and username != None:
+				response = self.get(username=username)
+				if not response.success: response.crash()
+				email = response.user.email
+			id = email
+		if self.db.mode == "cache" and Files.exists(f"{self.database}/{self.users_subpath}/{id}/settings"):
+			path = f"{self.users_subpath}/{id}/settings"
+		else:
+			path = f"{self.users_subpath}/{id}"
+		return path
 
 		

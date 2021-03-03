@@ -68,32 +68,6 @@ class Requests(_defaults_.Defaults):
 			_response_ = self.rate_limit.increment(ip=utils.get_client_ip(request), mode="signup")
 			if not _response_.success: return _response_
 
-			# post sign up.
-			"""
-			_response_ = self.users.load_data(email=parameters["email"])
-			if not _response_.success: return self.response(_response_)
-			data = _response_["data"]
-			rsa = w3bsite.rsa.RSA()
-			_response_ = rsa.generate_keys()
-			if not _response_.success: return self.response(_response_)
-			_response_ = self.aes.encrypt(rsa.public_key_pem)
-			if not _response_.success: return self.response(_response_)
-			public_key = _response_["encrypted"]
-			_response_ = self.aes.encrypt(rsa.private_key_pem)
-			if not _response_.success: return self.response(_response_)
-			private_key = _response_["encrypted"]
-			data["rsa"] = {
-				"public_key":public_key.decode(),
-				"private_key":private_key.decode(),
-			}
-			_response_ = self.aes.encrypt(parameters["password"])
-			if not _response_.success: return self.response(_response_)
-			data["account"] = {
-				"password":_response_["encrypted"].decode(),
-			}
-			_response_ = self.users.save_data(email=parameters["email"], data=data)
-			if not _response_.success: return self.response(_response_)
-			"""
 
 			# send activation code.
 			_response_ = self.send_code.send_code(email=parameters["email"], mode="activation", request=request)
@@ -267,7 +241,7 @@ class Requests(_defaults_.Defaults):
 				verify_password=parameters["verify_password"],)
 			if response.success: 
 				response["message"] = f"Succesfully resetted the password of user [{user.email}]."
-				_response_ = self.users.save_password(email=user.email, password=parameters["password"])
+				_response_ = self.users.save_password(email=user.email, username=user.username, password=parameters["password"])
 				if not _response_.success: return self.response(_response_)
 			return self.response(response)
 
