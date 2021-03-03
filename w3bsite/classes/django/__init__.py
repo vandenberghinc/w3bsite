@@ -38,7 +38,6 @@ class Django(_defaults_.Defaults):
 	def start(self, host="127.0.0.1", port="8000", production=False):
 
 		# import main.
-		os.system(f"export PRODUCTION='{production}'")
 		syst3m.env.set("PRODUCTION", str(production))
 		self.migrations()
 		if syst3m.defaults.options.log_level >= 1:
