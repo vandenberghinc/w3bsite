@@ -185,12 +185,12 @@ class Django(_defaults_.Defaults):
 			r3sponse.log(f"Checking the {ALIAS} webserver migrations.")
 		if not Files.exists(f"{self.database}/data/"): os.mkdir(f"{self.database}/data/")
 		if not Files.exists(f"{self.database}/data/db.sqlite3"):
-			os.system(f"cd {self.source}/ && . .secrets/env.sh && export MIGRATIONS='true' && ./manage.py migrate")
+			os.system(f"cd {self.root}/ && . .secrets/env.sh && export MIGRATIONS='true' && ./manage.py migrate")
 	def collect_static(self, log_level=syst3m.defaults.options.log_level):
 		if log_level >= 1:
 			r3sponse.log(f"Checking the {ALIAS} webserver migrations.")
 		if not Files.exists(f"{self.database}/data/"): os.mkdir(f"{self.database}/data/")
-		os.system(f"cd {self.source}/ && . .secrets/env.sh && export MIGRATIONS='true' && ./manage.py collectstatic")
+		os.system(f"cd {self.root}/ && . .secrets/env.sh && export MIGRATIONS='true' && ./manage.py collectstatic")
 
 # the django database users.
 class Users(_defaults_.Defaults):
