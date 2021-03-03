@@ -35,15 +35,16 @@ class Django(_defaults_.Defaults):
 		self.users = Users(defaults=defaults)
 
 		#
-	def start(self, address="127.0.0.1:8000"):
+	def start(self, host="127.0.0.1", port="8000", production=False):
 
 		# import main.
+		syst3m.env.set("PRODUCTION", str(production))
 		self.migrations()
 		if syst3m.defaults.options.log_level >= 1:
 			r3sponse.log(f"Starting {self.name}.", save=True)
 		os.chdir(self.root)
 		import manage
-		sys.argv = [f"{self.root}/manage.py", "runserver", address]
+		sys.argv = [f"{self.root}/manage.py", "runserver", f"{host}:{port}"]
 		manage.main()
 
 		### OLD
@@ -83,7 +84,7 @@ class Django(_defaults_.Defaults):
 			os.system(f"pkill -9 -f {file.file_path.name()}")
 			file.file_path.delete(forced=True)
 		'''
-		
+
 		# handlers.
 		return r3sponse.success(f"Successfully stopped website [{self.root}].")
 
