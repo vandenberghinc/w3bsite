@@ -154,6 +154,8 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		#	production mode.
 		production=True,
 		#
+		# the logs.
+		log_level=syst3m.defaults.options.log_level,
 		#
 		# 
 		# optionally initizialize from a serialized dict (for config.py) (still requires parameters: root).
@@ -217,6 +219,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		self.stripe_enabled = stripe_enabled
 		self.namecheap_enabled = namecheap_enabled
 		self.email_enabled = email_enabled
+		self.log_level = log_level
 		# checks.
 		if self.database == None: self.database = f"/etc/{self.domain}/"
 		if self.library == None: self.library = f"/usr/local/lib/{self.domain}/"
@@ -841,6 +844,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 			"stripe_enabled":self.stripe_enabled,
 			"namecheap_enabled":self.namecheap_enabled,
 			"email_enabled":self.email_enabled,
+			"log_level":self.log_level,
 		}
 
 		# save all secret variables in secrets.
@@ -893,7 +897,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 			"DATABASE":self.database,
 			"PRODUCTION":self.production,
 			"MAINTENANCE":self.maintenance,
-			"LOG_LEVEL":LOG_LEVEL,
+			"LOG_LEVEL":self.log_level,
 		})
 
 		# save.
@@ -944,6 +948,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		self.stripe_enabled = serialized["stripe_enabled"]
 		self.namecheap_enabled = serialized["namecheap_enabled"]
 		self.email_enabled = serialized["email_enabled"]
+		self.log_level = serialized["log_level"]
 
 		# load secrets.
 		local_security = security.Security(
