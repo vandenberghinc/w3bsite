@@ -167,6 +167,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 
 		# w3bsite values.
 		self.SOURCE_PATH = SOURCE_PATH
+		syst3m.env.set("WEBSITE_BASE", fgp.base(SOURCE_PATH))
 
 		# argurments.
 		if root != None:
