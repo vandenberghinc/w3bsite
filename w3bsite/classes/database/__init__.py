@@ -3,6 +3,7 @@
 
 # imports.
 from w3bsite.classes.config import *
+from w3bsite.classes import exceptions
 
 # the database class.
 class Database(syst3m.objects.Traceback):
@@ -10,6 +11,9 @@ class Database(syst3m.objects.Traceback):
 		
 		# traceback.
 		syst3m.objects.Traceback.__init__(self, traceback="w3bsite.Website.database")
+
+		# checks.
+		if firestore == None and path == None: raise exceptions.InvalidUsage(self.__traceback__()+" Both parameters firestore & path are None.")
 
 		# attributes.
 		self.firestore = firestore
@@ -40,7 +44,7 @@ class Database(syst3m.objects.Traceback):
 			try:
 				self.cache.save(group=path, data=data, format=format)
 			except Exception as e: return r3sponse.error(str(e))
-			return r3sponse.success("Successfully saved [{path}].")
+			return r3sponse.success(f"Successfully saved [{path}].")
 	def delete(self, path=None, data=None, format="str"):
 		if path == None: return r3sponse.error(self.__traceback__(function="delete")+" Define parameter: [path].")
 		if self.firestore != None:
