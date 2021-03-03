@@ -838,7 +838,6 @@ class Users(_defaults_.Defaults):
 				else:
 					users = []
 					_emails_ = []
-					dir = 
 					for path in Directory(Files.join(self.database, self.users_subpath)).paths(dirs_only=True):
 						id = fgp.name(path=path)
 						info = self.load_data(username=id, email=id)
