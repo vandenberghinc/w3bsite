@@ -930,7 +930,7 @@ class Users(_defaults_.Defaults):
 
 		# set cache.
 		if refresh or cache_subscriptions:
-			self.__subscriptions__. = subscriptions
+			self.__subscriptions__ = subscriptions
 
 		# handler.
 		return r3sponse.success("Successfully retrieved the stripe subscriptions cache.", {
