@@ -39,7 +39,7 @@ class Database(syst3m.objects.Traceback):
 			return self.firestore.load(path)
 		elif self.mode == "cache":
 			try:
-				data = self.cache.load(group=path, format=format)
+				data = self.cache.get(group=path, format=format)
 			except Exception as e: return r3sponse.error(str(e))
 			return r3sponse.success(f"Successfully loaded [{path}].", {
 				"data":data,
@@ -52,7 +52,7 @@ class Database(syst3m.objects.Traceback):
 			return self.firestore.save(path, data)
 		elif self.mode == "cache":
 			try:
-				self.cache.save(group=path, data=data, format=format)
+				self.cache.set(group=path, data=data, format=format)
 			except Exception as e: return r3sponse.error(str(e))
 			return r3sponse.success(f"Successfully saved [{path}].")
 		else: raise exceptions.InvalidUsage(self.__traceback__(function="save")+f" Unknown mode [{self.mode}].")
