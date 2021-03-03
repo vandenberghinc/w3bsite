@@ -137,10 +137,11 @@ class Users(_defaults_.Defaults):
 		if not response.success: return response
 
 		# insert api key cache.
-		if "api_keys" in list(self.cache.__cache__.keys()):
-			self.cache.__cache__["api_keys"]["value"][data["api_key"]] = {
-				"email":email,
-			}
+		try: self.__api_keys__
+		except AttributeError: self.__api_keys__ = {}
+		self.__api_keys__[data["api_key"]] = {
+			"email":email,
+		}
 
 		# handle success.
 		return r3sponse.success(f"Successfully created user [{email}].", {
@@ -914,11 +915,12 @@ class Users(_defaults_.Defaults):
 
 		# get cache.
 		subscriptions, cache_subscriptions = {}, False
-		response = self.cache.get(key="subscriptions")
-		if not response.success: 
+		if refresh: self.__subscriptions__ = {}
+		try:
+			subscriptions = self.__subscriptions__
+		except AttributeError:
+			self.__subscriptions__ = {}
 			cache_subscriptions = True
-		else:
-			subscriptions = response["value"]
 
 		# collect cache.
 		if refresh or cache_subscriptions:
@@ -928,8 +930,7 @@ class Users(_defaults_.Defaults):
 
 		# set cache.
 		if refresh or cache_subscriptions:
-			response = self.cache.set(key="subscriptions", value=subscriptions, reset=60)
-			if not response.success: return response
+			self.__subscriptions__. = subscriptions
 
 		# handler.
 		return r3sponse.success("Successfully retrieved the stripe subscriptions cache.", {
@@ -941,11 +942,12 @@ class Users(_defaults_.Defaults):
 		
 		# get cache.
 		api_keys, cache_api_keys = {}, False
-		response = self.cache.get(key="api_keys")
-		if not response.success: 
+		if refresh: self.__api_keys__ = {}
+		try:
+			subscriptions = self.__subscriptions__
+		except AttributeError:
+			self.__api_keys__ = {}
 			cache_api_keys = True
-		else:
-			api_keys = response["value"]
 
 		# collect cache.
 		if cache_api_keys or refresh:
@@ -960,8 +962,7 @@ class Users(_defaults_.Defaults):
 
 		# set cache.
 		if cache_api_keys or refresh:
-			response = self.cache.set(key="api_keys", value=api_keys, reset=60*24)
-			if not response.success: return response
+			self.__api_keys__ = api_keys
 
 		# handler.
 		return r3sponse.success("Successfully retrieved the api keys cache.", {
