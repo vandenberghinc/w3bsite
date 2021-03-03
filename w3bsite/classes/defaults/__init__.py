@@ -30,7 +30,6 @@ class Defaults(syst3m.objects.Object):
 		# objects.
 		template_data=None,
 		aes=None,
-		cache=None,
 		logging=None,
 		# defaults.
 		traceback="w3bsite.Website.defaults",
@@ -63,7 +62,6 @@ class Defaults(syst3m.objects.Object):
 		# objects.
 		self.template_data = template_data
 		self.aes = aes
-		self.cache = cache
 		self.logging = logging
 
 		#

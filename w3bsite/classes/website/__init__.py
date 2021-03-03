@@ -3,7 +3,7 @@
 
 # imports.
 from w3bsite.classes.config import *
-from w3bsite.classes import security, heroku, namecheap, utils, git, users, stripe, logging, rate_limit, aes, deployment, vps, cache, defaults, apps, views
+from w3bsite.classes import security, heroku, namecheap, utils, git, users, stripe, logging, rate_limit, aes, deployment, vps, defaults, apps, views
 from w3bsite.classes import database as _database_
 import django as pypi_django
 
@@ -400,7 +400,6 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 			root=self.root,)
 		self.aes = aes.AES(
 			passphrase=self.aes_master_key)
-		self.cache = cache.Cache()
 		self.defaults = defaults.Defaults(
 			root=self.root,
 			library=self.library,
@@ -423,7 +422,6 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 			maintenance=self.maintenance,
 			template_data=self.template_data,
 			aes=self.aes,
-			cache=self.cache,
 			logging=self.logging,)
 
 		# objects.
