@@ -14,6 +14,7 @@ from w3bsite.classes import email
 class Users(_defaults_.Defaults):
 	def __init__(self,
 		# noreply email settings.
+		email_enabled=True,
 		email_address=None, 
 		email_password=None, 
 		smtp_host="smtp.gmail.com", 
@@ -33,6 +34,7 @@ class Users(_defaults_.Defaults):
 		self.assign(defaults.dict())
 
 		# variables.
+		self.email_enabled = email_enabled
 		self.email_address = email_address
 		self.email_password = email_password
 		self.smtp_host = smtp_host 
@@ -883,6 +885,8 @@ class Users(_defaults_.Defaults):
 	# system functions.
 	def __initialize_email__(self):
 		# the email object.
+		if not self.email_enabled:
+			return r3sponse.error("The email object is disabled.")
 		if self.email_address == None or self.email_password == None:
 			return r3sponse.error("Define the firebase.users.email_address & firebase.users.email_password variables to send emails.")
 		self.email = email.Email(

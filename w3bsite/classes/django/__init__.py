@@ -35,8 +35,19 @@ class Django(_defaults_.Defaults):
 		self.users = Users(defaults=defaults)
 
 		#
-	def start(self):
+	def start(self, address="127.0.0.1:8000"):
 
+		# import main.
+		self.migrations()
+		if syst3m.defaults.options.log_level >= 1:
+			r3sponse.log(f"Starting {self.name}.", save=True)
+		os.chdir(self.root)
+		import manage
+		sys.argv = [f"{self.root}/manage.py", "runserver", address]
+		manage.main()
+
+		### OLD
+		'''
 		# check migrations.
 		migrations = ""
 		if not Files.exists(f"{self.database}/data/db.sqlite3"):
@@ -71,7 +82,8 @@ class Django(_defaults_.Defaults):
 			self.django_process.terminate()
 			os.system(f"pkill -9 -f {file.file_path.name()}")
 			file.file_path.delete(forced=True)
-
+		'''
+		
 		# handlers.
 		return r3sponse.success(f"Successfully stopped website [{self.root}].")
 
@@ -167,6 +179,17 @@ class Django(_defaults_.Defaults):
 
 		# handlers.
 		return r3sponse.success(f"Successfully created app [{name}].")
+	def migrations(self, log_level=syst3m.defaults.options.log_level):
+		if log_level >= 1:
+			r3sponse.log(f"Checking the {ALIAS} webserver migrations.")
+		if not Files.exists(f"{self.database}/data/"): os.mkdir(f"{self.database}/data/")
+		if not Files.exists(f"{self.database}/data/db.sqlite3"):
+			os.system(f"cd {self.source}/ && . .secrets/env.sh && export MIGRATIONS='true' && ./manage.py migrate")
+	def collect_static(self, log_level=syst3m.defaults.options.log_level):
+		if log_level >= 1:
+			r3sponse.log(f"Checking the {ALIAS} webserver migrations.")
+		if not Files.exists(f"{self.database}/data/"): os.mkdir(f"{self.database}/data/")
+		os.system(f"cd {self.source}/ && . .secrets/env.sh && export MIGRATIONS='true' && ./manage.py collectstatic")
 
 # the django database users.
 class Users(_defaults_.Defaults):
@@ -286,7 +309,7 @@ class Users(_defaults_.Defaults):
 			if user is not None: a=1
 			else:
 				response["error"] = f"Invalid verification."
-				utils.__log__(f"Invalid verification attempt for user [{username}] ip address [{ip}].")
+				r3sponse.log(f"Invalid verification attempt for user [{username}] ip address [{ip}].")
 				return response
 
 			# success.

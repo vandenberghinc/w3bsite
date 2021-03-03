@@ -60,6 +60,8 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		aes_master_key=None,
 		#
 		# Namecheap.
+		#	namecheap enabled.
+		namecheap_enabled=True,
 		# 	your namecheap username.
 		namecheap_username=None,
 		# 	your namecheap api key.
@@ -75,7 +77,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		#
 		# Stripe.
 		# enable strip.e
-		stripe_enabled=False,
+		stripe_enabled=True,
 		# 	your stripe secret key (str) [https://stripe.com > Dashboard > Developer > API Keys > Secret Key].
 		stripe_secret_key=None,
 		# 	your stripe publishable key (str) [https://stripe.com > Dashboard > Developer > API Keys > Secret Key].
@@ -128,6 +130,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		#
 		# Smtp Email
 		# 	sending emails [https://gmail.com > Security > Enable Unsafe 3th party applications].
+		email_enabled=True,
 		email_address=None,
 		email_password=None,
 		email_smtp_host="smtp.gmail.com",
@@ -197,7 +200,8 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		self.stripe_subscriptions = stripe_subscriptions
 		self.stripe_products = stripe_products
 		self.developers = developers
-		self.remote = remote.lower()
+		if remote == None: self.remote = remote
+		else: self.remote = remote.lower()
 		self.vps_ip = vps_ip
 		self.vps_port = vps_port
 		self.vps_username = vps_username
@@ -211,6 +215,8 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		self.maintenance = maintenance
 		self.firebase_enabled = firebase_enabled
 		self.stripe_enabled = stripe_enabled
+		self.namecheap_enabled = namecheap_enabled
+		self.email_enabled = email_enabled
 		# checks.
 		if self.database == None: self.database = f"/etc/{self.domain}/"
 		if self.library == None: self.library = f"/usr/local/lib/{self.domain}/"
@@ -241,27 +247,28 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 			parameters={
 				"root":self.root,
 				"name":self.name,
-				"author":self.author,
-				"email":self.email,
-				"city":self.city,
-				"province":self.province,
 				"organization":self.organization,
-				"organization_unit":self.organization_unit,
-				"country_code":self.country_code,
-				"namecheap_username":self.namecheap_username,
-				"namecheap_api_key":self.namecheap_api_key,
 				"domain":self.domain,
-				"firebase_admin":self.firebase_admin,
-				"firebase_js":self.firebase_js,
-				"email_address":self.email_address,
-				"email_password":self.email_password,
-				"email_smtp_host":self.email_smtp_host,
-				"email_smtp_port":self.email_smtp_port,
 				"developers":self.developers,
-				"remote":self.remote,
 				"_2fa":self._2fa,
 			})
 		if not response.success: raise ValueError(response.error)
+
+		# namecheap arguments.
+		if self.namecheap_enabled:
+			response = r3sponse.check_parameters(
+				traceback=self.__traceback__(),
+				parameters={
+					"author":self.author,
+					"email":self.email,
+					"city":self.city,
+					"province":self.province,
+					"organization_unit":self.organization_unit,
+					"country_code":self.country_code,
+					"namecheap_username":self.namecheap_username,
+					"namecheap_api_key":self.namecheap_api_key,
+				})
+			if not response.success: raise ValueError(response.error)
 
 		# firebase arguments.
 		if self.firebase_enabled:
@@ -282,6 +289,18 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 					"stripe_publishable_key":self.stripe_publishable_key,
 					"stripe_subscriptions":self.stripe_subscriptions,
 					"stripe_products":self.stripe_products,
+				})
+			if not response.success: raise ValueError(response.error)
+
+		# email arguments.
+		if self.email_enabled:
+			response = r3sponse.check_parameters(
+				traceback=self.__traceback__(),
+				parameters={
+					"email_address":self.email_address,
+					"email_password":self.email_password,
+					"email_smtp_host":self.email_smtp_host,
+					"email_smtp_port":self.email_smtp_port,
 				})
 			if not response.success: raise ValueError(response.error)
 
@@ -432,7 +451,14 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		os.chdir(gfp.clean(self.root))
 		if not os.path.exists("website/settings.py"): raise ImportError(f"Invalid website hierarchy, unable to find: website.settings, required location: {self.root}/website/settings.py")
 		os.environ.setdefault('DJANGO_SETTINGS_MODULE', f'website.settings')
-		pypi_django.setup()
+		SECRET_KEY = syst3m.env.get("DJANGO_SECRET_KEY", default=None)
+		if SECRET_KEY == None: 
+			SECRET_KEY = String().generate(length=128, capitalize=True, digits=True, special=True)
+		syst3m.env.set("DJANGO_SECRET_KEY", SECRET_KEY)
+		syst3m.env.set("DATABASE", str(self.database))
+		from website import settings
+		try:pypi_django.setup()
+		except: a=1
 		from w3bsite.classes import django
 		self.django = django.Django(
 			security=self.security,
@@ -443,16 +469,19 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 			smtp_host=self.email_smtp_host,
 			smtp_port=self.email_smtp_port,
 			firestore=self.firestore,
+			email_enabled=self.email_enabled,
 			db=self.db,
 			stripe=self.stripe,
 			django=self.django,
 			defaults=self.defaults,)
-		self.namecheap = namecheap.Namecheap(
-			username=self.namecheap_username,
-			api_key=self.namecheap_api_key,
-			root=self.root,
-			domain=self.domain,
-			email=self.email_address,)
+		if self.namecheap_enabled:
+			self.namecheap = namecheap.Namecheap(
+				username=self.namecheap_username,
+				api_key=self.namecheap_api_key,
+				root=self.root,
+				domain=self.domain,
+				email=self.email_address,)
+		else: self.namecheap = None
 		self.git = git.Git(
 			defaults=self.defaults,)#
 		# mode dependend objects.
@@ -484,7 +513,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 				name=self.name,
 				namecheap=self.namecheap,
 				logging=self.logging,)
-		else:
+		elif self.remote != None:
 			raise ValueError(f"Selected an invalid remote [{self.remote}], options: [local, vps, heroku]")
 		self.apps = apps.Apps(
 			rate_limit=self.rate_limit,
@@ -810,6 +839,8 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 			"_2fa":self._2fa,
 			"firebase_enabled":self.firebase_enabled,
 			"stripe_enabled":self.stripe_enabled,
+			"namecheap_enabled":self.namecheap_enabled,
+			"email_enabled":self.email_enabled,
 		}
 
 		# save all secret variables in secrets.
@@ -911,6 +942,8 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		self._2fa = serialized["_2fa"]
 		self.firebase_enabled = serialized["firebase_enabled"]
 		self.stripe_enabled = serialized["stripe_enabled"]
+		self.namecheap_enabled = serialized["namecheap_enabled"]
+		self.email_enabled = serialized["email_enabled"]
 
 		# load secrets.
 		local_security = security.Security(

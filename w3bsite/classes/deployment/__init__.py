@@ -61,6 +61,91 @@ class Deployment(syst3m.objects.Object):
 		self.namecheap = namecheap
 
 		#
+	# live functions.
+	def start(self):
+
+		# execute.
+		command = ""
+		for i in ["gunicorn.socket", "gunicorn", "nginx"]:
+			command += f"sudo systemctl start {i} &&"
+		command = command[:-3]
+		output = syst3m.utils.__execute_script__(command)
+		if output in ["", "\n"]:
+			return r3sponse.success(f"Successfully started {self.name}")
+		else:
+			return r3sponse.error(f"Failed to started {self.name};\n{output}")
+
+		#
+	def stop(self):
+
+		# execute.
+		command = ""
+		for i in ["gunicorn.socket", "gunicorn", "nginx"]:
+			command += f"sudo systemctl stop {i} &&"
+		command = command[:-3]
+		output = syst3m.utils.__execute_script__(command)
+		if output in ["", "\n"]:
+			return r3sponse.success(f"Successfully stopped {self.name}")
+		else:
+			return r3sponse.error(f"Failed to stopped {self.name};\n{output}")
+
+		#
+	def restart(self):
+
+		# execute.
+		command = ""
+		for i in ["gunicorn.socket", "gunicorn", "nginx"]:
+			command += f"sudo systemctl restart {i} &&"
+		command = command[:-3]
+		output = syst3m.utils.__execute_script__(command)
+		if output in ["", "\n"]:
+			return r3sponse.success(f"Successfully restarted {self.name}")
+		else:
+			return r3sponse.error(f"Failed to restarted {self.name};\n{output}")
+
+		#
+	def status(self):
+
+		# execute.
+		response = syst3m.console.execute("sudo systemctl status gunicorn > /tmp/status && cat /tmp/status && rm -fr /tmp/status")
+		if not response.success: return response
+		status = str(response)
+		return r3sponse.success(f"Successfully parsed the status of {self.name}.", {
+			"status":data,
+		})
+
+		#
+	def reset_logs(self):
+
+		# execute.
+		Files.save(f"{self.database}/logs/logs", "")
+		Files.save(f"{self.database}/logs/errors", "")
+		Files.save(f"{self.database}/logs/nginx", "")
+		Files.save(f"{self.database}/logs/nginx.debug", "")
+		return r3sponse.success("Successfully resetted the logs.")
+
+		#
+	def tail(self, nginx=False, debug=False):
+		
+		# execute.
+		if nginx:
+			if debug:
+				data = Files.load(f"/{self.database}/logs/nginx.debug")
+			else:
+				data = Files.load(f"/{self.database}/logs/nginx")
+		else:
+			if debug:
+				data = Files.load(f"{self.database}/logs/logs")
+			else:
+				data = Files.load(f"{self.database}/logs/errors")
+		
+		# handler.
+		return r3sponse.success(f"Successfully tailed the {self.name} logs.", {
+			"logs":data,
+		})
+
+		#
+
 	# configure also for remove:vps & remote:local.
 	def configure(self, reinstall=False, log_level=0, loader=None):
 		
