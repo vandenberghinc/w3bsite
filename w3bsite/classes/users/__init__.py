@@ -87,8 +87,8 @@ class Users(_defaults_.Defaults):
 		username=None,
 		email=None,
 		password=None,
-		verify_password=None,
 		# optionals:
+		verify_password=None,
 		name=None,
 		superuser=False,
 	):
@@ -100,17 +100,15 @@ class Users(_defaults_.Defaults):
 				"username":username,
 				"email":email,
 				"password":password,
-				"verify_password":verify_password,
 			})
 
 		# check password.
 		password = str(password)
-		verify_password = str(verify_password)
 		if len(password) < 8:
 			return r3sponse.error("The password must contain at least 8 characters.")
 		elif password.lower() == password:
 			return r3sponse.error("The password must regular and capital letters.")
-		elif password != verify_password:
+		elif verify_password != None and password != str(verify_password):
 			return r3sponse.error("Passwords do not match.")
 
 		# create django user.
