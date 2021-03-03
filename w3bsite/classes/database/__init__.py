@@ -25,7 +25,7 @@ class Database(syst3m.objects.Traceback):
 			Files.chmod(path=self.path, permission=700, sudo=True)
 			Files.chown(path=self.path, owner=syst3m.defaults.vars.user, group=syst3m.defaults.vars.group, sudo=True)
 		self.cache = None
-		if self.firestore != None:
+		if self.firestore == None:
 			self.cache = syst3m.cache.Cache(path=self.path)
 
 		#
