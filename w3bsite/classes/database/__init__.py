@@ -35,6 +35,7 @@ class Database(syst3m.objects.Traceback):
 			return self.firestore.load(path)
 		elif self.cache != None:
 			return self.cache.load(group=path, format=format)
+		else: raise exceptions.InvalidUsage(self.__traceback__(function="load")+" Both parameters firestore & path are None.")
 	def save(self, path=None, data=None, format="str"):
 		if path == None: return r3sponse.error(self.__traceback__(function="save")+" Define parameter: [path].")
 		if data == None: return r3sponse.error(self.__traceback__(function="save")+" Define parameter: [data].")
@@ -45,12 +46,14 @@ class Database(syst3m.objects.Traceback):
 				self.cache.save(group=path, data=data, format=format)
 			except Exception as e: return r3sponse.error(str(e))
 			return r3sponse.success(f"Successfully saved [{path}].")
+		else: raise exceptions.InvalidUsage(self.__traceback__(function="save")+" Both parameters firestore & path are None.")
 	def delete(self, path=None, data=None, format="str"):
 		if path == None: return r3sponse.error(self.__traceback__(function="delete")+" Define parameter: [path].")
 		if self.firestore != None:
 			return self.firestore.delete(path)
 		elif self.cache != None:
 			return self.cache.delete(group=path)
+		else: raise exceptions.InvalidUsage(self.__traceback__(function="delete")+" Both parameters firestore & path are None.")
 	# str representation.
 	def __str__(self):
 		return str(self.fp.path)
