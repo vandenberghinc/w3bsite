@@ -835,10 +835,10 @@ class Users(_defaults_.Defaults):
 				_emails_ = []
 				for path in Directory(Files.join(self.database, self.users_subpath)).paths(dirs_only=True):
 					id = gfp.name(path=path)
-					info = self.load_data(username=id, email=id).data
-					if info != None:
-						_users_.append(info["account"]["username"])
-						_emails_.append(info["account"]["email"])
+					response = self.load_data(username=id, email=id)
+					if response.success and response.data != None:
+						_users_.append(response.data["account"]["username"])
+						_emails_.append(response.data["account"]["email"])
 				if users:
 					return _users_
 				else:
