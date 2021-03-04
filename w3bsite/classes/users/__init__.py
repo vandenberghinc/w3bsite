@@ -959,6 +959,7 @@ class Users(_defaults_.Defaults):
 		if cache_api_keys or refresh:
 			api_keys = {}
 			for email in self.iterate(emails=True, combined=True):
+				username = utils.__email_to_username__(email)
 				response = self.load_data(email=email, username=email,)
 				if not response.success: return response
 				_api_key_ = response["data"]["api_key"]
@@ -995,4 +996,13 @@ class Users(_defaults_.Defaults):
 		else:
 			path = f"{self.users_subpath}/{id}"
 		return path
-	
+	def __username_to_email__(self, username):
+		try:
+			return self.get(username=username).email
+		except Exception as e:
+			raise ValueError(f"Unable retrieve the email of username [{username}], error: {e}.")
+	def __email_to_username__(self, email):
+		try:
+			return self.get(email=email).username
+		except Exception as e:
+			raise ValueError(f"Unable retrieve the username of email [{email}], error: {e}.")
