@@ -190,6 +190,14 @@ class VPS(_defaults_.Defaults):
 				if log_level >= 0: loader.stop(success=False)
 				return r3sponse.error(f"Failed to deploy website {self.domain} on vps {self.ip}, error (#3): {response.output}.", log_level=log_level)
 
+		# code update restart.
+		else:
+			response = ssht00ls.ssh.command(
+				alias=self.domain,
+				command=f"python3 {self.library}/website.py --restart --non-interactive",
+				log_level=-1,)
+			if not response.success: return response
+
 		# handler.
 		if log_level >= 0: loader.stop()
 		return r3sponse.success(f"Successfully deployed website {self.domain} on vps {self.ip}.", log_level=log_level)
