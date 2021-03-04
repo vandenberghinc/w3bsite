@@ -10,8 +10,7 @@ import xmltodict
 def catch_error(error):
 	r3sponse.log_file = Files.join(syst3m.env.get("DATABASE", default=""), "logs/errors")
 	if not Files.exists(r3sponse.log_file): r3sponse.log_file = None
-	r3sponse.log(traceback.format_exc(), save=True)
-	raise Exception(error)
+	r3sponse.log(message=traceback.format_exc(), save=True)
 
 # get naked domain url.
 def naked_url(domain):
