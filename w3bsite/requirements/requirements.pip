@@ -1,5 +1,8 @@
 
 # pip packages.
+stripe
+xmltodict
+django
 
 # inc packages.
 syst3m>=2.13.9
