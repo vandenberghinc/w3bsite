@@ -924,7 +924,9 @@ class Users(_defaults_.Defaults):
 
 		# get cache.
 		subscriptions, cache_subscriptions = {}, False
-		if refresh: self.__subscriptions__ = {}
+		if refresh: 
+			self.__subscriptions__ = {}
+			cache_subscriptions = Trie
 		try:
 			subscriptions = self.__subscriptions__
 		except AttributeError:
@@ -953,7 +955,7 @@ class Users(_defaults_.Defaults):
 		api_keys, cache_api_keys = {}, False
 		if refresh: self.__api_keys__ = {}
 		try:
-			subscriptions = self.__subscriptions__
+			api_keys = self.__api_keys__
 		except AttributeError:
 			self.__api_keys__ = {}
 			cache_api_keys = True
