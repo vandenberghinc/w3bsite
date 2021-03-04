@@ -378,7 +378,6 @@ class Users(_defaults_.Defaults):
 	):
 		if [username,email] == [None,None]:
 			return r3sponse.error(self.__traceback__(function="load_data")+" Define one of the following parameters [email, username].")
-		print('saving data:',data)
 		response = self.db.save(path=self.__get_path__(email=email, username=username, create=True), data=data)
 		if response.error != None: return response
 		return r3sponse.success(f"Successfully saved the data of user [{email}].")
