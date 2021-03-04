@@ -521,7 +521,7 @@ class Users(_defaults_.Defaults):
 
 			# check api key.
 			for _api_key_, info in api_keys.items():
-				print(f"api_key [{api_key}] vs _api_key_ [{_api_key_}].")
+				#print(f"api_key [{api_key}] vs _api_key_ [{_api_key_}].")
 				if _api_key_ == api_key: 
 					return r3sponse.success(f"Successfully verified api key [{api_key}].", {
 						"email":info["email"],
