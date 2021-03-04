@@ -840,7 +840,7 @@ class Users(_defaults_.Defaults):
 
 		# get all emails.
 		if not isinstance(ids, list):
-			ids = self.iterate(database=True, database=True)
+			ids = self.iterate(users=False, database=True)
 
 		# iterate.
 		api_keys = {}
