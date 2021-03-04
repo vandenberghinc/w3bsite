@@ -145,7 +145,7 @@ fi
 cd $SOURCE
 
 # checks.
-if [ ! -f "$DATABASE/tls/server.key" ] || [ ! -f "$DATABASE/tls/server.crt" ] || [ ! -f "$DATABASE/tls/server.csr" ] ; then
+if [ ! -f "$DATABASE/tls/server.key" ] || [ ! -f "$DATABASE/tls/server.crt" ] ; then
 	echo "Error: tls certificate does not exist [$DATABASE/tls]."
 	exit 1
 fi
