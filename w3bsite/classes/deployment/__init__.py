@@ -55,7 +55,7 @@ class Deployment(syst3m.objects.Object):
 		self.email = email
 
 		# vars.
-		self.live = ...
+		self.live = gfp.clean(self.library, remove_double_slash=True, remove_last_slash=True) in gfp.clean(self.root, remove_double_slash=True, remove_last_slash=True)
 
 		# objects.
 		self.namecheap = namecheap
@@ -163,13 +163,14 @@ class Deployment(syst3m.objects.Object):
 			username = syst3m.defaults.vars.user
 		
 		# configure before loader.
-		if reinstall:
-			os.system(f"rm -fr {self.database}/tls/dhparam.pem")
-		if not Files.exists(f"{self.database}/tls/dhparam.pem"):
-			if loader != None: loader.hold()
-			tmp = "/tmp/dhparam.pem"
-			os.system(f"sudo openssl dhparam -out {tmp} 4096 && sudo chown {syst3m.defaults.vars.user}:{syst3m.defaults.vars.group} {tmp} && mv {tmp} {self.database}/tls/dhparam.pem && sudo chown {syst3m.defaults.vars.user}:{syst3m.defaults.vars.group} {self.database}/tls/dhparam.pem")
-			if loader != None: loader.release()
+		if self.live:
+			if reinstall:
+				os.system(f"rm -fr {self.database}/tls/dhparam.pem")
+			if not Files.exists(f"{self.database}/tls/dhparam.pem"):
+				if loader != None: loader.hold()
+				tmp = "/tmp/dhparam.pem"
+				os.system(f"sudo openssl dhparam -out {tmp} 4096 && sudo chown {syst3m.defaults.vars.user}:{syst3m.defaults.vars.group} {tmp} && mv {tmp} {self.database}/tls/dhparam.pem && sudo chown {syst3m.defaults.vars.user}:{syst3m.defaults.vars.group} {self.database}/tls/dhparam.pem")
+				if loader != None: loader.release()
 
 		# loader.
 		if log_level >= 0: loader = syst3m.console.Loader(f"Configuring deployment of website {self.domain} ...")
@@ -196,16 +197,18 @@ class Deployment(syst3m.objects.Object):
 			output = syst3m.utils.__execute_script__(f"curl https://raw.githubusercontent.com/vandenberghinc/public-storage/master/w3bsite/favicon.ico -o {self.root}/static/favicon.ico")
 
 		# tls.
-		if not Files.exists(f"{self.database}/tls/server.key") and not Files.exists(f"{self.database}/tls/server.crt"):
-			response = self.generate_tls(log_level=log_level)
-			if not response.success: 
-				if log_level >= 0: loader.stop(success=False)
-				return response
+		if self.live:
+			if not Files.exists(f"{self.database}/tls/server.key") and not Files.exists(f"{self.database}/tls/server.crt"):
+				response = self.generate_tls(log_level=log_level)
+				if not response.success: 
+					if log_level >= 0: loader.stop(success=False)
+					return response
 
 		# database.
-		if not Files.exists(self.database): 
-			os.system(f"sudo mkdir -p {self.database} && sudo chown {syst3m.defaults.vars.user}:{syst3m.defaults.vars.group} {self.database} && sudo chmod 770 {self.database}")
-		if not Files.exists(f"{self.database}/logs"): os.mkdir(f"{self.database}/logs")
+		if self.live:
+			if not Files.exists(self.database): 
+				os.system(f"sudo mkdir -p {self.database} && sudo chown {syst3m.defaults.vars.user}:{syst3m.defaults.vars.group} {self.database} && sudo chmod 770 {self.database}")
+			if not Files.exists(f"{self.database}/logs"): os.mkdir(f"{self.database}/logs")
 
 		# deployment.
 		if not Files.exists(f"{self.root}/deployment"): os.mkdir(f"{self.root}/deployment")

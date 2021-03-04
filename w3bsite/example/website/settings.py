@@ -20,7 +20,7 @@ PRODUCTION = syst3m.env.get_boolean("PRODUCTION", default=True)
 DOMAIN = syst3m.env.get_string("DOMAIN")
 DATABASE = syst3m.env.get_string("DATABASE")
 SECRET_KEY = syst3m.env.get_string("DJANGO_SECRET_KEY")
-if syst3m.env.get_integer("LOG_LEVEL") > 0:
+if syst3m.defaults.options.log_level > 0:
     print("**************************")
     print("Initializing settings.py ...")
     print("Production:",PRODUCTION)
@@ -167,5 +167,5 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
-if syst3m.env.get_integer("LOG_LEVEL") > 0:
+if syst3m.defaults.options.log_level > 0:
     print("Initializing settings.py ... done")
