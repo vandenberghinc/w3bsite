@@ -1,8 +1,23 @@
 
 # pip packages.
-stripe
-xmltodict
+wheel
+asgiref
+certifi
+chardet
+Django
+idna
+requests
+sqlparse
+urllib3
+gunicorn
+whitenoise
+psutil
+uwsgi
+gunicorn
+whitenoise
 django
+psycopg2-binary
+xmltodict
 
 # inc packages.
 syst3m>=2.13.9
