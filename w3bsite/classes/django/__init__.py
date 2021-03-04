@@ -38,7 +38,9 @@ class Django(_defaults_.Defaults):
 	def start(self, host="127.0.0.1", port="8000", production=False):
 
 		# import main.
-		syst3m.env.set("PRODUCTION", str(production))
+		syst3m.env.export(export=".secrets/env.json", env={
+			"PRODUCTION": str(production),
+		})
 		self.migrations()
 		if syst3m.defaults.options.log_level >= 1:
 			r3sponse.log(f"Starting {self.name}.", save=True)
@@ -185,12 +187,24 @@ class Django(_defaults_.Defaults):
 			r3sponse.log(f"Checking the {ALIAS} webserver migrations.")
 		if not Files.exists(f"{self.database}/data/"): os.mkdir(f"{self.database}/data/")
 		if not Files.exists(f"{self.database}/data/db.sqlite3"):
+			syst3m.env.export(export=".secrets/env.json", env={
+				"MIGRATIONS": str(True),
+			})
 			os.system(f"cd {self.root}/ && . .secrets/env.sh && export MIGRATIONS='true' && ./manage.py migrate")
+			syst3m.env.export(export=".secrets/env.json", env={
+				"MIGRATIONS": str(False),
+			})
 	def collect_static(self, log_level=syst3m.defaults.options.log_level):
 		if log_level >= 1:
 			r3sponse.log(f"Checking the {ALIAS} webserver migrations.")
 		if not Files.exists(f"{self.database}/data/"): os.mkdir(f"{self.database}/data/")
-		os.system(f"cd {self.root}/ && . .secrets/env.sh && export MIGRATIONS='true' && ./manage.py collectstatic")
+		syst3m.env.export(export=".secrets/env.json", env={
+			"MIGRATIONS": str(True),
+		})
+		os.system(f"cd {self.root}/ && . .secrets/env.sh && export MIGRATIONS='true' && ./manage.py collectstatic" )
+		syst3m.env.export(export=".secrets/env.json", env={
+			"MIGRATIONS": str(False),
+		})
 
 # the django database users.
 class Users(_defaults_.Defaults):
