@@ -931,11 +931,8 @@ class Users(_defaults_.Defaults):
 
 		# get cache.
 		subscriptions, cache_subscriptions = {}, False
-		if refresh: 
-			self.__subscriptions__ = {}
-			cache_subscriptions = Trie
 		try:
-			subscriptions = self.__subscriptions__
+			subscriptions = dict(self.__subscriptions__)
 		except AttributeError:
 			self.__subscriptions__ = {}
 			cache_subscriptions = True
@@ -948,7 +945,7 @@ class Users(_defaults_.Defaults):
 
 		# set cache.
 		if refresh or cache_subscriptions:
-			self.__subscriptions__ = subscriptions
+			self.__subscriptions__ = dict(subscriptions)
 
 		# handler.
 		return r3sponse.success("Successfully retrieved the stripe subscriptions cache.", {
@@ -960,9 +957,8 @@ class Users(_defaults_.Defaults):
 		
 		# get cache.
 		api_keys, cache_api_keys = {}, False
-		if refresh: self.__api_keys__ = {}
 		try:
-			api_keys = self.__api_keys__
+			api_keys = dict(self.__api_keys__)
 		except AttributeError:
 			self.__api_keys__ = {}
 			cache_api_keys = True
@@ -975,7 +971,7 @@ class Users(_defaults_.Defaults):
 
 		# set cache.
 		if cache_api_keys or refresh:
-			self.__api_keys__ = api_keys
+			self.__api_keys__ = dict(api_keys)
 
 		# handler.
 		return r3sponse.success("Successfully retrieved the api keys cache.", {
