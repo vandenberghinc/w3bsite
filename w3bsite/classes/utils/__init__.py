@@ -21,6 +21,7 @@ class Utils(syst3m.objects.Object):
 		if not Files.exists(f"{self.database}/logs"): os.mkdir(f"{self.database}/logs")
 		r3sponse.log_file = gfp.clean(f"{self.database}/logs/errors")
 		r3sponse.log(message=traceback.format_exc(), save=True)
+		return r3sponse.error("Server Error 500.")
 
 		#
 
@@ -37,7 +38,7 @@ class Utils(syst3m.objects.Object):
 		return domain
 
 		#
-		
+
 	#
 
 # initialized globally.

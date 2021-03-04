@@ -823,7 +823,7 @@ class Users(_defaults_.Defaults):
 				_users_ = []
 				_emails_ = []
 				for path in Directory(Files.join(self.database, self.users_subpath)).paths(dirs_only=True):
-					id = fgp.name(path=path)
+					id = gfp.name(path=path)
 					info = self.load_data(username=id, email=id)
 					_users_.append(info["account"]["username"])
 					_emails_.append(info["account"]["email"])
