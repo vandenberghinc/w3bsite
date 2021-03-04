@@ -198,9 +198,9 @@ class Security(_defaults_.Defaults):
 			else: break
 		Files.save(f"{self.root}/.secrets/env.sh", env)
 		return r3sponse.success(f"Successfully setted the secret environment variable [{key}].")
-	def get_secret_env(self, key, default=None):
+	def get_secret_env(self, key, default=None, required=True):
 		value = syst3m.env.get_string(key, default=default)
 		if value == "None": value = None
-		if value == None: raise ValueError(f"Secret enironment variable [{key}] is undefined.")
+		if value == None and required: raise ValueError(f"Secret enironment variable [{key}] is undefined.")
 		if "\\n" in value: value = value.replace("\\n", "\n")
 		return value

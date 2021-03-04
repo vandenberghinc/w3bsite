@@ -967,27 +967,29 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		local_security = security.Security(
 			# the root path.
 			root=self.root,)
+		required = False
+		if self.firebase_enabled and not syst3m.env.get("MIGRATIONS", format=bool, default=False): required = True
 		self.firebase_admin = {
-			"type":local_security.get_secret_env("FIREBASE_ADMIN_"+"type".upper(), default=None),
-			"project_id":local_security.get_secret_env("FIREBASE_ADMIN_"+"project_id".upper(), default=None),
-			"private_key_id":local_security.get_secret_env("FIREBASE_ADMIN_"+"private_key_id".upper(), default=None),
-			"private_key":local_security.get_secret_env("FIREBASE_ADMIN_"+"private_key".upper(), default=None),
-			"client_email":local_security.get_secret_env("FIREBASE_ADMIN_"+"client_email".upper(), default=None),
-			"client_id":local_security.get_secret_env("FIREBASE_ADMIN_"+"client_id".upper(), default=None),
-			"auth_uri":local_security.get_secret_env("FIREBASE_ADMIN_"+"auth_uri".upper(), default=None),
-			"token_uri":local_security.get_secret_env("FIREBASE_ADMIN_"+"token_uri".upper(), default=None),
-			"auth_provider_x509_cert_url":local_security.get_secret_env("FIREBASE_ADMIN_"+"auth_provider_x509_cert_url".upper(), default=None),
-			"client_x509_cert_url":local_security.get_secret_env("FIREBASE_ADMIN_"+"client_x509_cert_url".upper(), default=None),
+			"type":local_security.get_secret_env("FIREBASE_ADMIN_"+"type".upper(), default=None, required=required),
+			"project_id":local_security.get_secret_env("FIREBASE_ADMIN_"+"project_id".upper(), default=None, required=required),
+			"private_key_id":local_security.get_secret_env("FIREBASE_ADMIN_"+"private_key_id".upper(), default=None, required=required),
+			"private_key":local_security.get_secret_env("FIREBASE_ADMIN_"+"private_key".upper(), default=None, required=required),
+			"client_email":local_security.get_secret_env("FIREBASE_ADMIN_"+"client_email".upper(), default=None, required=required),
+			"client_id":local_security.get_secret_env("FIREBASE_ADMIN_"+"client_id".upper(), default=None, required=required),
+			"auth_uri":local_security.get_secret_env("FIREBASE_ADMIN_"+"auth_uri".upper(), default=None, required=required),
+			"token_uri":local_security.get_secret_env("FIREBASE_ADMIN_"+"token_uri".upper(), default=None, required=required),
+			"auth_provider_x509_cert_url":local_security.get_secret_env("FIREBASE_ADMIN_"+"auth_provider_x509_cert_url".upper(), default=None, required=required),
+			"client_x509_cert_url":local_security.get_secret_env("FIREBASE_ADMIN_"+"client_x509_cert_url".upper(), default=None, required=required),
 		}
 		self.firebase_js = {
-			"api_key":syst3m.env.get_string("FIREBASE_JS_"+"API_KEY", default=None),
-			"auth_domain":syst3m.env.get_string("FIREBASE_JS_"+"AUTH_DOMAIN", default=None),
-			"database_url":syst3m.env.get_string("FIREBASE_JS_"+"DATABASE_URL", default=None),
-			"project_id":syst3m.env.get_string("FIREBASE_JS_"+"PROJECT_ID", default=None),
-			"storage_bucket":syst3m.env.get_string("FIREBASE_JS_"+"STORAGE_BUCKET", default=None),
-			"messaging_sender_id":syst3m.env.get_string("FIREBASE_JS_"+"MESSAGING_SENDER_ID", default=None),
-			"app_id":syst3m.env.get_string("FIREBASE_JS_"+"APP_ID", default=None),
-			"measurement_id":syst3m.env.get_string("FIREBASE_JS_"+"MEASUREMENT_ID", default=None),
+			"api_key":syst3m.env.get_string("FIREBASE_JS_"+"API_KEY", default=None, required=required),
+			"auth_domain":syst3m.env.get_string("FIREBASE_JS_"+"AUTH_DOMAIN", default=None, required=required),
+			"database_url":syst3m.env.get_string("FIREBASE_JS_"+"DATABASE_URL", default=None, required=required),
+			"project_id":syst3m.env.get_string("FIREBASE_JS_"+"PROJECT_ID", default=None, required=required),
+			"storage_bucket":syst3m.env.get_string("FIREBASE_JS_"+"STORAGE_BUCKET", default=None, required=required),
+			"messaging_sender_id":syst3m.env.get_string("FIREBASE_JS_"+"MESSAGING_SENDER_ID", default=None, required=required),
+			"app_id":syst3m.env.get_string("FIREBASE_JS_"+"APP_ID", default=None, required=required),
+			"measurement_id":syst3m.env.get_string("FIREBASE_JS_"+"MEASUREMENT_ID", default=None, required=required),
 		}
 		self.stripe_secret_key = local_security.get_secret_env("STRIPE_SECRET_KEY", default=None)
 		self.stripe_publishable_key = local_security.get_secret_env("STRIPE_PUBLISHABLE_KEY", default=None)
