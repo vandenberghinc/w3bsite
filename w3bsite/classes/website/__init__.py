@@ -968,7 +968,8 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 			# the root path.
 			root=self.root,)
 		required = False
-		if self.firebase_enabled and not syst3m.env.get("MIGRATIONS", format=bool, default=False): required = True
+		migrations = syst3m.env.get("MIGRATIONS", format=bool, default=False)
+		if self.firebase_enabled and not migrations: required = True
 		self.firebase_admin = {
 			"type":local_security.get_secret_env("FIREBASE_ADMIN_"+"type".upper(), default=None, required=required),
 			"project_id":local_security.get_secret_env("FIREBASE_ADMIN_"+"project_id".upper(), default=None, required=required),
@@ -982,22 +983,22 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 			"client_x509_cert_url":local_security.get_secret_env("FIREBASE_ADMIN_"+"client_x509_cert_url".upper(), default=None, required=required),
 		}
 		self.firebase_js = {
-			"api_key":syst3m.env.get_string("FIREBASE_JS_"+"API_KEY", default=None, required=required),
-			"auth_domain":syst3m.env.get_string("FIREBASE_JS_"+"AUTH_DOMAIN", default=None, required=required),
-			"database_url":syst3m.env.get_string("FIREBASE_JS_"+"DATABASE_URL", default=None, required=required),
-			"project_id":syst3m.env.get_string("FIREBASE_JS_"+"PROJECT_ID", default=None, required=required),
-			"storage_bucket":syst3m.env.get_string("FIREBASE_JS_"+"STORAGE_BUCKET", default=None, required=required),
-			"messaging_sender_id":syst3m.env.get_string("FIREBASE_JS_"+"MESSAGING_SENDER_ID", default=None, required=required),
-			"app_id":syst3m.env.get_string("FIREBASE_JS_"+"APP_ID", default=None, required=required),
-			"measurement_id":syst3m.env.get_string("FIREBASE_JS_"+"MEASUREMENT_ID", default=None, required=required),
+			"api_key":local_security.get_secret_env("FIREBASE_JS_"+"API_KEY", default=None, required=required),
+			"auth_domain":local_security.get_secret_env("FIREBASE_JS_"+"AUTH_DOMAIN", default=None, required=required),
+			"database_url":local_security.get_secret_env("FIREBASE_JS_"+"DATABASE_URL", default=None, required=required),
+			"project_id":local_security.get_secret_env("FIREBASE_JS_"+"PROJECT_ID", default=None, required=required),
+			"storage_bucket":local_security.get_secret_env("FIREBASE_JS_"+"STORAGE_BUCKET", default=None, required=required),
+			"messaging_sender_id":local_security.get_secret_env("FIREBASE_JS_"+"MESSAGING_SENDER_ID", default=None, required=required),
+			"app_id":local_security.get_secret_env("FIREBASE_JS_"+"APP_ID", default=None, required=required),
+			"measurement_id":local_security.get_secret_env("FIREBASE_JS_"+"MEASUREMENT_ID", default=None, required=required),
 		}
-		self.stripe_secret_key = local_security.get_secret_env("STRIPE_SECRET_KEY", default=None)
-		self.stripe_publishable_key = local_security.get_secret_env("STRIPE_PUBLISHABLE_KEY", default=None)
-		self.email_address = local_security.get_secret_env("EMAIL_ADDRESS", default=None)
-		self.email_password = local_security.get_secret_env("EMAIL_PASSWORD", default=None)
-		self.aes_master_key = local_security.get_secret_env("AES_MASTER_KEY", default=None)
-		self.namecheap_username = local_security.get_secret_env("NAMECHEAP_USERNAME", default=None)
-		self.namecheap_api_key = local_security.get_secret_env("NAMECHEAP_API_KEY", default=None)
+		self.stripe_secret_key = local_security.get_secret_env("STRIPE_SECRET_KEY", default=None, required=self.stripe_enabled)
+		self.stripe_publishable_key = local_security.get_secret_env("STRIPE_PUBLISHABLE_KEY", default=None, required=self.stripe_enabled)
+		self.email_address = local_security.get_secret_env("EMAIL_ADDRESS", default=None, required=self.email_enabled)
+		self.email_password = local_security.get_secret_env("EMAIL_PASSWORD", default=None, required=self.email_enabled)
+		self.aes_master_key = local_security.get_secret_env("AES_MASTER_KEY", default=None, required=not migrations)
+		self.namecheap_username = local_security.get_secret_env("NAMECHEAP_USERNAME", default=self.namecheap_enabled)
+		self.namecheap_api_key = local_security.get_secret_env("NAMECHEAP_API_KEY", default=self.namecheap_enabled)
 
 		# success.
 		return True
