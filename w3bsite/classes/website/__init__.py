@@ -390,7 +390,8 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 			# custom colors.
 			# ...
 		}
-		self.template_data = views.TemplateData(utils.__append_dict__(new=self.template_data, overwrite=True,  old={
+		#self.template_data = views.TemplateData(utils.__append_dict__(new=self.template_data, overwrite=True,  old={
+		self.template_data = Dictionary(utils.__append_dict__(new=self.template_data, overwrite=True,  old={
 			"COLORS":colors,"colors":colors,
 			"DOMAIN":self.domain,
 			"PRODUCTION":self.production,
@@ -1017,3 +1018,9 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		_indent_ = __indent__(indent)
 		str = json.dumps(_serialized_, indent=indent).replace('": "', ': ').replace('": ', ': ').replace('",', "").replace(f'\n{_indent_}"', f'\n{_indent_} * ').replace("{\n", "").replace('"\n}', "").replace("\n}", "").replace("{", "")
 		return f"<w3bsite.Website; \n{str}\n>"
+
+	def template(self, dictionary={}, update=False):
+		new = utils.__append_dict__(new=dictionary, overwrite=True,  old=dict(self.template_data))
+		if update:
+			self.template_data.dictionary = new
+		return new

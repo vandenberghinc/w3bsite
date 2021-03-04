@@ -1007,7 +1007,7 @@ class Users(_defaults_.Defaults):
 				if not response.success: response.crash()
 				email = response.user.email
 			id = email
-		if self.db.mode == "cache" and Files.exists(f"{self.database}/{self.users_subpath}/{id}/settings"):
+		if self.db.mode == "cache":
 			path = f"{self.users_subpath}/{id}/settings"
 		else:
 			path = f"{self.users_subpath}/{id}"

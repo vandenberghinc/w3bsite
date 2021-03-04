@@ -164,7 +164,7 @@ class View(syst3m.objects.Object):
 			template_data = template_data.raw()
 		return render(request, html, template_data)
 	def get_parameter(self, request, identifier):
-		return r3sponse.get_request_parameter(request, identifiers)
+		return r3sponse.get_request_parameter(request, identifier)
 	def get_parameters(self, request, identifiers=[], optional=False):
 		return r3sponse.get_request_parameters(request, identifiers, optional=optional)
 	def error(self, 
@@ -183,6 +183,8 @@ class View(syst3m.objects.Object):
 		# overwrite default template data.
 		template_data=None):
 		if template_data == None: template_data = self.template_data
+		title = title.replace("\n","")
+		message = message.replace("\n","")
 		template_data["ERROR"] = {
 			"title":title,
 			"message":message,
