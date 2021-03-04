@@ -959,7 +959,7 @@ class Users(_defaults_.Defaults):
 		if cache_api_keys or refresh:
 			api_keys = {}
 			for email in self.iterate(emails=True, combined=True):
-				username = utils.__email_to_username__(email)
+				username = self.__email_to_username__(email)
 				response = self.load_data(email=email, username=email,)
 				if not response.success: return response
 				_api_key_ = response["data"]["api_key"]
