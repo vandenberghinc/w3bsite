@@ -357,7 +357,7 @@ class Users(_defaults_.Defaults):
 
 		# by username.
 		identifier = None
-		if username != None:
+		if username not in [None,"None"]:
 			identifier = username
 
 			# create.
@@ -368,7 +368,7 @@ class Users(_defaults_.Defaults):
 			except Exception as e:  return r3sponse.error(f"Failed to retrieve django user {username}, error: {e}.")
 
 		# by email.
-		elif email != None:
+		elif email not in [None,"None"]:
 			identifier = email
 
 			# create.

@@ -853,23 +853,26 @@ class Users(_defaults_.Defaults):
 		api_keys = {}
 		for id in ids: 
 
-			# check django user existance (in case of sql rebuild).
-			response = self.django.users.exists(email=id, username=id,)
-			if not response.success: return response
-			elif not response.exists:
-				response = self.load_password(email=id, username=id)
+			# get user.
+			if self.id_by_username:
+				username = id
+				email = None
+			else:
+				username = None
+				email = id
+
+			# get.
+			response = self.get(email=email, username=username)
+			if not response.success: 
+				response = self.load_password(email=email, username=username)
 				if not response.success: return response
-				data, password = response.data, response.password
+				data, password = response.unpack(["data", "password"])
 				response = self.django.users.create(
 					email=data["account"]["email"], 
 					password=password, 
 					username=data["account"]["username"], 
 					name=data["account"]["name"])
 				if not response.success: return response
-
-			# get user.
-			response = self.get(email=id, username=id)
-			if not response.success: return response
 			user = response["user"]
 
 			# load data.
