@@ -18,9 +18,14 @@ class Utils(syst3m.objects.Object):
 
 	# catch request error.
 	def catch_error(self, error):
-		if not Files.exists(f"{self.database}/logs"): os.mkdir(f"{self.database}/logs")
-		r3sponse.log_file = gfp.clean(f"{self.database}/logs/errors")
-		r3sponse.log(message=traceback.format_exc(), save=True)
+		try:
+			database = self.database
+		except AttributeError:
+			database = None
+		if database != None:
+			if not Files.exists(f"{database}/logs"): os.mkdir(f"{database}/logs")
+			r3sponse.log_file = gfp.clean(f"{database}/logs/errors")
+		r3sponse.log(message=traceback.format_exc(), save=database != None)
 		return r3sponse.error("Server Error 500.")
 
 		#

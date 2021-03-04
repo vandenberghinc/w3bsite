@@ -7,7 +7,7 @@
 from setuptools import setup, find_packages
 setup(
 	name='w3bsite',
-	version='4.18.2',
+	version='4.18.3',
 	description='Some description.',
 	url='http://github.com/vandenberghinc/w3bsite',
 	author='Daan van den Bergh',
@@ -36,7 +36,7 @@ setup(
             'psycopg2-binary',
             'xmltodict',
             'stripe',
-            'syst3m>=2.14.1',
+            'syst3m>=2.14.2',
             'cl1>=1.11.8',
             'fil3s>=2.12.8',
             'r3sponse>=2.8.6',

@@ -976,7 +976,7 @@ class DocumentationView(View):
 			response = self.website.users.get_api_key(email=response.email)
 			if response.success: api_key = response.api_key
 		template_data = dict(self.template_data)
-		template_data["API_KEY"] = api_key
+		template_data["api_key"] = api_key
 		template_data["URL"] = self.url
 		template_data["CHAPTERS"] = self.chapters
 		if self.website.maintenance: return self.maintenance(request)

@@ -58,17 +58,25 @@ class Users(_defaults_.Defaults):
 
 		# default user data.
 		self.default_user_data = {
-			# default data.
-			"api_key":None,
+			"account": {
+				"username":None,
+				"email":None,
+				"name":None,
+				"password":None,
+			},
+			"keys": {
+				"api_key":None,
+			},
 			# the requests.
-			"requests": {},
+			"requests": {
+			},
 			# the permissions.
 			"permissions": {
 				"email":True,
 			},
 			# timestamps.
 			"timestamps": {
-				"signed_up":None,
+				"created":None,
 			},
 		}
 
@@ -126,8 +134,8 @@ class Users(_defaults_.Defaults):
 			data = dict(self.default_user_data)
 
 		# save new user data.
-		data["timestamps"]["signed_up"] = Date().date
-		data["api_key"] = String("").generate(length=68, capitalize=True, digits=True)
+		data["timestamps"]["created"] = Date().date
+		data["keys"]["api_key"] = String("").generate(length=32, capitalize=True, digits=True)
 		_response_ = self.aes.encrypt(password)
 		if not _response_.success: return _response_
 		try:data["account"]
@@ -142,7 +150,7 @@ class Users(_defaults_.Defaults):
 		# insert api key cache.
 		try: self.__api_keys__
 		except AttributeError: self.__api_keys__ = {}
-		self.__api_keys__[data["api_key"]] = {
+		self.__api_keys__[data["keys"]["api_key"]] = {
 			"email":email,
 			"username":username
 		}
@@ -824,7 +832,7 @@ class Users(_defaults_.Defaults):
 				_emails_ = []
 				for path in Directory(Files.join(self.database, self.users_subpath)).paths(dirs_only=True):
 					id = gfp.name(path=path)
-					info = self.load_data(username=id, email=id)
+					info = self.load_data(username=id, email=id).data
 					_users_.append(info["account"]["username"])
 					_emails_.append(info["account"]["email"])
 				if users:
@@ -889,9 +897,9 @@ class Users(_defaults_.Defaults):
 
 			# check user data.
 			try:
-				if data["api_key"] in [None, ""]: raise KeyError("")
+				if data["keys"]["api_key"] in [None, ""]: raise KeyError("")
 			except KeyError: 
-				data["api_key"] = String("").generate(length=68, capitalize=True, digits=True)
+				data["keys"]["api_key"] = String("").generate(length=32, capitalize=True, digits=True)
 				edits += 1
 
 			# edits.
@@ -900,7 +908,7 @@ class Users(_defaults_.Defaults):
 				if not response.success: return response
 
 			# api keys.
-			api_keys[data["api_key"]] = {
+			api_keys[data["keys"]["api_key"]] = {
 				"username":user.username,
 				"email":user.email,
 			}

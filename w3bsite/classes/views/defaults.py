@@ -80,7 +80,11 @@ class Request(syst3m.objects.Object):
 		self.type = "request"
 		self.template_data = template_data
 	def view(self, request):
-		return self.error_response("Define the self.view function.")
+		# default view, user needs to create default def request(self, request)
+		# can be overwritten with default def view(self, request):
+		resonse = self.request(request)
+		try: return self.resonse(resonse)
+		except Exception as e: return self.response(utils.utils.catch_error(e))
 	def success_response(self, message, arguments={}):
 		return r3sponse.success(message, arguments, django=True)
 	def error_response(self, error):
