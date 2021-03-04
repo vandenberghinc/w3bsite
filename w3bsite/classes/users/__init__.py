@@ -725,21 +725,20 @@ class Users(_defaults_.Defaults):
 		#
 	def get_api_key(self, email=None, username=None):
 
+		# check.
+		if [username,email] == [None,None]:
+			return r3sponse.error("Define one of the following parameters: [email, username].")
+		if username == None: id = email
+		elif email == None: id = username
+
 		# collect api keys from cache.
 		response = self.__collect_api_keys_cache__()
 		if not response.success: return response
 		api_keys = response["api_keys"]
 
 		# get api key.
-		api_key, id = None, None
-		if email != None: id = email
-		elif username != None: 
-			response = self.get(username=username)
-			if not response.success: return response
-			id = response["user"].email
-		else: return r3sponse.error("Define parameter email or username.")
 		for _api_key_, info in api_keys.items():
-			if info["email"] == id: 
+			if (email != None and email == info["email"]) or (username != None and username == info["username"]): 
 				api_key = _api_key_
 				break
 		if api_key != None:
