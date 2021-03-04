@@ -77,7 +77,7 @@ class Security(_defaults_.Defaults):
 		if not Files.exists(f"{self.root}/.secrets"): os.mkdir(f"{self.root}/.secrets")
 		try:
 			env = utils.__load_json__(f"{self.root}/.secrets/env.json")
-		except FileNotFoundError:
+		except:
 			env = {}
 		os.environ[key] = str(value)
 		splitted = key.split(".") ; c, m = 0, len(splitted)
