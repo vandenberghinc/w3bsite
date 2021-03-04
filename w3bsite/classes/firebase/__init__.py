@@ -51,9 +51,11 @@ class Firebase(_defaults_.Defaults):
 		
 
 		# initialize firestore.
-		# (in classes.config)
-		cred = credentials.Certificate(key) # must still be edited through env variables.
-		firebase_admin.initialize_app(cred)
+		# (except for double etc)
+		try:
+			cred = credentials.Certificate(key) # must still be edited through env variables.
+			firebase_admin.initialize_app(cred)
+		except ValueError:a=1
 		self.firestore = FireStore()
 		self.users = Users(defaults=defaults, firestore=self.firestore)
 
