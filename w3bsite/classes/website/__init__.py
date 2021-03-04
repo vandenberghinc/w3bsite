@@ -332,16 +332,22 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		self.https_domain = f"https://{self.domain}"
 
 		# environment for settings.py.
-		os.chdir(self.root)
-		secrets = utils.__load_json__(".secrets/env.json")
-		os.environ["PRODUCTION"] = str(self.production)
-		os.environ["DOMAIN"] = self.domain
-		os.environ["DATABASE"] = self.database
-		try:
-			os.environ["DJANGO_SECRET_KEY"] = secrets["DJANGO_SECRET_KEY"]
-		except KeyError: a=1
-		os.environ["DJANGO_RUNNING"] = str(True)
-		os.environ["leftbar_width"] = "250px"
+		os.chdir(gfp.clean(self.root))
+		if not os.path.exists(".secrets"): os.mkdir(".secrets")
+		SECRET_KEY = syst3m.env.get("DJANGO_SECRET_KEY", default=None)
+		if SECRET_KEY == None:  SECRET_KEY = String().generate(length=128, capitalize=True, digits=True, special=True)
+		syst3m.env.export(export=".secrets/env.json", env={
+			# settings.py options.
+			"DJANGO_SECRET_KEY":SECRET_KEY,
+			"WEBSITE_BASE":gfp.base(SOURCE_PATH),
+			"DOMAIN":str(self.domain),
+			"DATABASE":str(self.database),
+			"PRODUCTION":str(self.production),
+			# django options.
+			"DJANGO_RUNNING":True,
+			# html, css & js options.
+			"leftbar_width":"250px",
+		})
 
 		# template data.
 		colors = {
@@ -459,20 +465,8 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		self.rate_limit = rate_limit.RateLimit(
 			db=self.db,
 			defaults=self.defaults,)
-		os.chdir(gfp.clean(self.root))
 		if not os.path.exists("website/settings.py"): raise ImportError(f"Invalid website hierarchy, unable to find: website.settings, required location: {self.root}/website/settings.py")
 		os.environ.setdefault('DJANGO_SETTINGS_MODULE', f'website.settings')
-		SECRET_KEY = syst3m.env.get("DJANGO_SECRET_KEY", default=None)
-		if SECRET_KEY == None: 
-			SECRET_KEY = String().generate(length=128, capitalize=True, digits=True, special=True)
-		cache.set(group="DJANGO_SECRET_KEY", data="***")
-		cache.set(group="WEBSITE_BASE", data=gfp.base(SOURCE_PATH))
-		cache.set(group="DOMAIN", data=str(self.domain))
-		cache.set(group="DATABASE", data=str(self.database))
-		syst3m.env.set("DJANGO_SECRET_KEY", SECRET_KEY)
-		syst3m.env.set("WEBSITE_BASE", gfp.base(SOURCE_PATH))
-		syst3m.env.set("DOMAIN", str(self.domain))
-		syst3m.env.set("DATABASE", str(self.database))
 		from website import settings
 		try:pypi_django.setup()
 		except: a=1
