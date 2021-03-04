@@ -79,6 +79,7 @@ class Security(_defaults_.Defaults):
 			env = utils.__load_json__(f"{self.root}/.secrets/env.json")
 		except FileNotFoundError:
 			env = {}
+		os.environ[key] = str(value)
 		splitted = key.split(".") ; c, m = 0, len(splitted)
 		if m == 1:
 			env[key] = value
