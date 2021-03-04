@@ -182,18 +182,19 @@ class Django(_defaults_.Defaults):
 
 		# handlers.
 		return r3sponse.success(f"Successfully created app [{name}].")
-	def migrations(self, log_level=syst3m.defaults.options.log_level):
-		if log_level >= 1:
-			r3sponse.log(f"Checking the {ALIAS} webserver migrations.")
+	def migrations(self, forced=False, log_level=syst3m.defaults.options.log_level):
 		if not Files.exists(f"{self.database}/data/"): os.mkdir(f"{self.database}/data/")
-		if not Files.exists(f"{self.database}/data/db.sqlite3"):
-			syst3m.env.export(export=".secrets/env.json", env={
-				"MIGRATIONS": str(True),
-			})
-			os.system(f"cd {self.root}/ && . .secrets/env.sh && export MIGRATIONS='true' && ./manage.py migrate")
-			syst3m.env.export(export=".secrets/env.json", env={
-				"MIGRATIONS": str(False),
-			})
+		if forced or not Files.exists(f"{self.database}/data/db.sqlite3"):
+			r3sponse.log(f"Applying {ALIAS} webserver migrations.")
+			syst3m.env.export(export=".secrets/env.json", env={"MIGRATIONS": True,})
+			os.chdir(self.root)
+			#import manage
+			#old_argv = list(sys.argv)
+			#sys.argv = [f"{self.root}/manage.py", "migrate"]
+			#manage.main()
+			os.system(f"cd {self.root} && python3 ./manage.py migrate")
+			syst3m.env.export(export=".secrets/env.json", env={"MIGRATIONS": False,})
+			#sys.argv = old_argv
 	def collect_static(self, log_level=syst3m.defaults.options.log_level):
 		if log_level >= 1:
 			r3sponse.log(f"Checking the {ALIAS} webserver migrations.")
