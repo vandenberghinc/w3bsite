@@ -55,10 +55,10 @@ class RateLimit(_defaults_.Defaults):
 		response = self.db.load(reference, format="json")
 		if not response.success: 
 			if ip != None and "Document " in response.error and " does not exist" in response.error:
-				response["document"] = {}
+				response["data"] = {}
 			else:
 				return response
-		document = response["document"]
+		document = response["data"]
 		try:
 			rate_limits = document["rate_limits"]
 		except KeyError:
@@ -122,10 +122,10 @@ class RateLimit(_defaults_.Defaults):
 		response = self.db.load(reference, format="json")
 		if not response.success: 
 			if ip != None and "Document " in response.error and " does not exist" in response.error:
-				response["document"] = {}
+				response["data"] = {}
 			else:
 				return response
-		document = response["document"]
+		document = response["data"]
 		try:
 			rate_limits = document["rate_limits"]
 		except KeyError:

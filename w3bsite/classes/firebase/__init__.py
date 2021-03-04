@@ -107,7 +107,7 @@ class FireStore(object):
 			return r3sponse.error(f"Document [{reference}] does not exist.")
 		else:
 			data = doc.to_dict()
-			return r3sponse.success(f"Successfully loaded document [{reference}].", {"document":data})
+			return r3sponse.success(f"Successfully loaded document [{reference}].", {"data":data})
 	def load_collection(self, reference):
 		doc = self.__get_doc__(reference)
 		try:

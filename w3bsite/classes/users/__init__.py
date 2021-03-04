@@ -365,7 +365,7 @@ class Users(_defaults_.Defaults):
 		response = self.db.load(self.__get_path__(email=email, username=username), format="json")
 		if response.error != None: return response
 		return r3sponse.success(f"Successfully loaded the data of user [{email}].", {
-			"data":response["document"],
+			"data":response["data"],
 		})
 	def save_data(self,
 		# the user's email.
