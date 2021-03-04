@@ -990,7 +990,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 			"storage_bucket":local_security.get_secret_env("FIREBASE_JS_"+"STORAGE_BUCKET", default=None, required=required),
 			"messaging_sender_id":local_security.get_secret_env("FIREBASE_JS_"+"MESSAGING_SENDER_ID", default=None, required=required),
 			"app_id":local_security.get_secret_env("FIREBASE_JS_"+"APP_ID", default=None, required=required),
-			"measurement_id":local_security.get_secret_env("FIREBASE_JS_"+"MEASUREMENT_ID", default=None, required=required),
+			"measurement_id":local_security.get_secret_env("FIREBASE_JS_"+"MEASUREMENT_ID", default=None, required=False),
 		}
 		self.stripe_secret_key = local_security.get_secret_env("STRIPE_SECRET_KEY", default=None, required=self.stripe_enabled)
 		self.stripe_publishable_key = local_security.get_secret_env("STRIPE_PUBLISHABLE_KEY", default=None, required=self.stripe_enabled)
