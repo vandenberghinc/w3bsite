@@ -42,7 +42,7 @@ fi
 # remote install.
 alias="devos"
 rm -fr /tmp/$alias
-git clone https://github.com/vandenberghinc/$alias /tmp/$alias
+git clone -q https://github.com/vandenberghinc/$alias /tmp/$alias
 chmod +x /tmp/$alias/requirements/installer
 /tmp/$alias/requirements/installer
 rm -fr /tmp/$alias/
