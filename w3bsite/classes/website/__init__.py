@@ -171,7 +171,6 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 
 		# w3bsite values.
 		self.SOURCE_PATH = SOURCE_PATH
-		syst3m.env.set("WEBSITE_BASE", gfp.base(SOURCE_PATH))
 
 		# argurments.
 		if root != None:
@@ -467,6 +466,8 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		if SECRET_KEY == None: 
 			SECRET_KEY = String().generate(length=128, capitalize=True, digits=True, special=True)
 		syst3m.env.set("DJANGO_SECRET_KEY", SECRET_KEY)
+		syst3m.env.set("WEBSITE_BASE", gfp.base(SOURCE_PATH))
+		syst3m.env.set("DOMAIN", str(self.domain))
 		syst3m.env.set("DATABASE", str(self.database))
 		from website import settings
 		try:pypi_django.setup()
