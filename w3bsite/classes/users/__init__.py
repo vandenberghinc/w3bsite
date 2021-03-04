@@ -226,12 +226,8 @@ class Users(_defaults_.Defaults):
 	):
 		
 		# check parameters.
-		response = r3sponse.check_parameters(
-			traceback=self.__traceback__(function="delete"),
-			parameters={
-				#"email":email,
-			})
-		if not response.success: return response
+		if [username,email] == [None,None]:
+			return r3sponse.error(self.__traceback__(function="load_data")+" Define one of the following parameters [email, username].")
 
 		# delete django user.
 		response = self.django.users.delete(username=username, email=email)
@@ -355,13 +351,8 @@ class Users(_defaults_.Defaults):
 		# the user's username.
 		username=None,
 	):	
-		# new.
-		response = r3sponse.check_parameters(
-			traceback=self.__traceback__(function="load_data"),
-			parameters={
-				#"email":email,
-			})
-		if not response.success: return response
+		if [username,email] == [None,None]:
+			return r3sponse.error(self.__traceback__(function="load_data")+" Define one of the following parameters [email, username].")
 		response = self.db.load(self.__get_path__(email=email, username=username), format="json")
 		if response.error != None: return response
 		return r3sponse.success(f"Successfully loaded the data of user [{email}].", {
@@ -375,13 +366,8 @@ class Users(_defaults_.Defaults):
 		# the user's data.
 		data={},
 	):
-		# new.
-		response = r3sponse.check_parameters(
-			traceback=self.__traceback__(function="save_data"),
-			parameters={
-				#"email":email,
-			})
-		if not response.success: return response
+		if [username,email] == [None,None]:
+			return r3sponse.error(self.__traceback__(function="load_data")+" Define one of the following parameters [email, username].")
 		response = self.db.save(self.__get_path__(email=email, username=username), data, format="json")
 		if response.error != None: return response
 		return r3sponse.success(f"Successfully saved the data of user [{email}].")
@@ -782,12 +768,8 @@ class Users(_defaults_.Defaults):
 		return r3sponse.success(f"Successfully set the {permission_id} permission of user [{email}] to [{permission}].")
 		#
 	def load_password(self, email=None, username=None):
-		response = r3sponse.check_parameters(
-			traceback=self.__traceback__(function="load_password"),
-			parameters={
-				#"email":email,
-			})
-		if not response.success: return response
+		if [username,email] == [None,None]:
+			return r3sponse.error(self.__traceback__(function="load_data")+" Define one of the following parameters [email, username].")
 		response = self.load_data(email=email, username=username)
 		if not response.success: return response
 		data = response.data
@@ -799,10 +781,11 @@ class Users(_defaults_.Defaults):
 			"data":data,
 		})
 	def save_password(self, email=None, username=None, password=None):
+		if [username,email] == [None,None]:
+			return r3sponse.error(self.__traceback__(function="load_data")+" Define one of the following parameters [email, username].")
 		response = r3sponse.check_parameters(
 			traceback=self.__traceback__(function="save_password"),
 			parameters={
-				#"email":email,
 				"password":password,
 			})
 		if not response.success: return response
