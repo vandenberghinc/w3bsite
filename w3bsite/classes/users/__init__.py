@@ -849,6 +849,7 @@ class Users(_defaults_.Defaults):
 			ids = self.iterate(emails=True, database=True)
 
 		# iterate.
+		api_keys = {}
 		for id in ids: 
 
 			# check django user existance (in case of sql rebuild).
@@ -894,8 +895,16 @@ class Users(_defaults_.Defaults):
 				response = self.save_data(email=user.email, username=user.username, data=data)
 				if not response.success: return response
 
+			# api keys.
+			api_keys[data["api_key"]] = {
+				"username":user.username,
+				"email":user.email,
+			}
+
 		# success.
-		return r3sponse.success(f"Successfully synchronized {len(ids)} user(s).")
+		return r3sponse.success(f"Successfully synchronized {len(ids)} user(s).", {
+			"api_keys":api_keys,
+		})
 
 		#
 	# system functions.
@@ -957,16 +966,9 @@ class Users(_defaults_.Defaults):
 
 		# collect cache.
 		if cache_api_keys or refresh:
-			api_keys = {}
-			for email in self.iterate(emails=True, database=True):
-				username = self.__email_to_username__(email)
-				response = self.load_data(email=email, username=email,)
-				if not response.success: return response
-				_api_key_ = response["data"]["api_key"]
-				api_keys[_api_key_] = {
-					"email":email,
-					"username":username,
-				}
+			response = self.synchronize()
+			if not response.success: return response
+			api_keys = response["api_keys"]
 
 		# set cache.
 		if cache_api_keys or refresh:
