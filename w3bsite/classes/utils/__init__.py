@@ -8,7 +8,8 @@ import xmltodict
 
 # catch request error.
 def catch_error(error):
-	r3sponse.log_file = Files.join(syst3m.env.get("DATABASE", default=""), "logs/errors")
+	database = cache.get(group="DATABASE", default="")
+	r3sponse.log_file = gfp.clean(f"{database}/logs/errors")
 	if not Files.exists(r3sponse.log_file): r3sponse.log_file = None
 	r3sponse.log(message=traceback.format_exc(), save=True)
 

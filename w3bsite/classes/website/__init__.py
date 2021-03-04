@@ -465,6 +465,10 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		SECRET_KEY = syst3m.env.get("DJANGO_SECRET_KEY", default=None)
 		if SECRET_KEY == None: 
 			SECRET_KEY = String().generate(length=128, capitalize=True, digits=True, special=True)
+		cache.set(group="DJANGO_SECRET_KEY", data="***")
+		cache.set(group="WEBSITE_BASE", data=gfp.base(SOURCE_PATH))
+		cache.set(group="DOMAIN", data=str(self.domain))
+		cache.set(group="DATABASE", data=str(self.database))
 		syst3m.env.set("DJANGO_SECRET_KEY", SECRET_KEY)
 		syst3m.env.set("WEBSITE_BASE", gfp.base(SOURCE_PATH))
 		syst3m.env.set("DOMAIN", str(self.domain))

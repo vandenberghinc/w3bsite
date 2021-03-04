@@ -26,3 +26,6 @@ lib = Directory(f"{SOURCE_PATH}/classes/deployment/lib")
 if not lib.fp.exists():# or len(lib.paths()) != 7) and syst3m.env.get("HOST") not in ["macbookpro_daan"]:
 	r3sponse.log("Installing the w3bsite library.")
 	os.system(f"rm -fr /tmp/w3bsite && git clone https://github.com/vandenberghinc/w3bsite /tmp/w3bsite 2> /dev/null && rsync -azq /tmp/w3bsite/w3bsite/classes/deployment/lib/ {SOURCE_PATH}/classes/deployment/lib/")
+
+# the cache.
+from w3bsite.classes.cache import cache
