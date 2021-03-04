@@ -509,6 +509,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 			self.deployment = deployment.Deployment(
 				root=self.root,
 				library=self.library,
+				name=self.name,
 				domain=self.domain,
 				database=self.database,
 				remote=self.remote,

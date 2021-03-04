@@ -7,7 +7,7 @@
 from setuptools import setup, find_packages
 setup(
 	name='w3bsite',
-	version='4.15.1',
+	version='4.15.2',
 	description='Some description.',
 	url='http://github.com/vandenberghinc/w3bsite',
 	author='Daan van den Bergh',
@@ -17,10 +17,10 @@ setup(
 	zip_safe=False,
 	include_package_data=True,
 	install_requires=[
-            'syst3m>=2.13.2',
+            'syst3m>=2.13.3',
             'cl1>=1.11.8',
             'fil3s>=2.12.8',
             'r3sponse>=2.8.6',
             'netw0rk>=1.7.5',
-            'ssht00ls>=3.18.6',
+            'ssht00ls>=3.18.9',
         ])

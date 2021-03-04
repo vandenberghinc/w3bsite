@@ -14,6 +14,8 @@ class Deployment(syst3m.objects.Object):
 		root=None,
 		# the library path.
 		library=None,
+		# the website name.
+		name=None,
 		# the domain.
 		domain=None,
 		# the database path.
@@ -46,6 +48,7 @@ class Deployment(syst3m.objects.Object):
 		self.domain = domain
 		self.database = database
 		self.remote = remote
+		self.name = name
 
 		self.country_code = country_code
 		self.province = province
