@@ -202,5 +202,7 @@ class Security(_defaults_.Defaults):
 		value = syst3m.env.get_string(key, default=default)
 		if value == "None": value = None
 		if value == None and required: raise ValueError(f"Secret enironment variable [{key}] is undefined.")
-		if "\\n" in value: value = value.replace("\\n", "\n")
+		try:
+			if "\\n" in value: value = value.replace("\\n", "\n")
+		except: a=1
 		return value
