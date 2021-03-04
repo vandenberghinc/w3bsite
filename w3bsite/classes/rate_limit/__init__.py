@@ -63,6 +63,9 @@ class RateLimit(_defaults_.Defaults):
 			rate_limits = document["rate_limits"]
 		except KeyError:
 			rate_limits = {}
+		except TypeError:
+			document = {}
+			rate_limits = {}
 
 		# check.
 		date = Date()
@@ -129,6 +132,9 @@ class RateLimit(_defaults_.Defaults):
 		try:
 			rate_limits = document["rate_limits"]
 		except KeyError:
+			rate_limits = {}
+		except TypeError:
+			document = {}
 			rate_limits = {}
 
 		# check.
