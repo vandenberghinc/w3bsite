@@ -871,7 +871,7 @@ class Users(_defaults_.Defaults):
 			user = response["user"]
 
 			# load data.
-			response = self.load_data(email=id, username=id)
+			response = self.load_data(email=user.email, username=user.username)
 			if not response.success: return response
 			data, edits = response["data"], 0
 
@@ -891,7 +891,7 @@ class Users(_defaults_.Defaults):
 
 			# edits.
 			if edits > 0:
-				response = self.save_data(email=id, username=id, data=data)
+				response = self.save_data(email=user.email, username=user.username, data=data)
 				if not response.success: return response
 
 		# success.
@@ -958,7 +958,7 @@ class Users(_defaults_.Defaults):
 		# collect cache.
 		if cache_api_keys or refresh:
 			api_keys = {}
-			for email in self.iterate(emails=True, combined=True):
+			for email in self.iterate(emails=True, database=True):
 				username = self.__email_to_username__(email)
 				response = self.load_data(email=email, username=email,)
 				if not response.success: return response
