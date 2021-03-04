@@ -18,6 +18,7 @@ whitenoise
 django
 psycopg2-binary
 xmltodict
+stripe
 
 # inc packages.
 syst3m>=2.13.9
