@@ -69,7 +69,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		#
 		# Firebase.
 		#	firebase enabled.
-		firebase_enabled=False,
+		firebase_enabled=True,
 		# 	your firebase admin service account key, (dict) [https://console.firebase.google.com > Service Accounts > Firebase admin].
 		firebase_admin={},
 		# 	your firebase sdk javascript configuration, (dict) [https://console.firebase.google.com > Settings > General > Web JS SDK].
