@@ -159,7 +159,7 @@ class VPS(_defaults_.Defaults):
 		if not response.success: 
 			if log_level >= 0: loader.stop(success=False)
 			return r3sponse.error(f"Failed to deploy website {self.domain} on vps {self.ip}, error (#1): {response.error}.", log_level=log_level)
-		r3sponse.log(f"&ORANGE&Do not forget&END& to remove the [{tmp}/website.py] file.")
+		#r3sponse.log(f"&ORANGE&Do not forget&END& to remove the [{tmp}/website.py] file.")
 		#response = ssht00ls.ssh.command(
 		#	alias=self.domain,
 		#	command=f"rm -fr {tmp}/website.py",
