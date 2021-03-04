@@ -127,15 +127,15 @@ class Users(_defaults_.Defaults):
 		user = response.user
 
 		# try load existing data.
-		response = self.db.load_data(email=email, username=username)
-		if response.success:
-			data = Dictionary(data).check(default=dict(self.default_user_data))
+		response = self.load_data(email=email, username=username, create=True)
+		if response.success and response.data != None:
+			data = Dictionary(response.data).check(default=dict(self.default_user_data))
 		else:
 			data = dict(self.default_user_data)
 
 		# save new user data.
 		data["timestamps"]["created"] = Date().date
-		data["keys"]["api_key"] = String("").generate(length=32, capitalize=True, digits=True)
+		data["keys"]["api_key"] = String().generate(length=48, capitalize=True, digits=True)
 		_response_ = self.aes.encrypt(password)
 		if not _response_.success: return _response_
 		try:data["account"]
@@ -358,10 +358,12 @@ class Users(_defaults_.Defaults):
 		email=None,
 		# the user's username.
 		username=None,
+		# the create boolean (do not use).
+		create=False,
 	):	
 		if [username,email] == [None,None]:
 			return r3sponse.error(self.__traceback__(function="load_data")+" Define one of the following parameters [email, username].")
-		response = self.db.load(self.__get_path__(email=email, username=username), format="json")
+		response = self.db.load(path=self.__get_path__(email=email, username=username, create=create))
 		if response.error != None: return response
 		return r3sponse.success(f"Successfully loaded the data of user [{email}].", {
 			"data":response["data"],
@@ -376,7 +378,8 @@ class Users(_defaults_.Defaults):
 	):
 		if [username,email] == [None,None]:
 			return r3sponse.error(self.__traceback__(function="load_data")+" Define one of the following parameters [email, username].")
-		response = self.db.save(self.__get_path__(email=email, username=username), data, format="json")
+		print('saving data:',data)
+		response = self.db.save(path=self.__get_path__(email=email, username=username, create=True), data=data)
 		if response.error != None: return response
 		return r3sponse.success(f"Successfully saved the data of user [{email}].")
 	def send_email(self, 
@@ -900,7 +903,7 @@ class Users(_defaults_.Defaults):
 			try:
 				if data["keys"]["api_key"] in [None, ""]: raise KeyError("")
 			except KeyError: 
-				data["keys"]["api_key"] = String("").generate(length=32, capitalize=True, digits=True)
+				data["keys"]["api_key"] = String().generate(length=48, capitalize=True, digits=True)
 				edits += 1
 
 			# edits.
@@ -991,21 +994,26 @@ class Users(_defaults_.Defaults):
 		})
 
 		#
-	def __get_path__(self, email=None, username=None):
+	def __get_path__(self, email=None, username=None, create=False):
 		if self.id_by_username:
 			if username == None and email != None:
 				response = self.get(email=email)
 				if not response.success: response.crash()
 				username = response.user.username
 			id = username
+			if "@" in username:
+				raise ValueError(f"Forbidden @ character found in username: [{username}].")
 		else:
 			if email == None and username != None:
 				response = self.get(username=username)
 				if not response.success: response.crash()
 				email = response.user.email
 			id = email
+			if "@" not in email:
+				raise ValueError(f"Required @ character not found in email: [{email}].")
 		if self.db.mode == "cache":
 			path = f"{self.users_subpath}/{id}/settings"
+			if create and not Files.exists(gfp.base(path)): Files.create(gfp.base(path), directory=True)
 		else:
 			path = f"{self.users_subpath}/{id}"
 		return path

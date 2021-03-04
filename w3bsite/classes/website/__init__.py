@@ -434,6 +434,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 			maintenance=self.maintenance,
 			users_subpath=self.users_subpath,
 			template_data=self.template_data,
+			id_by_username=self.id_by_username,
 			aes=self.aes,
 			logging=self.logging,)
 		self.utils = utils.Utils(attributes=self.defaults.attributes())

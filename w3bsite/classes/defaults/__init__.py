@@ -28,7 +28,7 @@ class Defaults(syst3m.objects.Object):
 		_2fa=False,
 		maintenance=False,
 		users_subpath="users/",
-		id_by_username=False,
+		id_by_username=True,
 		# objects.
 		template_data=None,
 		aes=None,
