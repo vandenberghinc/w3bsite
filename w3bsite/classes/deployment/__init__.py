@@ -219,6 +219,7 @@ class Deployment(syst3m.objects.Object):
 			"***DOMAIN***":self.domain,
 			"***DATABASE***":self.database,
 			"***USER***":syst3m.defaults.vars.user,
+			"***WEBSITE_BASE***":gfp.base(SOURCE_PATH),
 		}
 		for path in Files.Directory(path=f"{SOURCE_PATH}/classes/deployment/lib/").paths():
 			name = FilePath(path).name()

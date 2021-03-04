@@ -2,12 +2,13 @@
 #sudo pkill -9 -f gunicorn
 cd ***ROOT***/
 source .secrets/env.sh
+export INTERACTIVE="false"
 if [ ! -f "***DATABASE***/data/db.sqlite3" ] ; then
 	export MIGRATIONS="true"
 	python3 ***ROOT***/manage.py migrate
 fi
 export MIGRATIONS="false"
-export INTERACTIVE="false"
+export WEBSITE_BASE="***WEBSITE_BASE***/"
 sudo chown -R $USER /www-data
 /www-data/venv/bin/gunicorn \
   --timeout 86400 \
