@@ -129,7 +129,7 @@ class Users(_defaults_.Defaults):
 		data["timestamps"]["signed_up"] = Date().date
 		data["api_key"] = String("").generate(length=68, capitalize=True, digits=True)
 		_response_ = self.aes.encrypt(password)
-		if not _response_.success: return self.response(_response_)
+		if not _response_.success: return _response_
 		try:data["account"]
 		except: data["account"] = {}
 		data["account"]["username"] = username
@@ -773,7 +773,7 @@ class Users(_defaults_.Defaults):
 		if not response.success: return response
 		data = response.data
 		_response_ = self.aes.decrypt(data["account"]["password"])
-		if not _response_.success: return self.response(_response_)
+		if not _response_.success: return _response_
 		password = _response_["decrypted"].decode()
 		return r3sponse.success(f"Successfully retrieved the password of user {email}.",{
 			"password":password,
@@ -792,14 +792,19 @@ class Users(_defaults_.Defaults):
 		if not response.success: return response
 		data = response.data
 		_response_ = self.aes.encrypt(password)
-		if not _response_.success: return self.response(_response_)
+		if not _response_.success: _response_
 		try:data["account"]
 		except: data["account"] = {}
 		data["account"]["password"] = _response_["encrypted"].decode()
 		response = self.save_data(email=email, username=username, data=data)
 		if not response.success: return response
 		return r3sponse.success(f"Successfully saved the password of user {email}.")
-	def iterate(self, users=True, database=False):
+	def iterate(self, 
+		# iterating user objects (True) or email strings (False).
+		users=True,
+		# iterating the database (True) or django (False). 
+		database=False,
+	):
 		if database:
 			if self.db.mode == "firestore":
 				response = self.firestore.load_collection(self.users_subpath)
