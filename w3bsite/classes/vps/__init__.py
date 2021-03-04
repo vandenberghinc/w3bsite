@@ -144,7 +144,10 @@ class VPS(_defaults_.Defaults):
 		# copy current source to vps & installer script.		
 		if log_level >= 0: loader.mark(new_message=f"Installing source code of website {self.domain} on vps {self.ip}")
 		package_name = gfp.name(path=self.root)
-		tmp = f"/tmp/{package_name}/"
+		if code_update:
+			tmp = self.library
+		else:
+			tmp = f"/tmp/{package_name}/"
 		response = ssht00ls.ssync.push(
 			alias=self.domain,
 			path=self.root,
