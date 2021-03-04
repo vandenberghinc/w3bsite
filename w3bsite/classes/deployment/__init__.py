@@ -281,12 +281,12 @@ class Deployment(syst3m.objects.Object):
 		if not Files.exists(f"{self.database}/tls/server.key") or not Files.exists(f"{self.database}/tls/server.crt"):
 			if log_level >= 0: loader.stop(success=False)
 			return r3sponse.error("No tls certificate exists.\nExecute the following command to generate a tls certificate:\n$ ./website.py --generate-tls", log_level=log_level)
-		if not Files.exists(f"{self.database}/tls/signed.server.crt"):
-			if log_level >= 0: loader.stop(success=False)
-			return r3sponse.error("No activated tls certificate exists. \nExecute the following command to activate the generated tls certificate:\n$ ./website.py --activate-tls", log_level=log_level)
-		if not Files.exists(f"{self.database}/tls/server.ca-bundle"):
-			if log_level >= 0: loader.stop(success=False)
-			return r3sponse.error("No bundled tls certificate exists. \nDownload the signed certificate send to your email, extr the zip to a directory and execute \n$ ./website.py --bundle-tls /path/to/extracted/directory/", log_level=log_level)
+		#if not Files.exists(f"{self.database}/tls/signed.server.crt"):
+		#	if log_level >= 0: loader.stop(success=False)
+		#	return r3sponse.error("No activated tls certificate exists. \nExecute the following command to activate the generated tls certificate:\n$ ./website.py --activate-tls", log_level=log_level)
+		#if not Files.exists(f"{self.database}/tls/server.ca-bundle"):
+		#	if log_level >= 0: loader.stop(success=False)
+		#	return r3sponse.error("No bundled tls certificate exists. \nDownload the signed certificate send to your email, extr the zip to a directory and execute \n$ ./website.py --bundle-tls /path/to/extracted/directory/", log_level=log_level)
 		
 		# arguments.
 		arguments = ""

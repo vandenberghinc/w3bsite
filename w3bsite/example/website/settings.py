@@ -11,22 +11,18 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 # imports.
-import os, sys, syst3m, w3bsite
+import os, sys, syst3m
 from fil3s import *
 
-# SECURITY WARNING: don't run with PRODUCTION enabled in production!
-# environment variables due to circular import.
-PRODUCTION = syst3m.env.get_boolean("PRODUCTION", default=True)
-DOMAIN = syst3m.env.get_string("DOMAIN")
-DATABASE = syst3m.env.get_string("DATABASE")
-SECRET_KEY = syst3m.env.get_string("DJANGO_SECRET_KEY")
-if syst3m.defaults.options.log_level > 0:
-    print("**************************")
-    print("Initializing settings.py ...")
-    print("Production:",PRODUCTION)
-    print("Domain:",DOMAIN)
-    print("Database:",DATABASE)
-    print("Secret Key:",SECRET_KEY[:2]+"********************")
+# env.
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PRODUCTION = syst3m.env.get("PRODUCTION", default=True, format=bool)
+DATABASE = syst3m.env.get("DATABASE", default=BASE_DIR)
+SECRET_KEY = syst3m.env.get("DJANGO_SECRET_KEY", default=String().generate(length=128, capitalize=True, digits=True, special=True))
+WEBSITE_BASE = syst3m.env.get("WEBSITE_BASE", default=None)
+DOMAIN = syst3m.env.get("DOMAIN", default=None)
+if WEBSITE_BASE == None:
+    raise ValueError("Improperly configured run, env variable [WEBSITE_BASE] is None.")
 
 # Match production.
 if PRODUCTION:
@@ -49,23 +45,19 @@ else:
     SECURE_SSL_REDIRECT = False
     DEBUG = True
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
-
 # Add allowed hosts.
 ALLOWED_HOSTS = []
 for url in [
     DOMAIN,
 ]:
-    ALLOWED_HOSTS.append(url)
-    ALLOWED_HOSTS.append("www."+url)
-    ALLOWED_HOSTS.append("http://"+url)
-    ALLOWED_HOSTS.append("https://"+"www."+url)
+    if url != None:
+        ALLOWED_HOSTS.append(url)
+        ALLOWED_HOSTS.append("www."+url)
+        ALLOWED_HOSTS.append("http://"+url)
+        ALLOWED_HOSTS.append("https://"+"www."+url)
 if PRODUCTION == False:
     ALLOWED_HOSTS.append("*")
+
 
 # Application definition
 
