@@ -800,44 +800,39 @@ class Users(_defaults_.Defaults):
 		response = self.save_data(email=email, username=username, data=data)
 		if not response.success: return response
 		return r3sponse.success(f"Successfully saved the password of user {email}.")
-	def iterate(self, emails=False, database=False, combined=False):
-		if combined:
-			database = self.iterate(emails=emails, database=True)
-			django = self.iterate(emails=emails, database=False)
-			return database + django
-		else:
-			if database:
-				if self.db.mode == "firestore":
-					response = self.firestore.load_collection(self.users_subpath)
-					if not response.success: raise ValueError(response.error)
-					users = []
-					_emails_ = response["collection"]
-					if not emails:
-						for email in _emails_:
-							users.append(auth.get_user_by_email(email))
-						return users
-					else:
-						return _emails_
+	def iterate(self, users=True, database=False):
+		if database:
+			if self.db.mode == "firestore":
+				response = self.firestore.load_collection(self.users_subpath)
+				if not response.success: raise ValueError(response.error)
+				_users_ = []
+				_emails_ = response["collection"]
+				if users:
+					for email in _emails_:
+						_users_.append(auth.get_user_by_email(email))
+					return _users_
 				else:
-					users = []
-					_emails_ = []
-					for path in Directory(Files.join(self.database, self.users_subpath)).paths(dirs_only=True):
-						id = fgp.name(path=path)
-						info = self.load_data(username=id, email=id)
-						users.append(info["account"]["username"])
-						_emails_.append(info["account"]["email"])
-					if not emails:
-						return users
-					else:
-						return _emails_
-			else:
-				users, _emails_ = auth.list_users().iterate_all(), []
-				if emails:
-					for user in users:
-						_emails_.append(user.email)
 					return _emails_
+			else:
+				_users_ = []
+				_emails_ = []
+				for path in Directory(Files.join(self.database, self.users_subpath)).paths(dirs_only=True):
+					id = fgp.name(path=path)
+					info = self.load_data(username=id, email=id)
+					_users_.append(info["account"]["username"])
+					_emails_.append(info["account"]["email"])
+				if users:
+					return _users_
 				else:
-					return users
+					return _emails_
+		else:
+			_users_, _emails_ = auth.list_users().iterate_all(), []
+			if not users:
+				for user in _users_:
+					_emails_.append(user.email)
+				return _emails_
+			else:
+				return _users_
 	def synchronize(self, 
 		# leave emails=None default to synchronize all users.
 		# optionally pass emails=[newuser@email.com] to synchronize new users.
