@@ -985,7 +985,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		self.firebase_js = {
 			"api_key":local_security.get_secret_env("FIREBASE_JS_"+"API_KEY", default=None, required=required),
 			"auth_domain":local_security.get_secret_env("FIREBASE_JS_"+"AUTH_DOMAIN", default=None, required=required),
-			"database_url":local_security.get_secret_env("FIREBASE_JS_"+"DATABASE_URL", default=None, required=required),
+			"database_url":local_security.get_secret_env("FIREBASE_JS_"+"DATABASE_URL", default=None, required=False),
 			"project_id":local_security.get_secret_env("FIREBASE_JS_"+"PROJECT_ID", default=None, required=required),
 			"storage_bucket":local_security.get_secret_env("FIREBASE_JS_"+"STORAGE_BUCKET", default=None, required=required),
 			"messaging_sender_id":local_security.get_secret_env("FIREBASE_JS_"+"MESSAGING_SENDER_ID", default=None, required=required),
