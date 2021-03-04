@@ -6,6 +6,13 @@ from w3bsite.classes.config import *
 import xmltodict 
 
 
+# catch request error.
+def catch_error(error):
+	r3sponse.log_file = Files.join(syst3m.env.get("DATABASE", default=""), "logs/errors")
+	if not Files.exists(r3sponse.log_file): r3sponse.log_file = None
+	r3sponse.log(traceback.format_exc(), save=True)
+	raise Exception(error)
+
 # get naked domain url.
 def naked_url(domain):
 	while True:
