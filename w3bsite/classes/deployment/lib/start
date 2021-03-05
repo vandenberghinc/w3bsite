@@ -9,6 +9,7 @@ if [ ! -f "***DATABASE***/data/db.sqlite3" ] ; then
 fi
 export MIGRATIONS="false"
 export WEBSITE_BASE="***WEBSITE_BASE***/"
+export LIVE="true"
 sudo chown -R $USER /www-data
 /www-data/venv/bin/gunicorn \
   --timeout 86400 \

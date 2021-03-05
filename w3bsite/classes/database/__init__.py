@@ -25,10 +25,8 @@ class Database(syst3m.objects.Traceback):
 			os.system(f"sudo mkdir {self.path}")
 			Files.chmod(path=self.path, permission=700, sudo=True)
 			Files.chown(path=self.path, owner=syst3m.defaults.vars.user, group=syst3m.defaults.vars.group, sudo=True)
-		self.cache = None
 		if firestore == None:
 			self.mode = "cache"
-			self.cache = syst3m.cache.Cache(path=self.path)
 
 		#
 
@@ -38,6 +36,7 @@ class Database(syst3m.objects.Traceback):
 		if self.mode == "firestore":
 			return self.firestore.load(path)
 		elif self.mode == "cache":
+			path = gfp.clean(f"{self.path}/{path}")
 			try:
 				data = Files.load(path=path, format="json")
 			except Exception as e: return r3sponse.error(str(e))
@@ -45,13 +44,36 @@ class Database(syst3m.objects.Traceback):
 				"data":data,
 			})
 		else: raise exceptions.InvalidUsage(self.__traceback__(function="load")+f" Unknown mode [{self.mode}].")
-	def save(self, path=None, data=None):
+	def save(self, path=None, data=None, overwrite=False):
 		if path == None: return r3sponse.error(self.__traceback__(function="save")+" Define parameter: [path].")
 		if data == None: return r3sponse.error(self.__traceback__(function="save")+" Define parameter: [data].")
 		if self.mode == "firestore":
 			return self.firestore.save(path, data)
 		elif self.mode == "cache":
-			if not Files.exists(path=gfp.base(path)): Files.create(path=gfp.base(), directory=True)
+			path = gfp.clean(f"{self.path}/{path}")
+			try:
+				if not Files.exists(path=gfp.base(path)): Files.create(path=gfp.base(path), directory=True)
+			except ValueError: a=1
+			if not overwrite:
+				def insert(old, new):
+					for key,value in new.items():
+						if isinstance(value, (dict, Dictionary)):
+							if key in old:
+								old[key] = insert(old[key], value)
+							else:
+								old[key] = value
+						elif isinstance(value, (list, Array)):
+							if key in old:
+								for i in value:
+									if i not in old[key]: old[key].append(i)
+							else:
+								old[key] = value
+						else:
+							old[key] = value
+					return old
+				try: old_data = Files.load(path=path, format="json")
+				except: old_data = {}
+				data = insert(old_data, data)
 			try:
 				Files.save(path=path, data=data, format="json")
 			except Exception as e: return r3sponse.error(str(e))
@@ -62,9 +84,11 @@ class Database(syst3m.objects.Traceback):
 		if self.mode == "firestore":
 			return self.firestore.delete(path)
 		elif self.mode == "cache":
+			path = gfp.clean(f"{self.path}/{path}")
 			try:
-				self.cache.delete(group=path)
+				Files.delete(path=path)
 			except Exception as e: return r3sponse.error(str(e))
+			if Files.exists(path): return r3sponse.error(f"Failed to delete [{path}].")
 			return r3sponse.success(f"Successfully deleted [{path}].")
 		else: raise exceptions.InvalidUsage(self.__traceback__(function="delete")+f" Unknown mode [{self.mode}].")
 

@@ -64,12 +64,6 @@ class Users(_defaults_.Defaults):
 				"name":None,
 				"password":None,
 			},
-			"keys": {
-				"api_key":None,
-			},
-			# the requests.
-			"requests": {
-			},
 			# the permissions.
 			"permissions": {
 				"email":True,
@@ -77,6 +71,13 @@ class Users(_defaults_.Defaults):
 			# timestamps.
 			"timestamps": {
 				"created":None,
+			},
+			# the keys.
+			"keys": {
+				"api_key":None,
+			},
+			# the requests.
+			"requests": {
 			},
 		}
 
@@ -146,6 +147,7 @@ class Users(_defaults_.Defaults):
 		data["account"]["password"] = _response_["encrypted"].decode()
 		response = self.save_data(email=email, username=username, data=data)
 		if not response.success: return response
+		print(response.message, data)
 
 		# insert api key cache.
 		try: self.__api_keys__
@@ -375,10 +377,12 @@ class Users(_defaults_.Defaults):
 		username=None,
 		# the user's data.
 		data={},
+		# the overwrite boolean.
+		overwrite=False,
 	):
 		if [username,email] == [None,None]:
 			return r3sponse.error(self.__traceback__(function="load_data")+" Define one of the following parameters [email, username].")
-		response = self.db.save(path=self.__get_path__(email=email, username=username, create=True), data=data)
+		response = self.db.save(path=self.__get_path__(email=email, username=username, create=True), data=data, overwrite=overwrite)
 		if response.error != None: return response
 		return r3sponse.success(f"Successfully saved the data of user [{email}].")
 	def send_email(self, 
