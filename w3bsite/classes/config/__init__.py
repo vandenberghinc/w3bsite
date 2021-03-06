@@ -6,6 +6,7 @@ import os, sys, ast, json, glob, platform, subprocess, random, requests, urllib,
 
 # inc imports.
 import cl1, netw0rk, syst3m, ssht00ls
+from ssht00ls import ssht00ls_agent
 from fil3s import *
 from r3sponse import r3sponse
 

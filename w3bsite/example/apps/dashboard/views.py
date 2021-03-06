@@ -25,7 +25,7 @@ class HelloWorld(w3bsite.views.View):
 	def view(self, request):
 		return self.render(request)
 		
-# the activate views.
+# the active views.
 urlpatterns = w3bsite.views.build_urls([
 	#Home(),
 	#HelloWorld(),

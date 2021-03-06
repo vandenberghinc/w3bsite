@@ -608,11 +608,11 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 
 		# activate enc.
 		if self.remote in ["vps"] and not self.vps.live:
-			if not ssht00ls.encryption.generated:
-				response = ssht00ls.encryption.generate()
+			if not ssht00ls_agent.generated:
+				response = ssht00ls_agent.generate()
 				if not response.success: self.stop(response=response, json=syst3m.defaults.options.json)
-			elif not ssht00ls.encryption.activated:
-				response = ssht00ls.encryption.activate()
+			elif not ssht00ls_agent.activated:
+				response = ssht00ls_agent.activate()
 				if not response.success: self.stop(response=response, json=syst3m.defaults.options.json)
 
 		# help.

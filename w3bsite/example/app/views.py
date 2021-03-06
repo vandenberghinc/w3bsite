@@ -21,11 +21,11 @@ class Home(w3bsite.views.View):
 # compact.
 class HelloWorld(w3bsite.views.View):
 	def __init__(self):
-		w3bsite.views.View.__init__(self, "dashboard/" "hello-world", template_data=website.template_data)
+		w3bsite.views.View.__init__(self, "dashboard/" "hello-world")
 	def view(self, request):
-		return self.render(request)
+		return self.render(request, website.template_data+{})
 		
-# the activate views.
+# the active views.
 urlpatterns = w3bsite.views.build_urls([
 	#Home(),
 	#HelloWorld(),
