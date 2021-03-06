@@ -13,5 +13,5 @@ def main():
         ) from exc
     execute_from_command_line(sys.argv)
 if __name__ == '__main__':
-    os.chdir(gfp.base(__file__, back=2))
+    os.chdir(gfp.base(__file__, back=1))
     main()

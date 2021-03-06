@@ -158,6 +158,7 @@ class Django(_defaults_.Defaults):
 			os.system(f"cd {self.root} && python3 ./manage.py migrate")
 			syst3m.env.export(export="__defaults__/env/json", env={"MIGRATIONS": False,})
 			#sys.argv = old_argv
+		return r3sponse.success(f"Successfully checked the migrations.")
 	def collect_static(self, log_level=syst3m.defaults.options.log_level):
 		if log_level >= 1:
 			r3sponse.log(f"Checking the {ALIAS} webserver migrations.")
@@ -169,6 +170,7 @@ class Django(_defaults_.Defaults):
 		syst3m.env.export(export="__defaults__/env/json", env={
 			"MIGRATIONS": str(False),
 		})
+		return r3sponse.success(f"Successfully checked the static files.")
 
 # the django database users.
 class Users(_defaults_.Defaults):
