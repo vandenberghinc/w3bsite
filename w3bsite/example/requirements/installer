@@ -7,7 +7,7 @@ function osinfo() {
         os="linux"
         group="root"
     elif [[ "$OSTYPE" == "darwin"* ]]; then
-        os="macos"
+        os="osx"
         group="wheel"
     elif [[ "$OSTYPE" == "cygwin" ]]; then
        os="posix"     # POSIX compatibility layer and Linux environment emulation for Windows
@@ -161,20 +161,17 @@ else
 fi
 
 # python requirements:
-file=$requirements_dir"/requirements.pip"
+file=$requirements_dir"/requirements.txt"
 if [ -f "$file" ] ; then
     echo "Installing PIP requirements..."
-    sudo -u $user pip3 install -r $file 2> /dev/null
-    if [[ "$os" == "macos" ]] && [[ -f "/usr/bin/pip3" ]] ; then
-        sudo /usr/bin/pip3 install -r $file -u $user 2> /dev/null
-    fi
+    pip3 install -r $file
 fi
 
 # install alias.
 if [[ "$website_package" == "true" ]] || [[ "$website_package" == "True" ]] ; then
-    python3 $package/website.py --create-alias $alias --sudo 
+    python3 $package/website.py --create-alias $alias
 else 
-    python3 $package/ --create-alias $alias --sudo
+    python3 $package --create-alias $alias
 fi
 
 # install pypi package.

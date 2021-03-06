@@ -9,22 +9,34 @@
 	
 	<!-- JAVASCRIPT -->
 	<a href="/" id="base_url" style="display: none;"></a>
+	<p id="hidden_response_element" style="display: none;"></p>
 	<script type="text/javascript">
+		var BASE_URL = document.getElementById("base_url").href
 		var EMAIL = localStorage.getItem("EMAIL")
+		var FLEX_FUNCTIONS = []
+		var hidden_response_element = document.getElementById("hidden_response_element")
+	</script>
+	<script type="text/javascript">
+		
 	</script>
 
 	<!-- BODY -->
-	<body id="body" style="background: {{colors.background}}">
+	<body id="body" style="background: {{COLORS.background}}">
 		<div id="root-content" style="min-width: 250px; red; position: absolute; top: 0px; left: 0px; right: 0px; bottom: 0px; position: relative;"> 
 
+			<!-- BASE BLOCK -->
+			{% block pre_base %}
+			{% endblock %}
+
+
 			<!-- TOPBAR -->
-			{% include "w3bsite/classes/apps/defaults/html/topbar.html" %}
+			<!-- include "w3bsite/classes/apps/defaults/html/topbar.html"  -->
 
 			<!-- BACKGROUND IMAGE -->
-			<!--
-			<div class="background-image"  style="background-image: url('{% static 'media//images/bg1.jpg' %}'); width: 100%; height: 100%; position: fixed; left: 0px; top: 0px; bottom: 0px; right: 0px;">
-			</div>
-			-->
+			{% if COLORS.background_img != "None" and COLORS.background_img != "" and COLORS.background_img != null %}
+				<div class="background-image"  style="background-image: url('{% static 'media//images/bg1.jpg' %}'); width: 100%; height: 100%; position: fixed; left: 0px; top: 0px; bottom: 0px; right: 0px;">
+				</div>
+			{% endif %}
 			
 			<!-- LEFT BAR -->
 			<div id="leftbar" class="widget" style="position: fixed; top: 90px; left: 15px; width: 250px; bottom: 35px; margin-top: 0px;  display: none; ">
@@ -43,7 +55,7 @@
 			</div>
 
 			<!-- BLOCKS -->
-			<div id="content" style="z-index: 7; position: fixed; top: 15px; bottom: 35px; right: 15px; left: 15px; overflow: visible; border-radius: 10px;">
+			<div id="content" style="z-index: 7; position: fixed; top: 15px; bottom: 35px; right: 15px; left: 15px; overflow: visible; border-radius: 0px;">
 				<div style="position: relative; width: 100%; height: 100%; overflow: visible;">
 				
 					<!-- error pop up -->
@@ -53,7 +65,7 @@
 
 								<!-- title -->
 								<div style="display: flex; margin: 0 auto; width: 200px; padding-left: 45px; margin-bottom: 5px;  margin-top: 15px;">
-									<h1 id="error.popup.title" class="title" style="color: {{colors.text}}; text-align: center; font-size: 26px; flex: 0; margin-top: 1px;">
+									<h1 id="error.popup.title" class="title" style="color: {{COLORS.text}}; text-align: center; font-size: 26px; flex: 0; margin-top: 1px;">
 										Important
 									</h1>
 									<img id="error.popup.icon" src="{% static 'media//icons/warning.png' %}" alt="VanDenBerghInc" width="30" style="width: 30px; height: 30px; margin: 0 auto; margin-left: 10px;" />
@@ -144,24 +156,60 @@
 					</script>
 					
 					<!-- content blocks -->
-					<div id="content_blocks" style="display: inherit; position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px; overflow: scroll;">
+					<div id="content_blocks" style="display: inherit; position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px; 
+					overflow: scroll;">
 						{% block content %}
 						{% endblock %}
 					</div>
 
 					<!-- ...include footer.. 
-					<h1 class="text" style="font-size: 6px; font-weight: 400; color: {{colors.darkest}}; margin-top: 25px;">
+					<h1 class="text" style="font-size: 6px; font-weight: 400; color: {{COLORS.darkest}}; margin-top: 25px;">
 						© 2020 VanDenBerghInc. All Rights Reserved.
 					</h1>
 					-->
 
-				</div>
-			</div>
 
+					<!-- DARK MODE CONTROL BAR -->
+
+			<!-- DARK MODE CONTROL BAR -->
+			<div id="darkmode_control_bar" class="widget" style="position: fixed; right: 15px; bottom: 15px;  margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px; z-index: 12;">
+				<div class="text" style="display: flex; font-size: 12px;">
+					<div id="darkmode_control_bar.lightmode" onclick="toggle_darkmode('light')" class="widget_reversed text_reversed" style="height: 100%; margin: 0px 0px 0px 0px; padding: 5px 15px 5px 15px;">
+						<a class="empty_a" href="#">
+							Light Mode
+						</a>
+					</div>
+					<div id="darkmode_control_bar.darkmode" class="widget" onclick="toggle_darkmode('dark')" style="box-shadow: none; background-color: #00000000; margin: 0px 0px 0px 0px; padding: 5px 15px 5px 15px;">
+						<a class="empty_a" href="#">
+							Dark Mode
+						</a>
+					</div>
+				</div>
+				<script type="text/javascript">
+					toggle_darkmode(DARKMODE)
+				</script>
+			</div>
+			
 		</div>
 		{% csrf_token %}
 	</body>
 
+	<!-- BASPOST E BLOCK -->
+	{% block post_base %}
+	{% endblock %}
+
+	<!-- ELECTRON -->
+	<script type="text/javascript">
+		var electron = get_boolean_url_param("electron");
+		if (electron == true) {
+			localStorage.setItem("ELECTRON", true)
+		}
+		var electron = localStorage.getItem("ELECTRON")
+		if (electron == true || electron == "true") {
+			topbar = document.getElementById("topbar")
+			topbar.style.top = "20px"
+		}
+	</script>
 	
 	<!-- SET ELEMENTS BY WIDTH -->
 	<script type="text/javascript">
@@ -185,6 +233,11 @@
 			}
 
 			try { __set_payments_flex__() } catch(e) {}
+
+			// iterate flex functions.
+			FLEX_FUNCTIONS.forEach(function(flex_function, index) {
+				try { flex_function() } catch(e) {}
+			})
 		}
 		__set_elements_by_width__()
 		window.addEventListener("resize", __set_elements_by_width__);

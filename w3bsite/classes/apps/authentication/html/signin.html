@@ -4,9 +4,9 @@
 
 <!-- JS -->
 <script type="text/javascript">
-	__toggle_top_bar__("hide")
-	__toggle_left_bar__("hide")
-	__toggle_right_bar__("hide")
+	toggle_top_bar("hide")
+	toggle_left_bar("hide")
+	toggle_right_bar("hide")
 	check_authenticated(function(response) {
 		if (response.error == null) {
 			location.href = "/"
@@ -69,10 +69,12 @@
 				location.href = "/"
 			} else {}
 		}
-		__make_request__("/requests/authentication/signin/", document.getElementById("response"), document.getElementById("loader"), {
+		request("/requests/authentication/signin/", {
 				username:username, 
 				password:password, 
 				code:null,
+				response: document.getElementById("response"),
+				loader: document.getElementById("loader"),
 			},
 			function(response) {
 				__handle_response__(response)

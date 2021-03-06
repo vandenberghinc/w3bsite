@@ -277,7 +277,7 @@ class Stripe(_defaults_.Defaults):
 		):
 
 			# params.
-			response = r3sponse.check_parameters(
+			response = r3sponse.parameters.check(
 				traceback=self.__traceback__(function="check"),
 				parameters={
 					"email":email,
@@ -305,7 +305,7 @@ class Stripe(_defaults_.Defaults):
 		):
 
 			# params.
-			response = r3sponse.check_parameters(
+			response = r3sponse.parameters.check(
 				traceback=self.__traceback__(function="create"),
 				parameters={
 					"email":email,
@@ -342,7 +342,7 @@ class Stripe(_defaults_.Defaults):
 		):
 
 			# params.
-			response = r3sponse.check_parameters(
+			response = r3sponse.parameters.check(
 				traceback=self.__traceback__(function="delete"),
 				parameters={
 					"id":id,
@@ -415,7 +415,7 @@ class Stripe(_defaults_.Defaults):
 		):
 
 			# params.
-			response = r3sponse.check_parameters(
+			response = r3sponse.parameters.check(
 				traceback=self.__traceback__(function="get_cards"),
 				parameters={
 				"id":id,})
@@ -471,7 +471,7 @@ class Stripe(_defaults_.Defaults):
 		):
 
 			# params.
-			response = r3sponse.check_parameters(
+			response = r3sponse.parameters.check(
 				traceback=self.__traceback__(function="create_card"),
 				parameters={
 					"id":id,
@@ -551,7 +551,7 @@ class Stripe(_defaults_.Defaults):
 		):
 			
 			# params.
-			response = r3sponse.check_parameters(
+			response = r3sponse.parameters.check(
 				traceback=self.__traceback__(function="delete_card"),
 				parameters={
 					"id":id,
@@ -832,7 +832,7 @@ class Stripe(_defaults_.Defaults):
 		):
 
 			# params.
-			response = r3sponse.check_parameters(
+			response = r3sponse.parameters.check(
 				traceback=self.__traceback__(function="create"),
 				parameters={
 					"id":id,
@@ -944,7 +944,7 @@ class Stripe(_defaults_.Defaults):
 		):
 			
 			# params.
-			response = r3sponse.check_parameters(
+			response = r3sponse.parameters.check(
 				traceback=self.__traceback__(function="create"),
 				parameters={
 					"id":id,

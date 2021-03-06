@@ -1,0 +1,100 @@
+{% load static %}
+<script type="text/javascript">
+	
+	// the authentication requests class.
+	class Authentication {
+
+		// init.
+		constructor(height, width) {
+			this.url = "/requests/authentication/"
+		}
+
+		// signin.
+		signin(args={}, handler=null) {
+			localStorage.setItem("USERNAME", args["username"])
+			request(this.url+"signin/", {
+				username: args["username"],
+				password: args["password"],
+				code: args["code"],
+				response:args["response"],
+				loader:args["loader"],
+			// handler.
+			}, function(response) {
+				if (handler != null) {
+					handler(response)
+				}
+			})
+		}
+
+		// signup.
+		signup(args={}, handler=null) {
+			request(this.url+"signup/", {
+				name: args["name"],
+				email: args["email"],
+				username: args["username"],
+				password: args["password"],
+				verify_password: args["verify_password"],
+				response:args["response"],
+				loader:args["loader"],
+			// handler.
+			}, function(response) {
+				if (handler != null) {
+					handler(response)
+				}
+			})
+		}
+
+		// send_code.
+		send_code(args={}, handler=null) {
+			request(this.url+"send_code/", {
+				email: args["email"],
+				mode: args["mode"],
+				response:args["response"],
+				loader:args["loader"],
+			// handler.
+			}, function(response) {
+				if (handler != null) {
+					handler(response)
+				}
+			})
+		}
+
+		// reset_password.
+		reset_password(args={}, handler=null) {
+			request(this.url+"reset_password/", {
+				code: args["code"],
+				email: args["email"],
+				password: args["password"],
+				verify_password: args["verify_password"],
+				response:args["response"],
+				loader:args["loader"],
+			// handler.
+			}, function(response) {
+				if (handler != null) {
+					handler(response)
+				}
+			})
+		}
+
+
+		// activate.
+		activate(args={}, handler=null) {
+			request(this.url+"activate/", {
+				code: args["code"],
+				email: args["email"],
+				response:args["response"],
+				loader:args["loader"],
+			// handler.
+			}, function(response) {
+				if (handler != null) {
+					handler(response)
+				}
+			})
+		}
+
+	}
+
+	// initialize class.
+	const authentication = new Authentication();
+
+</script>

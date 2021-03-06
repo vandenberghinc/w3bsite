@@ -254,14 +254,14 @@ class Heroku(object):
 		# add.
 		output = utils.__execute_script__(f"""
 			cd {self.root}
-			heroku certs:add .secrets/tls/server.crt .secrets/tls/server.key
+			heroku certs:add __defaults__/tls/server.crt __defaults__/tls/server.key
 		""")
 
 		# update.
 		if "try certs:update instead" in output:
 			output = utils.__execute_script__(f"""
 				cd {self.root}
-				heroku certs:update --confirm {app} .secrets/tls/server.crt .secrets/tls/server.key
+				heroku certs:update --confirm {app} __defaults__/tls/server.crt __defaults__/tls/server.key
 			""")
 
 		# handlers.
@@ -369,7 +369,7 @@ class Heroku(object):
 
 		# set heroku env.
 		loader = syst3m.console.Loader("Configuring heroku environment ...")
-		response = self.add_environment_variables(variables=utils.__load_json__(f"{self.root}/.secrets/env.json"))
+		response = self.add_environment_variables(variables=utils.__load_json__(f"{self.root}/__defaults__/env/json"))
 		if not response.success: 
 			loader.stop(success=False)
 			return response

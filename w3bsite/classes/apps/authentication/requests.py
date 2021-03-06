@@ -46,14 +46,15 @@ class Requests(_defaults_.Defaults):
 			if not response.success: return self.response(response)
 
 			# retrieve params.
-			parameters, response = r3sponse.get_request_parameters(request, [
+			parameters, response = self.parameters.get(request, [
 				"username",
 				"email",
 				"password",
 				"verify_password",])
 			if not response.success: return self.response(response)
-			optional_parameters, _ = r3sponse.get_request_parameters(request, [
-				"name",], optional=True)
+			optional_parameters, _ = self.parameters.get(request, {
+				"name":None,
+			})
 
 			# make request.
 			response = self.users.create(
@@ -97,12 +98,13 @@ class Requests(_defaults_.Defaults):
 			#if not response.success: return self.response(response)
 
 			# retrieve params.
-			parameters, response = r3sponse.get_request_parameters(request, [
+			parameters, response = self.parameters.get(request, [
 				"username",
 				"password",])
 			if not response.success: return self.response(response)
-			optional_parameters, _ = r3sponse.get_request_parameters(request, [
-				"code",], optional=True)
+			optional_parameters, _ = self.parameters.get(request, {
+				"code":None,
+			})
 			# make request.
 			return self.response(self.users.authenticate(
 				username=parameters["username"],
@@ -127,12 +129,12 @@ class Requests(_defaults_.Defaults):
 			if not response.success: return self.response(response)
 
 			# retrieve params.
-			parameters, response = r3sponse.get_request_parameters(request, [
+			parameters, response = self.parameters.get(request, [
 				"email",
 				"mode",])
 			if not response.success: return self.response(response)
 			if parameters["email"] in ["undefined", "null", "None", "none", ""]:
-				return self.error_response("Refresh the web page.")
+				return self.error("Refresh the web page.")
 
 			# make request.
 			return self.response(self.send_code(
@@ -218,14 +220,14 @@ class Requests(_defaults_.Defaults):
 			if not response.success: return self.response(response)
 
 			# retrieve params.
-			parameters, response = r3sponse.get_request_parameters(request, [
+			parameters, response = self.parameters.get(request, [
 				"code",
 				"email",
 				"password",
 				"verify_password",])
 			if not response.success: return self.response(response)
 			if parameters["email"] in ["undefined", "null", "None", "none", ""]:
-				return self.error_response("Refresh the web page.")
+				return self.error("Refresh the web page.")
 
 			# make request.
 			response = self.users.verify_code(
@@ -257,12 +259,12 @@ class Requests(_defaults_.Defaults):
 			if not response.success: return self.response(response)
 
 			# retrieve params.
-			parameters, response = r3sponse.get_request_parameters(request, [
+			parameters, response = self.parameters.get(request, [
 				"code",
 				"email",])
 			if not response.success: return self.response(response)
 			if parameters["email"] in ["undefined", "null", "None", "none", ""]:
-				return self.error_response("Refresh the web page.")
+				return self.error("Refresh the web page.")
 
 			# make request.
 			response = self.users.verify_code(

@@ -5,7 +5,7 @@
 from w3bsite.classes.config import *
 from w3bsite.classes import utils
 from w3bsite.classes import defaults as _defaults_
-from w3bsite.classes.apps import payments, authentication, template_data
+from w3bsite.classes.apps import payments, authentication
 
 # the apps holder.
 class Apps(_defaults_.Defaults):

@@ -41,7 +41,7 @@
 	{% endfor %}
 {% endfor %}
 <script type="text/javascript">
-	__toggle_full_screen__("show")
+	toggle_full_screen("show")
 </script>
 
 <!-- CONTENT -->
@@ -84,7 +84,7 @@
 			</div>
 
 			<!-- flex divider -->
-			<div class="divider" id="payments.divider" style="display: none; background: {{colors.white}}75; width: 90%; margin: 0 auto; margin-bottom: 25px;"></div>
+			<div class="divider" id="payments.divider" style="display: none; background: {{COLORS.white}}75; width: 90%; margin: 0 auto; margin-bottom: 25px;"></div>
 
 			<!-- right -->
 			<div style="width: 50px; height: 25px;"></div>
@@ -227,7 +227,7 @@
 
 	// retrieve current cards.
 	function get_card() {
-		__make_request__("/requests/payments/methods/list/", null, null, {}, function(response) {
+		request("/requests/payments/methods/list/", {}, function(response) {
 			// set loaded.
 			payment_elements.loading.style.display = "none"
 			payment_elements.loaded.style.display = "block"
@@ -280,7 +280,7 @@
 					plan_set = true
 					payment_elements.plans.innerHTML += `
 						<a class="empty_a" href="#" onclick="PLAN='`+plan_name+`';select_plan('`+product+`', '`+plan_name+`')">
-							<div class="wrapper widget_reversed" style="border: 1px solid #00000010; border-radius: 25px; width: 100%; height: 55px;  margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px; background-color: {{colors.widgets}}; border: 1px solid {{COLORS.widgets_reversed}}; box-shadow: none;">
+							<div class="wrapper widget_reversed" style="border: 1px solid #00000010; border-radius: 25px; width: 100%; height: 55px;  margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px; background-color: {{COLORS.widgets}}; border: 1px solid {{COLORS.widgets_reversed}}; box-shadow: none;">
 								<img src="`+favicon+`" alt="Poker Stats" width="30" height="30" style="margin: 12.5px 0px 0px 15px;" /> 
 								<div style="width: 100%; margin: 15px 0px 0px 10px;">
 									<h1 id="payments.title" class="subtitle" style="text-align: left; color: {{COLORS.widgets_reversed}}; font-size: 16px; font-weight: 600;  margin: 0px 0px 0px 10px; padding: 0px 0px 0px 0px;">
@@ -302,7 +302,7 @@
 				} else {
 					payment_elements.plans.innerHTML += `
 						<a class="empty_a" href="#" onclick="PLAN='`+plan_name+`';select_plan('`+product+`', '`+plan_name+`')">
-							<div class="wrapper widget_reversed" style="border: 1px solid #00000010; border-radius: 25px; width: 100%; height: 55px;  margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px; background-color: {{colors.widgets}}50; border: 1px solid {{COLORS.widgets_reversed}}; box-shadow: none;">
+							<div class="wrapper widget_reversed" style="border: 1px solid #00000010; border-radius: 25px; width: 100%; height: 55px;  margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px; background-color: {{COLORS.widgets}}50; border: 1px solid {{COLORS.widgets_reversed}}; box-shadow: none;">
 								<img src="`+favicon+`" alt="Poker Stats" width="30" height="30" style="margin: 12.5px 0px 0px 15px;" /> 
 								<div style="width: 100%; margin: 15px 0px 0px 10px;">
 									<h1 id="payments.title" class="subtitle" style="text-align: left; color: {{COLORS.widgets_reversed}}; font-size: 16px; font-weight: 600;  margin: 0px 0px 0px 10px; padding: 0px 0px 0px 0px;">
@@ -347,7 +347,7 @@
 
 	// purchase.
 	function purchase() {
-		__make_request__("/requests/payments/subscriptions/purchase/", payment_elements.response, payment_elements.loader, {
+		request("/requests/payments/subscriptions/purchase/", {
 			plan: PLAN,
 			product: PRODUCT,
 			card_name:payment_elements.card_name.value,
@@ -355,6 +355,8 @@
 			card_expiration_year:payment_elements.expiration_year.value,
 			card_expiration_month:payment_elements.expiration_month.value,
 			card_cvc:payment_elements.cvc.value,
+			response:payment_elements.response,
+			loader:payment_elements.loader,
 		}, function(response) {
 			if (response.success == true) {
 				setInterval(function() {

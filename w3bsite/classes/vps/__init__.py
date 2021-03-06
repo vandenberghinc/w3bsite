@@ -26,7 +26,7 @@ class VPS(_defaults_.Defaults):
 		self.assign(defaults.dict())
 
 		# check arguments.
-		response = r3sponse.check_parameters(
+		response = r3sponse.parameters.check(
 			traceback=self.__traceback__(),
 			parameters={
 				"ip":ip,
@@ -63,9 +63,9 @@ class VPS(_defaults_.Defaults):
 		if not self.live:
 
 			# ssh key.
-			if not Files.exists(f"{self.root}/.secrets/ssh"): 
+			if not Files.exists(f"{self.root}/__defaults__/ssh"): 
 				response = ssht00ls.keys.generate(
-					path=f"{self.root}/.secrets/ssh", 
+					path=f"{self.root}/__defaults__/ssh", 
 					comment=f"SSH key for domain {self.domain}", 
 					passphrase="",)
 				if not response.success: 
@@ -82,8 +82,8 @@ class VPS(_defaults_.Defaults):
 					"private_ip":self.ip,
 					"public_port":self.port,
 					"private_port":self.port,
-					"private_key":f"{self.root}/.secrets/ssh/private_key",
-					"public_key":f"{self.root}/.secrets/ssh/public_key",
+					"private_key":f"{self.root}/__defaults__/ssh/private_key",
+					"public_key":f"{self.root}/__defaults__/ssh/public_key",
 					"passphrase":"",
 				})
 			if not response.success: 
@@ -130,7 +130,7 @@ class VPS(_defaults_.Defaults):
 		output = syst3m.utils.__execute_script__(f"printf 'yes\n' | ssh {self.domain} ' echo Hello World ' ").replace('\n\n','\n')
 		if "Permission denied (publickey)" in output:
 			if log_level >= 0:  loader.stop(success=False)
-			data = Files.load(f'{self.root}/.secrets/ssh/public_key').replace('\n','')
+			data = Files.load(f'{self.root}/__defaults__/ssh/public_key').replace('\n','')
 			return r3sponse.error(f"Unable to connect with {self.domain} over ssh (permission denied). Did you install public key {data} into the vps server?", log_level=log_level)
 		elif "Hello World" not in output:
 			if log_level >= 0:  loader.stop(success=False)

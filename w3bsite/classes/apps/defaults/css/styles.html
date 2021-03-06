@@ -30,12 +30,12 @@
 		margin-top: 2.5px;
 		border-bottom: 2px solid #CC3333;
 		box-shadow: 0 0 10px #00000050;
-		background: {{ colors.widgets_reversed }};  
-		color: {{ colors.text_reversed }}
+		background: {{ COLORS.widgets_reversed }};  
+		color: {{ COLORS.text_reversed }}
 	}
 	.filter_reversed {
-		background: {{ colors.text_reversed }};  
-		color: {{ colors.widgets_reversed }}	
+		background: {{ COLORS.text_reversed }};  
+		color: {{ COLORS.widgets_reversed }}	
 	}
 
 	/* the buttons */
@@ -58,26 +58,26 @@
 	    margin-top: 15px;
 	    padding: 12.5px 25px 12.5px 25px;
 	    box-shadow: 0 0 10px #00000050;
-		background: {{ colors.button_bg }};  
-		color: {{ colors.button_txt }};
+		background: {{ COLORS.button_bg }};  
+		color: {{ COLORS.button_txt }};
 	}
 	.button_reversed, .button_bordered_reversed, .button_selectable_reversed {
-		background: {{ colors.button_bg_reversed }};  
-		color: {{ colors.button_txt_reversed }};
+		background: {{ COLORS.button_bg_reversed }};  
+		color: {{ COLORS.button_txt_reversed }};
 	}
 	.button_bordered {
 		background: #00000000;  
-		border: 1px solid {{ colors.grey }};  
+		border: 1px solid {{ COLORS.grey }};  
 	}
 	.button_bordered_reversed {
 		background: #00000000;  
-		border: 1px solid {{ colors.button_bg_reversed }};  
+		border: 1px solid {{ COLORS.button_bg_reversed }};  
 	}
 	.disabled_button {
-		background: {{ colors.button_bg }}50;  
+		background: {{ COLORS.button_bg }}50;  
 	}
 	.disabled_button_reversed {
-		background: {{ colors.button_bg_reversed }}50;  
+		background: {{ COLORS.button_bg_reversed }}50;  
 	}
 	.small_button {
 		font-size: 12px; 
@@ -109,20 +109,20 @@
 		margin-top: 2.5px;
 		border: none;
 		box-shadow: 0 0 10px #00000050;
-		background: {{ colors.input_bg }};  
-		color: {{ colors.input_txt }}
+		background: {{ COLORS.input_bg }};  
+		color: {{ COLORS.input_txt }}
 	}
 	.input_reversed, .textarea_reversed, .code_input_reversed, .code_textarea_reversed, .input_bordered_reversed, .textarea_bordered_reversed, .code_textarea_bordered_reversed { 
-		background: {{ colors.input_bg_reversed }};  
-		color: {{ colors.input_txt_reversed }}
+		background: {{ COLORS.input_bg_reversed }};  
+		color: {{ COLORS.input_txt_reversed }}
 	}
 	.input_bordered {
 		background: #00000000;  
-		border: 1px solid {{ colors.grey }};  
+		border: 1px solid {{ COLORS.grey }};  
 	}
 	.input_bordered_reversed {
 		background: #00000000;  
-		border: 1px solid {{ colors.input_bg_reversed }};  
+		border: 1px solid {{ COLORS.input_bg_reversed }};  
 	}
 	.textarea, .textarea_reversed, .code_textarea, .code_textarea_reversed, .textarea_bordered, .textarea_bordered_reversed, .code_textarea_bordered, .code_textarea_bordered_reversed {
 		height: auto;
@@ -132,7 +132,7 @@
 	    box-shadow:none;
 	}
 	input:invalid, textarea:invalid {
-	    /*box-shadow:0 0 3px {{colors.red}};*/
+	    /*box-shadow:0 0 3px {{COLORS.red}};*/
 	    box-shadow: none;
 	}
 	input:focus, textarea:focus {
@@ -150,22 +150,22 @@
 	.textarea_bordered, .code_textarea_bordered {
 		background: #00000000;  
 		box-shadow: none;
-		border: 1px solid {{ colors.grey }};  
+		border: 1px solid {{ COLORS.grey }};  
 	}
 	.textarea_bordered_reversed, .code_textarea_bordered_reversed {
 		background: #00000000;  
 		box-shadow: none;
-		border: 1px solid {{ colors.button_bg_reversed }};  
+		border: 1px solid {{ COLORS.button_bg_reversed }};  
 	}
 
 	/* the texts */
 	.text, .shadow_text, .text_reversed, .shadow_text_reversed, .toggle_button_text, .toggle_button_text_reversed {
 		font-family: Avenir Next;
 		text-align: center;
-		color: {{ colors.text }}; 
+		color: {{ COLORS.text }}; 
 	}
 	.text_reversed, .shadow_text_reversed, .toggle_button_text_reversed {
-		color: {{ colors.text_reversed }}; 
+		color: {{ COLORS.text_reversed }}; 
 	}
 	.shadow_text {
 		text-shadow: 2.5px 2.5px #00000050;
@@ -177,10 +177,10 @@
 		font-size: 32px;
 		padding-bottom: 0px;
 		text-align: center;
-		color: {{ colors.text }}; 
+		color: {{ COLORS.text }}; 
 	}
 	.title_reversed, .shadow_title_reversed {
-		color: {{ colors.text_reversed }}; 
+		color: {{ COLORS.text_reversed }}; 
 	}
 	..shadow_title {
 		text-shadow: 2.5px 2.5px #00000050;
@@ -192,10 +192,10 @@
 		font-weight: 500;
 		font-size: 22px;
 		text-align: center;
-		color: {{ colors.text }}; 
+		color: {{ COLORS.text }}; 
 	}
 	.subtitle_reversed, .shadow_subtitle_reversed {
-		color: {{ colors.text_reversed }}; 
+		color: {{ COLORS.text_reversed }}; 
 	}
 	..shadow_subtitle {
 		text-shadow: 2.5px 2.5px #00000050;
@@ -224,7 +224,7 @@
 		position: absolute; 
 		text-decoration: none; 
 		outline: none;
-		background: {{colors.red}}; 
+		background: {{COLORS.red}}; 
 	}
 	.toggle_button_input, .toggle_button_input_reversed {
 		color: #00000000; 
@@ -236,11 +236,11 @@
 		margin-top: 14px; 
 		height: 14px; 
 		padding: 0px 0px 0px 0px;
-		border: 1px solid {{colors.grey}};
-		background-color: {{colors.widgets}}; 
+		border: 1px solid {{COLORS.grey}};
+		background-color: {{COLORS.widgets}}; 
 	}
 	.toggle_button_input_reversed {
-		background-color: {{colors.widgets_reversed}}; 
+		background-color: {{COLORS.widgets_reversed}}; 
 	}
 	/* spawn toggle button as:
 
@@ -268,10 +268,10 @@
 		height: 1px;
 		margin-top: 25px;
 		margin-bottom: 25px;
-		background: {{ colors.widgets_reversed }}; 
+		background: {{ COLORS.widgets_reversed }}; 
 	}
 	.divider_reversed {
-		background: {{ colors.widgets }}; 
+		background: {{ COLORS.widgets }}; 
 	}
 	.empty_a {
 		text-decoration: none; 
@@ -282,10 +282,10 @@
 	}
 	.code, .code_reversed {
 		font-family: Courier New;
-		color: {{ colors.text }}; 
+		color: {{ COLORS.text }}; 
 	}
 	.code_reversed {
-		color: {{ colors.text_reversed }}; 	
+		color: {{ COLORS.text_reversed }}; 	
 	}
 	.widget, .widget_container, .widget_reversed, .widget_container_reversed {
 		/* keep padding from increasing width:*/
@@ -304,10 +304,10 @@
 		/*height: auto;*/
 		/*width: 100%;
 		max-width: 400px;*/
-		background: {{colors.widgets}};
+		background: {{COLORS.widgets}};
 	}
 	.widget_reversed, .widget_container_reversed {
-		background: {{ colors.widgets_reversed }}; 	
+		background: {{ COLORS.widgets_reversed }}; 	
 	}
 	.widget_container, .widget_container_reversed {
 		width: 100%; 
@@ -354,7 +354,7 @@
 		/*margin-left: 20px;*/
 		font-size: 16px;
 		overflow-x: scroll;
-		color: {{ colors.widgets_reversed }}; 
+		color: {{ COLORS.widgets_reversed }}; 
 	}
 	.leftbar_item_icon {
 		position: absolute; left: 0px;
@@ -371,7 +371,7 @@
 		/*transform: rotate(180deg);*/
 	}
 	.leftbar_divider {
-		background: {{ colors.widgets_reversed }}50; height: 1px; margin-top: 0px; margin-bottom: 0px;
+		background: {{ COLORS.widgets_reversed }}50; height: 1px; margin-top: 0px; margin-bottom: 0px;
 	}
 
 	/* left overs */
@@ -388,7 +388,7 @@
 	    height:30px;
 	    transition:height 1s;
 	    -webkit-transition:height 1s;
-	    color: {{colors.backgrounds.side_bar }};
+	    color: {{COLORS.backgrounds.side_bar }};
 	}
 
 	/* LOADERS */
@@ -409,11 +409,11 @@
 	  width: 7px;
 	  height: 7px;
 	  border-radius: 50%;
-	  background: {{colors.widgets_reversed}};
+	  background: {{COLORS.widgets_reversed}};
 	  margin: -4px 0 0 -4px;
 	}
 	.loader_reversed div:after {
-		background: {{colors.widgets}};
+		background: {{COLORS.widgets}};
 	}
 	.loader div:nth-child(1), .loader_reversed div:nth-child(1) {
 	  animation-delay: -0.036s;

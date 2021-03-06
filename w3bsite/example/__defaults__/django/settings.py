@@ -10,21 +10,20 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
-# imports.
-import os, sys, syst3m
+import os, syst3m
 from fil3s import *
 
-# env.
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Environment.
+SOURCE = Directory(gfp.base(__file__, back=3))
+DATABASE = Directory(syst3m.env.get("DATABASE", default=str(SOURCE)))
 PRODUCTION = syst3m.env.get("PRODUCTION", default=True, format=bool)
-DATABASE = syst3m.env.get("DATABASE", default=BASE_DIR)
+DOMAIN = syst3m.env.get("DOMAIN", default=None)
 SECRET_KEY = syst3m.env.get("DJANGO_SECRET_KEY", default=String().generate(length=128, capitalize=True, digits=True, special=True))
 WEBSITE_BASE = syst3m.env.get("WEBSITE_BASE", default=None)
-DOMAIN = syst3m.env.get("DOMAIN", default=None)
 if WEBSITE_BASE == None:
     raise ValueError("Improperly configured run, env variable [WEBSITE_BASE] is None.")
-
-# Match production.
+    
+# Match production,
 if PRODUCTION:
 
     # disable logs.
@@ -32,10 +31,10 @@ if PRODUCTION:
 
     # security settings.
     SECURE_SSL_REDIRECT = True
-    SECURE_BROWSER_XSS_FILTER = True
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
     SESSION_COOKIE_HTTPONLY = True
+    SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_HSTS_PRELOAD = True
@@ -45,22 +44,22 @@ else:
     SECURE_SSL_REDIRECT = False
     DEBUG = True
 
+
 # Add allowed hosts.
 ALLOWED_HOSTS = []
-for url in [
-    DOMAIN,
-]:
-    if url != None:
-        ALLOWED_HOSTS.append(url)
-        ALLOWED_HOSTS.append("www."+url)
-        ALLOWED_HOSTS.append("http://"+url)
-        ALLOWED_HOSTS.append("https://"+"www."+url)
+if DOMAIN not in [None, ""]:
+    for url in [
+        DOMAIN,
+    ]:
+        if url != None:
+            ALLOWED_HOSTS.append(url)
+            ALLOWED_HOSTS.append("www."+url)
+            ALLOWED_HOSTS.append("http://"+url)
+            ALLOWED_HOSTS.append("https://"+"www."+url)
 if PRODUCTION == False:
     ALLOWED_HOSTS.append("*")
 
-
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -68,10 +67,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.sitemaps',
 ]
-
-SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -81,17 +77,16 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
-ROOT_URLCONF = 'website.urls'
+ROOT_URLCONF = '__defaults__.django.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR, "templates"),
-            w3bsite.BASE,
+            SOURCE.join("apps"),
+            WEBSITE_BASE,
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -105,7 +100,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'website.wsgi.application'
+WSGI_APPLICATION = '__defaults__.django.wsgi.application'
 
 
 # Database
@@ -114,7 +109,7 @@ WSGI_APPLICATION = 'website.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': f"{DATABASE}/data/db.sqlite3",
+        'NAME': DATABASE.join("data/db.sqlite3"),
     }
 }
 
@@ -154,10 +149,9 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
-STATIC_ROOT = f"/www-data/static/"
+
+STATIC_ROOT = SOURCE.join('staticfiles')
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
+    SOURCE.join('__defaults__/static'),
 ]
-if syst3m.defaults.options.log_level > 0:
-    print("Initializing settings.py ... done")

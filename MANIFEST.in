@@ -12,4 +12,5 @@ include w3bsite/classes/deployment/lib/gunicorn.socket
 include w3bsite/classes/views/html/*
 #include w3bsite/classes/views/html/*/**
 include w3bsite/classes/apps/*/html/*
+include w3bsite/classes/apps/*/js/*
 include w3bsite/classes/apps/defaults/*/**

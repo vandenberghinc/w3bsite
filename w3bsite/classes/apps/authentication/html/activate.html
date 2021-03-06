@@ -4,9 +4,9 @@
 
 <!-- JS -->
 <script type="text/javascript">
-	__toggle_top_bar__("hide")
-	__toggle_left_bar__("hide")
-	__toggle_right_bar__("hide")
+	toggle_top_bar("hide")
+	toggle_left_bar("hide")
+	toggle_right_bar("hide")
 	check_authenticated(null, function(response) {
 		if (response.error != null) {
 			location.href = "/authentication/signin/"
@@ -77,13 +77,15 @@
 	function __resend_email__() {
 		function __do__() {
 			try {
-				__make_request__("/requests/authentication/send_code/", response_element, document.getElementById("loader"), {
-				email:EMAIL,
-				mode:"activation",
+				request("/requests/authentication/send_code/", {
+					response: response_element,
+					loader:document.getElementById("loader"),
+					email:EMAIL,
+					mode:"activation",
 				})
 			} catch(e) {
 				response_element.style.display = "block"
-				response_element.style.color = "{{colors.red}}"
+				response_element.style.color = "{{COLORS.red}}"
 				response_element.innerHTML = "Refresh the web page."
 			}
 		}
@@ -100,7 +102,9 @@
 	// create encryption request.
 	function __activate_account__() {
 		var response_element = document.getElementById("response")
-		__make_request__("/requests/authentication/activate/", response_element, document.getElementById("loader"), {
+		request("/requests/authentication/activate/", {
+			response: response_element,
+			loader:document.getElementById("loader"),
 			email:EMAIL,
 			code:document.getElementById("code").value,
 		}, function(response) {

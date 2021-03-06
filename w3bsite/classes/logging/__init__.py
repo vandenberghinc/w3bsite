@@ -6,12 +6,15 @@ from w3bsite.classes.config import *
 
 # the users class.
 class Logging(object):
-	def __init__(self, name=None, root=None):
+	def __init__(self, name=None, root=None, database=None):
 		self.name = name
 		self.root = root
-		self.log_file = None
-		if not Files.exists(f"{self.root}/logs"):
-			os.mkdir(f"{self.root}/logs")
+		self.database = database
+		self.log_file = f"{self.root}/logs/logs"
+		if not Files.exists(f"{self.database}/logs"):
+			os.mkdir(f"{self.database}/logs")
+
+	# log to logfile.
 	def log(self,
 		# option 1.
 		# 	the message response body.
@@ -39,9 +42,12 @@ class Logging(object):
 		__log__(msg)
 
 		#
+
+	# system functions.
 	def __log__(self, string):
-		self.log_file = f"{self.root}/logs/{Date().date}"
 		msg = f"{Date().seconds_timestamp}: {string}"
 		print(msg)
 		with open(self.log_file, "a") as file:
 			file.write(msg)
+
+	#

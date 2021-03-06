@@ -953,7 +953,6 @@ class DocumentationView(View):
 		}
 		for key, value in colors.items():self.colors[key] = value
 		self.template_data["COLORS"] = self.colors
-		self.template_data["colors"] = self.colors
 		try:
 			self.template_data["CHAPTERS"] = {}
 		except KeyError:

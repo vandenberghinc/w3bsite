@@ -100,7 +100,7 @@ class Users(_defaults_.Defaults):
 	):
 
 		# check parameters.
-		response = r3sponse.check_parameters(
+		response = r3sponse.parameters.check(
 			traceback=self.__traceback__(function="create"),
 			parameters={
 				"username":username,
@@ -280,7 +280,7 @@ class Users(_defaults_.Defaults):
 	):
 
 		# check parameters.
-		response = r3sponse.check_parameters(
+		response = r3sponse.parameters.check(
 			traceback=self.__traceback__(function="authenticate"),
 			parameters={
 				"username":username,
@@ -316,7 +316,10 @@ class Users(_defaults_.Defaults):
 		return self.django.users.authenticate(username=username, password=password, request=request)
 
 		#
-	def authenticated(self, request):
+	def authenticated(self, 
+		# the request (#1).
+		request=None,
+	):
 
 		# by request user filled (django).
 		if request.user.is_authenticated:
@@ -327,10 +330,9 @@ class Users(_defaults_.Defaults):
 			})
 
 		# by api key.
-		optional_parameters, response = r3sponse.get_request_parameters(request, [
-			"api_key",
-			#"id_token",
-			], optional=True)
+		optional_parameters, _ = r3sponse.parameters.get(request, {
+			"api_key":None,
+		})
 		if optional_parameters["api_key"] != None:
 			return self.verify_api_key(api_key=optional_parameters["api_key"])
 
@@ -338,7 +340,10 @@ class Users(_defaults_.Defaults):
 		return r3sponse.error("User is not authenticated, please specify your api key or login.")
 
 		#
-	def root_permission(self, request):
+	def root_permission(self, 
+		# the request (#1).
+		request=None,
+	):
 
 		# by request user filled (django).
 		if request.user != None and request.user.is_authenticated and request.user.is_superuser:
@@ -521,7 +526,7 @@ class Users(_defaults_.Defaults):
 		
 		# by request.
 		if request != None:
-			parameters, response = r3sponse.get_request_parameters(request, ["api_key"])
+			parameters, response = r3sponse.parameters.get(request, ["api_key"])
 			if not response.success: return response
 			return self.verify_api_key(api_key=parameters["api_key"])
 		
@@ -645,7 +650,7 @@ class Users(_defaults_.Defaults):
 
 		# checkparameters.
 		if email == None and api_key == None: return r3sponse.error("Define one of the following parameters: [email, api_key].")
-		response = r3sponse.check_parameters(
+		response = r3sponse.parameters.check(
 			traceback=self.__traceback__(function="create_subscription"),
 			parameters={
 				"product":product,
@@ -656,7 +661,7 @@ class Users(_defaults_.Defaults):
 		if card_cvc == "***" and "************" in card_number:
 			blinded = True
 		if not blinded:
-			response = r3sponse.check_parameters(
+			response = r3sponse.parameters.check(
 				traceback=self.__traceback__(function="create_subscription"),
 				parameters={
 					"card_name":card_name,
@@ -782,6 +787,34 @@ class Users(_defaults_.Defaults):
 		# handlers.
 		return r3sponse.success(f"Successfully set the {permission_id} permission of user [{email}] to [{permission}].")
 		#
+	def check_password(self, 
+		# password (#1).
+		password=None, 
+		# verify password (#2).
+		verify_password=None, 
+		# the strong password boolean.
+		strong=False,
+	):
+		response =r3sponse.parameters.check(
+			traceback=self.__traceback__(function="check_password"),
+			parameters={
+				"password:str,String":password,
+				"verify_password:str,String":verify_password,
+				"strong:bool,Boolean":strong,
+			})
+		if not response.success: return response
+		if password != verify_password:
+			return r3sponse.error("Passwords do not match.")
+		elif (not strong and len(password) < 6) or (strong and len(password) < 12):
+			return r3sponse.error("The password must contain at least 12 characters.")
+		elif password.lower() == password:
+			return r3sponse.error("The password must contain capital letters.")
+		match = False
+		for i in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]:
+			if  str(i) in password: match = True ; break
+		if match == False:
+			return r3sponse.error("The password must contain digits.")
+		return r3sponse.success("Succesfully checked the password.")
 	def load_password(self, email=None, username=None):
 		if [username,email] == [None,None]:
 			return r3sponse.error(self.__traceback__(function="load_data")+" Define one of the following parameters [email, username].")
@@ -798,7 +831,7 @@ class Users(_defaults_.Defaults):
 	def save_password(self, email=None, username=None, password=None):
 		if [username,email] == [None,None]:
 			return r3sponse.error(self.__traceback__(function="load_data")+" Define one of the following parameters [email, username].")
-		response = r3sponse.check_parameters(
+		response = r3sponse.parameters.check(
 			traceback=self.__traceback__(function="save_password"),
 			parameters={
 				"password":password,

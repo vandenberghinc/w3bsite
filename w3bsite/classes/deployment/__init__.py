@@ -154,7 +154,7 @@ class Deployment(syst3m.objects.Object):
 		
 		# check arguments.
 		if self.remote in ["vps"]:
-			response = r3sponse.check_parameters(
+			response = r3sponse.parameters.check(
 				traceback=self.__traceback__(function="configure"),
 				parameters={
 					"vps_ip":self.vps_ip,
@@ -313,7 +313,7 @@ class Deployment(syst3m.objects.Object):
 		# https://devcenter.heroku.com/articles/acquiring-an-ssl-certificate
 
 		# check base.
-		base = f"{self.root}/.secrets/"
+		base = f"{self.root}/__defaults__/"
 		if not Files.exists(base): os.mkdir(base)
 		base = f"{self.database}/tls"
 		if not Files.exists(base): os.mkdir(base)

@@ -4,9 +4,9 @@
 
 <!-- JS -->
 <script type="text/javascript">
-	__toggle_top_bar__("hide")
-	__toggle_left_bar__("hide")
-	__toggle_right_bar__("hide")
+	toggle_top_bar("hide")
+	toggle_left_bar("hide")
+	toggle_right_bar("hide")
 	check_authenticated(function(response) {
 		if (response.error == null) {
 			location.href = "/"
@@ -61,7 +61,7 @@
 			<p class="text" id="response.step_2" style="display: none; font-size: 12px;"></p>
 			<div class="loader" id="loader.step_2" style="transform: scale(0.33); display: block; margin: 0 auto; display: none;"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
 			<div style="display: flex;">
-				<button class="button" onclick="__toggle_widgets__('step_1', widgets); document.getElementById('response.step_1').style.display = 'none' " style="width: 49%;">
+				<button class="button" onclick="toggle_widgets('step_1', widgets); document.getElementById('response.step_1').style.display = 'none' " style="width: 49%;">
 					<a href="#" class="empty_a">
 						Back
 					</a>
@@ -93,12 +93,14 @@
 	// create encryption request.
 	function __send_code__() {
 		var response_element = document.getElementById("response.step_1")
-		__make_request__("/requests/authentication/send_code/", response_element, document.getElementById("loader.step_1"), {
+		request("/requests/authentication/send_code/", {
 			email:document.getElementById("email").value,
 			mode:"reset_password",
+			response: response_element,
+			loader:document.getElementById("loader.step_1"),
 		}, function(response) {
 			if (response.error == null) {
-				__toggle_widgets__("step_2", widgets)
+				toggle_widgets("step_2", widgets)
 				document.getElementById("response.step_2").style.display = "none"
 			}
 		})
@@ -107,11 +109,13 @@
 	// create encryption request.
 	function __reset_password__() {
 		var response_element = document.getElementById("response.step_2")
-		__make_request__("/requests/authentication/reset_password/", response_element, document.getElementById("loader.step_2"), {
+		request("/requests/authentication/reset_password/", {
 			email:document.getElementById("email").value,
 			code:document.getElementById("code").value,
 			password:document.getElementById("password").value,
 			verify_password:document.getElementById("verify_password").value,
+			response: response_element,
+			loader:document.getElementById("loader.step_2"),
 		}, function(response) {
 			if (response.error == null) {
 				setTimeout(function() {

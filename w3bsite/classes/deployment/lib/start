@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #sudo pkill -9 -f gunicorn
 cd ***ROOT***/
-source .secrets/env.sh
+source __defaults__/env/bash
 export INTERACTIVE="false"
 if [ ! -f "***DATABASE***/data/db.sqlite3" ] ; then
 	export MIGRATIONS="true"
@@ -16,4 +16,4 @@ sudo chown -R $USER /www-data
   --access-logfile - \
   --workers 1 \
   --bind unix:/www-data/gunicorn.sock \
-  website.wsgi:application
+  __defaults__.django.wsgi:application

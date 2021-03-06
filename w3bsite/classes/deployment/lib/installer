@@ -157,7 +157,7 @@ fi
 # static files.
 log "Collecting static files"
 export MIGRATIONS="true"
-source $SOURCE/.secrets/env.sh
+source $SOURCE/__defaults__/env/bash
 sudo rm -fr /www-data/static
 python3 $SOURCE/manage.py collectstatic --no-input
 sudo rm -fr /www-data/favicon.ico

@@ -38,8 +38,9 @@ class Django(_defaults_.Defaults):
 	def start(self, host="127.0.0.1", port="8000", production=False):
 
 		# import main.
-		syst3m.env.export(export=".secrets/env.json", env={
+		syst3m.env.export(export="__defaults__/env/json", env={
 			"PRODUCTION": str(production),
+			"INTERACTIVE":False,
 		})
 		self.migrations()
 		if syst3m.defaults.options.log_level >= 1:
@@ -54,7 +55,7 @@ class Django(_defaults_.Defaults):
 		# check migrations.
 		migrations = ""
 		if not Files.exists(f"{self.database}/data/db.sqlite3"):
-			migrations = "export MIGRATIONS=True && ./manage.py migrate"
+			migrations = "export MIGRATIONS=True && ./manage.py migrate  --non-interactive
 
 		# start django.
 		print(f"Starting website [{self.root}].")
@@ -62,7 +63,7 @@ class Django(_defaults_.Defaults):
 		if OS in ["macos"]:
 			file.save(f"""
 				cd {self.root}/
-				source .secrets/env.sh
+				source __defaults__/env/bash
 				export PRODUCTION=False
 				export MAINTENANCE=False
 				{migrations}
@@ -71,7 +72,7 @@ class Django(_defaults_.Defaults):
 		else:
 			file.save(f"""
 				cd {self.root}/
-				. .secrets/env.sh
+				. __defaults__/env/bash
 				export PRODUCTION=False
 				export MAINTENANCE=False
 				{migrations}
@@ -94,45 +95,17 @@ class Django(_defaults_.Defaults):
 	def create(self):
 
 		# create.
-		output = utils.__execute_script__(f"""
-			cd {self.root}
-			django-admin startproject website
-			mv website/manage.py manage.py
-			mv website/website website-
-			rm -fr website
-			mv website- website
-		""")
-
-		# secrets.
-		path = f"{self.root}/website/settings.py"
-		if not Files.exists(path):
-			return r3sponse.error(f"Failed to create django project [{self.root}].")
-		data = Files.load(path)
-		secret_key = data.split("SECRET_KEY = '")[1].split("'")[0]
-		if not Files.exists(f"{self.root}/.secrets"):
-			os.mkdir(f"{self.root}/.secrets")
-		#Files.save(f"{self.root}/.secrets/env.sh", f"# Django environment variables.\nexport DJANGO_SECRET_KEY='{secret_key}'\n")
-		#utils.__save_json__(f"{self.root}/.secrets/env.json", {f"DJANGO_SECRET_KEY":secret_key})
-		self.security.set_secret_env("DJANGO_SECRET_KEY", secret_key)
-
-		# copy urls.py
-		path = f"{self.root}/website/urls.py"
-		os.system(f"rm -fr {path}")
-		os.system(f"cp {SOURCE_PATH}/example/website/urls.py {path}")
-
-		# copy settings.py
-		path = f"{self.root}/website/settings.py"
-		os.system(f"rm -fr {path}")
-		os.system(f"cp {SOURCE_PATH}/example/website/settings.py {path}")
+		if not Files.exists(self.root): os.mkdir(self.root)
 
 		# copy requirements
 		path = f"{self.root}/requirements/"
 		os.system(f"rm -fr {path}")
 		os.system(f"cp -r {SOURCE_PATH}/example/requirements {path}")
 
-		# create requirements.pip
-		#path = f"{self.root}/requirements.pip"
-		#os.system(f"cp {SOURCE_PATH}/example/requirements.pip {path}")
+		# copy manage.py
+		path = f"{self.root}/manage.py"
+		os.system(f"rm -fr {path}")
+		os.system(f"cp -r {SOURCE_PATH}/example/manage.py {path}")
 
 		# copy classes
 		path = f"{self.root}/classes/"
@@ -144,29 +117,19 @@ class Django(_defaults_.Defaults):
 		os.system(f"rm -fr {path}")
 		os.system(f"cp -r {SOURCE_PATH}/example/apps {path}")
 
-		# copy static
-		path = f"{self.root}/static/"
+		# copy __defaults__
+		path = f"{self.root}/__defaults__/"
 		os.system(f"rm -fr {path}")
-		os.system(f"cp -r {SOURCE_PATH}/example/static {path}")
-
-		# copy templates
-		path = f"{self.root}/templates/"
-		os.system(f"rm -fr {path}")
-		os.system(f"cp -r {SOURCE_PATH}/example/templates {path}")
+		os.system(f"cp -r {SOURCE_PATH}/example/__defaults__ {path}")
 
 		# copy .gitignore
 		path = f"{self.root}/.gitignore"
 		os.system(f"cp {SOURCE_PATH}/example/.gitignore {path}")
 
 		# create proc file
-		path = f"{self.root}/Procfile"
-		Files.save(path, "web: gunicorn website.wsgi")
-		os.system(f"chmod +x {path}")
-
-		# replace manage.py
-		path = f"{self.root}/manage.py"
-		data = Files.load(path)
-		Files.save(path, data.replace("#!/usr/bin/env python", "#!/usr/bin/env python3"))
+		#path = f"{self.root}/Procfile"
+		#Files.save(path, "web: gunicorn __defaults__.django.wsgi")
+		#os.system(f"chmod +x {path}")
 
 		# handlers.
 		return r3sponse.success(f"Successfully created django website [{self.root}].")
@@ -186,24 +149,24 @@ class Django(_defaults_.Defaults):
 		if not Files.exists(f"{self.database}/data/"): os.mkdir(f"{self.database}/data/")
 		if forced or not Files.exists(f"{self.database}/data/db.sqlite3"):
 			r3sponse.log(f"Applying {ALIAS} webserver migrations.")
-			syst3m.env.export(export=".secrets/env.json", env={"MIGRATIONS": True,})
+			syst3m.env.export(export="__defaults__/env/json", env={"MIGRATIONS": True,})
 			os.chdir(self.root)
 			#import manage
 			#old_argv = list(sys.argv)
 			#sys.argv = [f"{self.root}/manage.py", "migrate"]
 			#manage.main()
 			os.system(f"cd {self.root} && python3 ./manage.py migrate")
-			syst3m.env.export(export=".secrets/env.json", env={"MIGRATIONS": False,})
+			syst3m.env.export(export="__defaults__/env/json", env={"MIGRATIONS": False,})
 			#sys.argv = old_argv
 	def collect_static(self, log_level=syst3m.defaults.options.log_level):
 		if log_level >= 1:
 			r3sponse.log(f"Checking the {ALIAS} webserver migrations.")
 		if not Files.exists(f"{self.database}/data/"): os.mkdir(f"{self.database}/data/")
-		syst3m.env.export(export=".secrets/env.json", env={
+		syst3m.env.export(export="__defaults__/env/json", env={
 			"MIGRATIONS": str(True),
 		})
-		os.system(f"cd {self.root}/ && . .secrets/env.sh && export MIGRATIONS='true' && ./manage.py collectstatic" )
-		syst3m.env.export(export=".secrets/env.json", env={
+		os.system(f"cd {self.root}/ && . __defaults__/env/bash && export MIGRATIONS='true' && ./manage.py collectstatic" )
+		syst3m.env.export(export="__defaults__/env/json", env={
 			"MIGRATIONS": str(False),
 		})
 
@@ -227,7 +190,7 @@ class Users(_defaults_.Defaults):
 		superuser=False,
 	):
 		# check arguments.
-		response = r3sponse.check_parameters(
+		response = r3sponse.parameters.check(
 			traceback=self.__traceback__(function="create"),
 			parameters={
 				"username":username,
@@ -262,7 +225,7 @@ class Users(_defaults_.Defaults):
 		superuser=None,
 	):
 		# check arguments.
-		response = r3sponse.check_parameters(
+		response = r3sponse.parameters.check(
 			traceback=self.__traceback__(function="update"),
 			parameters={
 				"username":username,
@@ -311,7 +274,7 @@ class Users(_defaults_.Defaults):
 	):
 
 		# check arguments.
-		response = r3sponse.check_parameters(
+		response = r3sponse.parameters.check(
 			traceback=self.__traceback__(function="authenticate"),
 			parameters={
 				"username":username,
@@ -343,7 +306,7 @@ class Users(_defaults_.Defaults):
 	def delete(self, username=None):
 
 		# check arguments.
-		response = r3sponse.check_parameters(
+		response = r3sponse.parameters.check(
 			traceback=self.__traceback__(function="delete"),
 			parameters={
 				"username":username,

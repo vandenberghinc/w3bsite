@@ -44,7 +44,7 @@ class Firebase(_defaults_.Defaults):
 		self.assign(defaults.dict())
 
 		# check arguments.
-		#response = r3sponse.check_parameters({
+		#response = r3sponse.parameters.check({
 		#	#"ip":ip,
 		#})
 		#if not response.success: raise ValueError(response.error)
@@ -217,7 +217,7 @@ class Users(_defaults_.Defaults):
 	):
 
 		# check parameters.
-		response = r3sponse.check_parameters(empty_value=None, parameters={
+		response = r3sponse.parameters.check(default=None, parameters={
 			"email":email,
 			"password":password,
 			"verify_password":verify_password,

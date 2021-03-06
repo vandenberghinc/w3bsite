@@ -24,7 +24,7 @@ MAINTENANCE = syst3m.env.get_boolean("MAINTENANCE", default=True)
 
 # website.
 website = w3bsite.Website(
-	serialized=f"website.json",
+	serialized=f"__defaults__/env/website",
 	django=True,
 	maintenance=True,
 	root=SOURCE_PATH, 
@@ -83,7 +83,6 @@ COLORS = {
 }
 
 # template data.
-website.template_data["colors"] = COLORS
 website.template_data["COLORS"] = COLORS
 
 # database.

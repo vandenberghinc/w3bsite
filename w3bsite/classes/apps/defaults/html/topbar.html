@@ -9,8 +9,8 @@
 			<a class="desktop_only_home_redirects" style="" href="/">
 				<!-- {% static 'media/logo.png' %} vs {% static 'media//icons/chip-2.png' %} -->
 				<img src="{% static 'favicon.png' %}" alt="" width="20" style="position: absolute; top: 14px; left: 25px;" />
-				<h3 class="text" style="position: absolute; height: 17px; width: 1px; top: -2px; left: 60px; background-color: {{ colors.text }}; "></h3>
-				<h3 class="text" style="position: absolute; top: -6px; left: 75px; color: {{ colors.text }}; font-weight: 600;">
+				<h3 class="text" style="position: absolute; height: 17px; width: 1px; top: -2px; left: 60px; background-color: {{ COLORS.text }}; "></h3>
+				<h3 class="text" style="position: absolute; top: -6px; left: 75px; color: {{ COLORS.text }}; font-weight: 600;">
 					RSAMessenger
 				</h3>
 			</a>
@@ -34,14 +34,14 @@
 			<!-- ICONS -->
 			<!--
 			<a href="#" id="top_bar.search_button" onclick="toggle_searchbar_menu()" style="text-decoration: none; display: block;">
-				<img onclick="__toggle_left_bar__('toggle')" src="{% static 'media/icons/search.png' %}" alt="VanDenBerghInc" width="16" style="margin-top: 16.5px; margin-right: 15px;" />
+				<img onclick="toggle_left_bar('toggle')" src="{% static 'media/icons/search.png' %}" alt="VanDenBerghInc" width="16" style="margin-top: 16.5px; margin-right: 15px;" />
 			</a>
 			<a href="#" id="top_bar.filter_button" style="text-decoration: none; display: none;">
 				<img onclick="toggle_filterbar_menu()" src="{% static 'media/icons/filter.png' %}" alt="VanDenBerghInc" width="16" style="margin-top: 16.5px; margin-right: 15px;" />
 			</a>
 			-->
 			<a href="#" id="top_bar.menu_button" style="text-decoration: none; display: block;">
-				<img onclick="__toggle_left_bar__('toggle')" src="{% static 'media/icons/menu.dark.png' %}" alt="VanDenBerghInc" width="16" style="margin-top: 16.5px; margin-right: 15px;" />
+				<img onclick="toggle_left_bar('toggle')" src="{% static 'media/icons/menu.dark.png' %}" alt="VanDenBerghInc" width="16" style="margin-top: 16.5px; margin-right: 15px;" />
 			</a>
 			<a href="/account/membership" style="text-decoration: none;">
 				<img onclick="" src="{% static 'media/icons/user.dark.png' %}" alt="VanDenBerghInc" width="20" style="margin-top: 15px; margin-right: 15px;" />

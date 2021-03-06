@@ -160,6 +160,8 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		#
 		# the logs.
 		log_level=syst3m.defaults.options.log_level,
+		# styling options.
+		styling={},
 		#
 		# 
 		# optionally initizialize from a serialized dict (for config.py) (still requires parameters: root).
@@ -179,7 +181,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 			if root[len(root)-1] != "/": root += "/"
 			root = root.replace("//","/").replace("//","/")
 			if firebase_admin != None:
-				if isinstance(firebase_admin, str) and firebase_admin[:len(".secrets")] == ".secrets":
+				if isinstance(firebase_admin, str) and firebase_admin[:len("__defaults__/env")] == "__defaults__/env":
 					firebase_admin = f"{root}/{firebase_admin}".replace("//","/").replace("//","/")
 		self.root = gfp.clean(root)
 		self.name = name
@@ -226,6 +228,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		self.log_level = log_level
 		self.users_subpath = users_subpath
 		self.id_by_username = id_by_username
+		self.styling = styling
 		# checks.
 		if self.database == None: self.database = f"/etc/{self.domain}/"
 		if self.library == None: self.library = f"/usr/local/lib/{self.domain}/"
@@ -236,7 +239,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 			self.serialize(save=True)
 		else:
 			if isinstance(serialized, str):
-				serialized = utils.__load_json__(serialized)
+				serialized = Files.load(serialized, format="json")
 			self.init_from_serialized(serialized=serialized)
 		if self.aes_master_key == None and "--generate-aes" not in sys.argv:
 			raise ValueError("Generate a passphrase for the aes master key with [ $ ./website.py --generate-aes] and pass it as the 'aes_master_key' parameter.")
@@ -251,7 +254,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 	def initialize(self):
 
 		# overall arguments.
-		response = r3sponse.check_parameters(
+		response = r3sponse.parameters.check(
 			traceback=self.__traceback__(),
 			parameters={
 				"root":self.root,
@@ -267,7 +270,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 
 		# namecheap arguments.
 		if self.namecheap_enabled:
-			response = r3sponse.check_parameters(
+			response = r3sponse.parameters.check(
 				traceback=self.__traceback__(),
 				parameters={
 					"author":self.author,
@@ -283,7 +286,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 
 		# firebase arguments.
 		if self.firebase_enabled:
-			response = r3sponse.check_parameters(
+			response = r3sponse.parameters.check(
 				traceback=self.__traceback__(),
 				parameters={
 					"firebase_admin":self.firebase_admin,
@@ -293,7 +296,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 
 		# stripe arguments.
 		if self.stripe_enabled:
-			response = r3sponse.check_parameters(
+			response = r3sponse.parameters.check(
 				traceback=self.__traceback__(),
 				parameters={
 					"stripe_secret_key":self.stripe_secret_key,
@@ -305,7 +308,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 
 		# email arguments.
 		if self.email_enabled:
-			response = r3sponse.check_parameters(
+			response = r3sponse.parameters.check(
 				traceback=self.__traceback__(),
 				parameters={
 					"email_address":self.email_address,
@@ -317,7 +320,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 
 		# remote: vps arguments.
 		if self.remote in ["vps"]:
-			response = r3sponse.check_parameters(
+			response = r3sponse.parameters.check(
 				traceback=self.__traceback__(),
 				parameters={
 					"vps_ip":self.vps_ip,
@@ -333,20 +336,15 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 
 		# environment for settings.py.
 		os.chdir(gfp.clean(self.root))
-		if not os.path.exists(".secrets"): os.mkdir(".secrets")
+		if not os.path.exists("__defaults__/env"): os.mkdir("__defaults__/env")
 		SECRET_KEY = syst3m.env.get("DJANGO_SECRET_KEY", default=None)
 		if SECRET_KEY == None:  SECRET_KEY = String().generate(length=128, capitalize=True, digits=True, special=True)
-		syst3m.env.export(export=".secrets/env.json", env={
-			# settings.py options.
+		syst3m.env.export(export="__defaults__/env/json", env={
 			"DJANGO_SECRET_KEY":SECRET_KEY,
 			"WEBSITE_BASE":gfp.base(SOURCE_PATH),
 			"DOMAIN":str(self.domain),
 			"DATABASE":str(self.database),
 			"PRODUCTION":str(self.production),
-			# django options.
-			"DJANGO_RUNNING":True,
-			# html, css & js options.
-			"leftbar_width":"250px",
 		})
 
 		# template data.
@@ -371,6 +369,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 			"background":"#323B83",#"#E7E9EF", #"#FAFAFA",
 			"topbar_darkmode":"#1F2227",#1F2227", #"#FAFAFA",
 			"background_darkmode":"#1F2227",#"#E7E9EF", #"#FAFAFA",
+			"background_img":None,
 			# elements.
 			"widgets":"#FAFAFA",
 			"widgets_reversed":"#323B83",#"#1F2227",
@@ -395,21 +394,44 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 			# custom colors.
 			# ...
 		}
-		#self.template_data = views.TemplateData(utils.__append_dict__(new=self.template_data, overwrite=True,  old={
+
+		# check styling.
+		d = {}
+		for key,value in self.styling.items(): d[key.upper()] = value
+		styling = Dictionary(d).check(default={
+			# styling options.
+			"LEFTBAR_WIDTH":280, # px
+			"RIGHTBARBAR_WIDTH":280, # px
+			"TOPBAR_HEIGHT":50 #px
+			})
+		self.template_data = Dictionary(utils.__append_dict__(new=self.template_data, overwrite=True,  old=styling))
+
+		# add safe template data.
 		self.template_data = Dictionary(utils.__append_dict__(new=self.template_data, overwrite=True,  old={
-			"COLORS":colors,"colors":colors,
+			# colors.
+			"COLORS":colors,
+			# wbsite info.
+			"NAME":self.name,
 			"DOMAIN":self.domain,
 			"PRODUCTION":self.production,
 			"AUTHOR":self.author,
 			"ORGANIZATION":self.organization,
+			# include other tempalte data's.
 			"STRIPE":{},
 			"FIREBASE":{},
+			# options.
+			"2FA":self._2fa,
+			# styling options.
+			"LEFTBAR_WIDTH":280, # px
+			"RIGHTBARBAR_WIDTH":280, # px
+			"TOPBAR_HEIGHT":50 #px
 		}))
 
 		# defaults objects.
 		self.logging = logging.Logging(
 			name=self.name,
-			root=self.root,)
+			root=self.root,
+			database=self.database,)
 		self.aes = aes.AES(
 			passphrase=self.aes_master_key)
 		self.defaults = defaults.Defaults(
@@ -467,9 +489,9 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		self.rate_limit = rate_limit.RateLimit(
 			db=self.db,
 			defaults=self.defaults,)
-		if not os.path.exists("website/settings.py"): raise ImportError(f"Invalid website hierarchy, unable to find: website.settings, required location: {self.root}/website/settings.py")
-		os.environ.setdefault('DJANGO_SETTINGS_MODULE', f'website.settings')
-		from website import settings
+		if not os.path.exists("__defaults__/django/settings.py"): raise ImportError(f"Invalid website hierarchy, unable to find: __defaults__.django.settings, required location: {self.root}/__defaults__/django/settings.py")
+		os.environ.setdefault('DJANGO_SETTINGS_MODULE', f'__defaults__.django.settings')
+		from __defaults__.django import settings
 		try:pypi_django.setup()
 		except: a=1
 		from w3bsite.classes import django
@@ -815,11 +837,11 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		#
 	def serialize(self, save=False):
 		# serizalized is used by the config.py in deployment.
-		# all non secret variables are stored in website.json inside the root/. directory .
+		# all non secret variables are stored in __defaults__/env/website inside the root/. directory .
 		# all secret variables are stored in environment variables from env.sh & env.json.
-		# all keys of the stored secrets are stored in the serialzed website.json.
+		# all keys of the stored secrets are stored in the serialzed __defaults__/env/website.
 
-		# serialize and save all non secret variables in the website.json.
+		# serialize and save all non secret variables in the __defaults__/env/website.
 		serialized = {
 			"root":self.root,
 			"database":self.database,
@@ -858,6 +880,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 			"log_level":self.log_level,
 			"users_subpath":self.users_subpath,
 			"id_by_username":self.id_by_username,
+			"styling":self.styling,
 		}
 
 		# save all secret variables in secrets.
@@ -915,7 +938,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 
 		# save.
 		if save: 
-			utils.__save_json__(f"{self.root}/website.json", serialized)
+			Files.save(f"{self.root}/__defaults__/env/website", serialized, format="json")
 
 
 		# return serizaled.
@@ -926,7 +949,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 
 		# load non secrets.
 		if serialized == None:
-			serialized = utils.__load_json__(f"{self.root}/website.json")
+			serialized = Files.load(f"{self.root}/__defaults__/env/website", format="json")
 		#self.root = serialized["root"]
 		self.database = serialized["database"]
 		self.library = serialized["library"]
@@ -964,6 +987,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		self.log_level = serialized["log_level"]
 		self.users_subpath = serialized["users_subpath"]
 		self.id_by_username = serialized["id_by_username"]
+		self.styling = serialized["styling"]
 
 		# load secrets.
 		local_security = security.Security(

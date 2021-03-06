@@ -52,7 +52,7 @@ class Requests(_defaults_.Defaults):
 				except: api_key = None
 
 				# get parameters.
-				parameters, response = self.get_parameters(request, [
+				parameters, response = self.parameters.get(request, [
 					"product",
 					"plan",
 					"card_name",
@@ -94,7 +94,7 @@ class Requests(_defaults_.Defaults):
 				except: api_key = None
 
 				# get parameters.
-				parameters, response = self.get_parameters(request, [
+				parameters, response = self.parameters.get(request, [
 					"product",
 					"plan",])
 				if not response.success: return self.response(response)
@@ -128,7 +128,7 @@ class Requests(_defaults_.Defaults):
 				# by subscription id.
 
 				# get parameters.
-				parameters, response = self.get_parameters(request, [
+				parameters, response = self.parameters.get(request, [
 					"subscription_id",])
 				if response.success: 
 
@@ -142,7 +142,7 @@ class Requests(_defaults_.Defaults):
 				else:
 
 					# get parameters.
-					parameters, response = self.get_parameters(request, [
+					parameters, response = self.parameters.get(request, [
 						"product",
 						"plan",])
 					if not response.success: return self.response(response)
@@ -199,7 +199,7 @@ class Requests(_defaults_.Defaults):
 					subscriptions[plan_id]["price"] = self.stripe.template_data["PRODUCTS"][product][plan]["price"]
 
 				# request.
-				return self.success_response(f"Successfully listed {len(subscriptions)} active subscription(s).", {
+				return self.success(f"Successfully listed {len(subscriptions)} active subscription(s).", {
 					"subscriptions":subscriptions,
 				})
 
@@ -224,7 +224,7 @@ class Requests(_defaults_.Defaults):
 				email = response.email
 
 				# get parameters.
-				parameters, response = self.get_parameters(request, [
+				parameters, response = self.parameters.get(request, [
 					"number",
 					"month",
 					"year",

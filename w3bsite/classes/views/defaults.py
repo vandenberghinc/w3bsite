@@ -48,10 +48,10 @@ def build_urls(views=[]):
 			urls.append(path("", view.view))
 			urls.append(path("/", view.view))
 		urls.append(
-			path(utils.__clean_url__(view.url, strip_first_slash=True), view.view),
+			path(gfp.clean(view.url, remove_first_slash=True), view.view),
 		)
 	return urls
-
+	
 # the django request object class.
 class Request(syst3m.objects.Object):
 	def __init__(self,
@@ -67,41 +67,45 @@ class Request(syst3m.objects.Object):
 
 		# defaultss.
 		syst3m.objects.Object.__init__(self)
+		self.parameters = r3sponse.parameters
 
 		# variables.
+		self.base = base
 		self.id = id
 		if url == None:
-			self.url = f"{base}/{id}/".replace("//",'/').replace("//",'/')
+			self.url = gfp.clean(f"{base}/{id}/", remove_first_slash=True)
 		else:
-			self.url = url
-		self.base = FilePath(self.url).base(back=1)
-		self.url = utils.__clean_url__(self.url, strip_first_slash=True).replace(".html", "")
-		self.base = utils.__clean_url__(self.base, strip_first_slash=True)
+			self.url = gfp.clean(url.replace("/$id",f"/{self.id}"), remove_last_slash=True, remove_first_slash=True)+"/"
+		if self.base == None: 
+			self.base = gfp.clean(FilePath(self.url).base(back=1), remove_last_slash=True)+"/"
+		self.url = gfp.clean(self.url, remove_first_slash=True).replace(".html", "")
+		self.base = gfp.clean(self.base, remove_first_slash=True)
 		self.type = "request"
 		self.template_data = template_data
 	def view(self, request):
 		# default view, user needs to create default def request(self, request)
 		# can be overwritten with default def view(self, request):
-		resonse = self.request(request)
-		try: return self.resonse(resonse)
+		try: 
+			response = self.request(request)
 		except Exception as e: return self.response(utils.utils.catch_error(e))
-	def success_response(self, message, arguments={}):
+		return self.response(response)
+	def success(self, message, arguments={}):
 		return r3sponse.success(message, arguments, django=True)
-	def error_response(self, error):
+	def error(self, error):
 		return r3sponse.error(error, django=True)
 	def response(self, response):
-		try:
-			return JsonResponse(response.dict(), safe=False)
-		except AttributeError:
-			return JsonResponse(response)
-	def get_parameter(self, request, identifier):
-		return r3sponse.get_request_parameter(request, identifier)
-	def get_parameters(self, request, identifiers=[], optional=False):
-		return r3sponse.get_request_parameters(request, identifiers, optional=optional)
+		if isinstance(response, JsonResponse):
+			return response
+		else:
+			try:
+				return JsonResponse(response.dict(), safe=False)
+			except AttributeError:
+				return JsonResponse(response)
 	def maintenance(self, request=None):
 		return r3sponse.error("Domain is under maintenance.")
 	def permission_denied(self, request=None):
-		return self.error_response("Permission denied.")
+		return self.error("Permission denied.")
+	# do not forget the self.parameters's functions.
 
 # the django view object class.
 class View(syst3m.objects.Object):
@@ -122,35 +126,52 @@ class View(syst3m.objects.Object):
 		type="View",
 	):
 
-		# defaultss.
+		# defaults.
 		syst3m.objects.Object.__init__(self)
+		self.parameters = r3sponse.parameters
 
-		# variables.
+		# vars.
+		self.base = base
 		self.id = id
 		self.template_data = template_data
 		self.landing_page = landing_page
 		self.type = type
 		if url == None:
-			self.url = f"{base}/{id}/".replace("//",'/').replace("//",'/')
+			self.url = gfp.clean(f"{base}/{id}/", remove_first_slash=True)
 		else:
-			self.url = url
-		self.base = FilePath(self.url).base(back=1)
+			self.url = gfp.clean(url.replace("/$id",f"/{self.id}"), remove_last_slash=True, remove_first_slash=True)+"/"
+		if self.base == None: 
+			self.base = gfp.clean(FilePath(self.url).base(back=1), remove_last_slash=True)+"/"
 		if html != None:
-			self.html = html
+			if len(html) >= len(f"/apps/") and html[:len(f"/apps/")] == f"/apps/": html = html[len(f"/apps"):]
+			elif len(html) >= len(f"apps/") and html[:len(f"apps/")] == f"apps/": html = html[len(f"apps/"):]
+			self.html = gfp.clean(html.replace("/$id",f"/{self.id}"))
+			self.app = gfp.clean(self.html, remove_first_slash=True, remove_last_slash=True, remove_double_slash=True).split("/")[0]
 		else:
-			self.html = f"{self.base}/{self.id}.html"
-		self.base = utils.__clean_url__(self.base, strip_first_slash=True)
-		self.url = utils.__clean_url__(self.url, strip_first_slash=True).replace(".html", "")
-		self.html = utils.__clean_url__(self.html, strip_first_slash=True)
+			self.app = gfp.clean(self.base, remove_first_slash=True, remove_last_slash=True, remove_double_slash=True).split("/")[0]
+			l_base = gfp.clean(str(self.base), remove_last_slash=True)+"/"
+			if len(l_base) >= len(f"{self.app}/{self.app}") and l_base[:len(f"{self.app}/{self.app}")] == f"{self.app}/{self.app}": l_base = l_base[len(f"{self.app}/"):]
+			elif len(l_base) >= len(f"{self.app}/") and l_base[:len(f"{self.app}/")] == f"{self.app}/": l_base = l_base[len(f"{self.app}/"):]
+			self.html = gfp.clean(f"{self.app}/html/{l_base}/{self.id}.html")
+		self.base = gfp.clean(self.base, remove_last_slash=True)+"/"
+		self.url = gfp.clean(self.url.replace(".html", ""), remove_first_slash=True, remove_last_slash=True)+"/"
+		self.html = gfp.clean(self.html)
 		self.type = type
 
 		# check html.
-		if self.type.lower() in ["view"]:
-			fp = FilePath(f"{SOURCE_PATH}/example/")
-			if not Files.exists(f"templates/{self.html}"):
-				base = utils.__clean_url__(FilePath(self.html).base(back=1), strip_first_slash=True)
-				if not Files.exists(base): os.system(f"mkdir -p templates/{base}")
-				os.system(f"cp {SOURCE_PATH}/example/view.html templates/{self.html}")
+		if self.type.lower() in ["view"] and "w3bsite/" not in self.html:
+			path = FilePath(f"apps/{self.app}/")
+			if Files.exists(path):
+				path = Files.join(path, "html")
+				if not Files.exists(path): 
+					r3sponse.log(f"&ORANGE&Creating&END& html base [{path}].")
+					Files.create(path, directory=True)
+				path = Files.join("apps", self.html)
+				if not Files.exists(path):
+					r3sponse.log(f"&ORANGE&Creating&END& default html view [{path}].")
+					base = FilePath(path).base(back=1)
+					if not Files.exists(base): Files.create(base, directory=True)
+					os.system(f"cp {SOURCE_PATH}/example/view.html {path}")
 
 		#
 	#@w3bsite.views.method_decorator(w3bsite.views.login_required)
@@ -167,10 +188,6 @@ class View(syst3m.objects.Object):
 		if isinstance(template_data, (Dictionary, r3sponse.ResponseObject)): 
 			template_data = template_data.raw()
 		return render(request, html, template_data)
-	def get_parameter(self, request, identifier):
-		return r3sponse.get_request_parameter(request, identifier)
-	def get_parameters(self, request, identifiers=[], optional=False):
-		return r3sponse.get_request_parameters(request, identifiers, optional=optional)
 	def error(self, 
 		# the django request parameter.
 		request, 
@@ -209,8 +226,17 @@ class View(syst3m.objects.Object):
 		if isinstance(template_data, (Dictionary, r3sponse.ResponseObject)): 
 			template_data = template_data.raw()
 		return render(request, f"w3bsite/classes/apps/defaults/html/permission_denied.html", template_data)
+	# do not forget the self.parameters's functions.
 
-# template data object.
+
+
+
+
+
+
+
+
+# template data object !!! DEPRICATED !!!.
 class TemplateData(syst3m.objects.Object):
 	def __init__(self, data={}):
 		# defaults.

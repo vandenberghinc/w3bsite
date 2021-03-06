@@ -1,0 +1,32 @@
+{% load static %}
+<script type="text/javascript">
+	
+	// the authentication requests class.
+	class Requests {
+
+		// init.
+		constructor(height, width) {
+			this.url = "/requests/updates/"
+		}
+
+		// example request with no arguments x & y.
+		hello_world(args={}, handler=null) {
+			request(this.url+"check/", {
+				x:args["x"],
+				y:args["y"],
+				response:args["response"],
+				loader:args["loader"],
+			// handler.
+			}, function(response) {
+				if (handler != null) {
+					handler(response)
+				}
+			})
+		}
+
+	}
+
+	// initialize class.
+	const requests = new Requests();
+
+</script>

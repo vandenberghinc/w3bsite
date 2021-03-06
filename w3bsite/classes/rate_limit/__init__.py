@@ -35,7 +35,7 @@ class RateLimit(_defaults_.Defaults):
 		
 		# check options.
 		if email == None and ip == None: return r3sponse.error("Specify parameter [email] or [ip].")
-		response = r3sponse.check_parameters(
+		response = r3sponse.parameters.check(
 			traceback=self.__traceback__(function="increment"),
 			parameters={
 				"mode":mode,
@@ -45,7 +45,7 @@ class RateLimit(_defaults_.Defaults):
 		# by email.
 		reference = None
 		if email != None or username != None:
-			reference = self.__get_path__(username=username, email=email)
+			reference = self.__get_path__(username=username, email=email,)
 
 		# by ip.
 		elif ip != None:
@@ -54,7 +54,7 @@ class RateLimit(_defaults_.Defaults):
 		# load.
 		response = self.db.load(reference)
 		if not response.success: 
-			if ip != None and "Document " in response.error and " does not exist" in response.error:
+			if "does not exist" in response.error or "No such file or directory" in response.error:
 				response["data"] = {}
 			else:
 				return response
@@ -105,7 +105,7 @@ class RateLimit(_defaults_.Defaults):
 	):
 		# check options.
 		if email == None and ip == None: return r3sponse.error("Specify parameter [email] or [ip].")
-		response = r3sponse.check_parameters(
+		response = r3sponse.parameters.check(
 			traceback=self.__traceback__(function="verify"),
 			parameters={
 				"mode":mode,
@@ -124,7 +124,7 @@ class RateLimit(_defaults_.Defaults):
 		# check reset timestamp.
 		response = self.db.load(reference)
 		if not response.success: 
-			if ip != None and "Document " in response.error and " does not exist" in response.error:
+			if "does not exist" in response.error or "No such file or directory" in response.error:
 				response["data"] = {}
 			else:
 				return response

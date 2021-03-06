@@ -15,15 +15,15 @@ class HelloWorld(w3bsite.views.Request):
 		)
 	def view(self, request):
 		#if ..:
-		#	return self.error_response("Error: ...")
-		return self.success_response("Success ...", {"hello":"world"})
+		#	return self.error("Error: ...")
+		return self.success("Success ...", {"hello":"world"})
 
 # hello world compact.
 class HelloWorldSmall(w3bsite.views.Request):
 	def __init__(self):
 		w3bsite.views.Request.__init__(self, "requests/compact/", "hello-world")
 	def view(self, request):
-		return self.success_response("Success ...", {"hello":"world"})
+		return self.success("Success ...", {"hello":"world"})
 
 # the activate requests.
 urlpatterns = w3bsite.views.build_urls([

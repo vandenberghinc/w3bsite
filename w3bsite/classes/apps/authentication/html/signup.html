@@ -4,9 +4,9 @@
 
 <!-- JS -->
 <script type="text/javascript">
-	__toggle_top_bar__("hide")
-	__toggle_left_bar__("hide")
-	__toggle_right_bar__("hide")
+	toggle_top_bar("hide")
+	toggle_left_bar("hide")
+	toggle_right_bar("hide")
 </script>
 
 <!-- CONTENT -->
@@ -58,11 +58,13 @@
 		var username = document.getElementById("username").value
 		var email = document.getElementById("email").value
 		var password = document.getElementById("password").value;
-		__make_request__("/requests/authentication/signup/", response_element, document.getElementById("loader"), {
+		request("/requests/authentication/signup/", {
 			username:username,
 			email:email,
 			password:password,
 			verify_password:document.getElementById("verify_password").value,
+			response:response_element,
+			loader:document.getElementById("loader"),
 		}, function(response) {
 			if (response.error == null) {
 				setTimeout(function() {

@@ -30,7 +30,7 @@ class Security(_defaults_.Defaults):
 		# https://devcenter.heroku.com/articles/acquiring-an-ssl-certificate
 
 		# check base.
-		base = f"{self.root}/.secrets/"
+		base = f"{self.root}/__defaults__/env/"
 		if not Files.exists(base): os.mkdir(base)
 		base = f"{self.database}/tls"
 		if not Files.exists(base): os.mkdir(base)
@@ -74,9 +74,9 @@ class Security(_defaults_.Defaults):
 		#
 	def set_secret_env(self, key, value):
 		# env.json
-		if not Files.exists(f"{self.root}/.secrets"): os.mkdir(f"{self.root}/.secrets")
+		if not Files.exists(f"{self.root}/__defaults__/env"): os.mkdir(f"{self.root}/__defaults__/env")
 		try:
-			env = utils.__load_json__(f"{self.root}/.secrets/env.json")
+			env = utils.__load_json__(f"{self.root}/__defaults__/env/json")
 		except:
 			env = {}
 		os.environ[key] = str(value)
@@ -176,10 +176,10 @@ class Security(_defaults_.Defaults):
 				else:
 					raise ValueError(f"Reached max recursive depth with key [{key}].")
 				previous.append(s)
-		utils.__save_json__(f"{self.root}/.secrets/env.json", env)
+		utils.__save_json__(f"{self.root}/__defaults__/env/json", env)
 		# env.sh
 		try:
-			env = Files.load(f"{self.root}/.secrets/env.sh")
+			env = Files.load(f"{self.root}/__defaults__/env/bash")
 		except FileNotFoundError:
 			env = ""
 		l_key = key.replace(".","-")
@@ -196,7 +196,7 @@ class Security(_defaults_.Defaults):
 		for i in range(100):
 			if "\n\n" in env: env = env.replace("\n\n","\n")
 			else: break
-		Files.save(f"{self.root}/.secrets/env.sh", env)
+		Files.save(f"{self.root}/__defaults__/env/bash", env)
 		return r3sponse.success(f"Successfully setted the secret environment variable [{key}].")
 	def get_secret_env(self, key, default=None, required=True):
 		value = syst3m.env.get_string(key, default=default)
