@@ -590,12 +590,13 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		# logs.
 		if syst3m.defaults.options.log_level >= 1:
 			print(f"Website: {self.name}")
-			print(f"Domain: {self.domain}")
-			print(f"Root: {self.root}")
-			print(f"Library: {self.library}")
-			print(f"Database: {self.database}")
-			print(f"Remote: {self.remote}")
-			print(f"Live: {self.live}")
+			print(f" * domain: {self.domain}")
+			print(f" * root: {self.root}")
+			print(f" * library: {self.library}")
+			print(f" * database: {self.database}")
+			print(f" * pwd: {syst3m.defaults.pwd()}")
+			print(f" * remote: {self.remote}")
+			print(f" * live: {self.live}")
 
 		# handler.
 		return r3sponse.success(f"Successfully initialized website [{self.name}].")
