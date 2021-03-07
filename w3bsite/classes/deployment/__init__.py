@@ -112,7 +112,7 @@ class Deployment(syst3m.objects.Object):
 		# execute.
 		response = syst3m.console.execute("sudo systemctl status gunicorn > /tmp/status && cat /tmp/status && rm -fr /tmp/status")
 		if not response.success: return response
-		status = str(response)
+		status = response.output
 		return r3sponse.success(f"Successfully parsed the status of {self.name}.", {
 			"status":data,
 		})
