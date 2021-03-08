@@ -6,7 +6,7 @@ from w3bsite.classes.config import *
 
 # the stripe subscription daemon.
 # used for verifying subscriptions.
-class SubscriptionVerification(syst3m.objects.Thread):
+class SubscriptionVerification(Thread):
 	def __init__(self, 
 		# the daemons sleep time.
 		sleeptime=60,
@@ -17,7 +17,7 @@ class SubscriptionVerification(syst3m.objects.Thread):
 	):
 		
 		# defaults.
-		syst3m.objects.Thread.__init__(self, log_level=0)
+		Thread.__init__(self, log_level=0)
 		self.assign(defaults.dict())
 
 		# arguments.

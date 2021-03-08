@@ -5,7 +5,7 @@
 from w3bsite.classes.config import *
 
 # the website defaults object class.
-class Defaults(syst3m.objects.Object):
+class Defaults(Object):
 	def __init__(self,
 		# info.
 		root=None,
@@ -38,7 +38,7 @@ class Defaults(syst3m.objects.Object):
 	):
 
 		# object defaults.
-		syst3m.objects.Object.__init__(self, traceback=traceback)
+		Object.__init__(self, traceback=traceback)
 
 		# defaults.
 		self.root = root

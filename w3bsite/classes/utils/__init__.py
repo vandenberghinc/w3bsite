@@ -7,11 +7,11 @@ import xmltodict
 
 
 # the utils object class.
-class Utils(syst3m.objects.Object):
+class Utils(Object):
 	def __init__(self, attributes={}):
 
 		# defaults.
-		syst3m.objects.Object.__init__(self, traceback="Website.utils")
+		Object.__init__(self, traceback="Website.utils")
 		self.assign(attributes)
 
 		#

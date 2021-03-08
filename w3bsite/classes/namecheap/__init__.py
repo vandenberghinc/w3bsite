@@ -6,7 +6,7 @@ from w3bsite.classes.config import *
 from w3bsite.classes import utils
 
 # the namecheap object class.
-class Namecheap(syst3m.objects.Object):
+class Namecheap(Object):
 	# does not use Defaults so also accessable without Website init.
 	# source: https://www.namecheap.com/support/api/methods/
 	# go to [Profile > Tools > Developer > API > Manage] and enable the APi and whitelist your public ip.
@@ -26,7 +26,7 @@ class Namecheap(syst3m.objects.Object):
 	):	
 
 		# defaults.
-		syst3m.objects.Object.__init__(self, traceback="w3bsite.Website.namecheap",)
+		Object.__init__(self, traceback="w3bsite.Website.namecheap",)
 		
 		# arguments.
 		self.username = username

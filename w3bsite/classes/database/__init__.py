@@ -6,11 +6,11 @@ from w3bsite.classes.config import *
 from w3bsite.classes import exceptions
 
 # the database class.
-class Database(syst3m.objects.Traceback):
+class Database(Traceback):
 	def __init__(self, firestore=None, path=None):
 		
 		# traceback.
-		syst3m.objects.Traceback.__init__(self, traceback="w3bsite.Website.database")
+		Traceback.__init__(self, traceback="w3bsite.Website.database")
 
 		# checks.
 		if firestore == None and path == None: raise exceptions.InvalidUsage(self.__traceback__()+" Both parameters firestore & path are None.")

@@ -6,7 +6,7 @@ from w3bsite.classes.config import *
 from w3bsite.classes import utils
 
 # the deployment object class.
-class Deployment(syst3m.objects.Object):
+class Deployment(Object):
 	# does not use Defaults so also accessable without Website init.
 	# deploy the website on a local ubuntu machine.
 	def __init__(self,
@@ -38,7 +38,7 @@ class Deployment(syst3m.objects.Object):
 	):	
 
 		# defaults.
-		syst3m.objects.Object.__init__(self, traceback="w3bsite.Website.deployment",)
+		Object.__init__(self, traceback="w3bsite.Website.deployment",)
 
 		# attributes.
 		self.vps_ip = vps_ip

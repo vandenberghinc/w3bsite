@@ -53,7 +53,7 @@ def build_urls(views=[]):
 	return urls
 	
 # the django request object class.
-class Request(syst3m.objects.Object):
+class Request(Object):
 	def __init__(self,
 		# the base path (required; if url path is null) [#1 argument].
 		base=None,
@@ -66,7 +66,7 @@ class Request(syst3m.objects.Object):
 	):
 
 		# defaultss.
-		syst3m.objects.Object.__init__(self)
+		Object.__init__(self)
 		self.parameters = Response.parameters
 
 		# variables.
@@ -108,7 +108,7 @@ class Request(syst3m.objects.Object):
 	# do not forget the self.parameters's functions.
 
 # the django view object class.
-class View(syst3m.objects.Object):
+class View(Object):
 	def __init__(self, 
 		# the base path (required; if url path is null) [#1 argument].
 		base=None,
@@ -127,7 +127,7 @@ class View(syst3m.objects.Object):
 	):
 
 		# defaults.
-		syst3m.objects.Object.__init__(self)
+		Object.__init__(self)
 		self.parameters = Response.parameters
 
 		# vars.
@@ -237,10 +237,10 @@ class View(syst3m.objects.Object):
 
 
 # template data object !!! DEPRICATED !!!.
-class TemplateData(syst3m.objects.Object):
+class TemplateData(Object):
 	def __init__(self, data={}):
 		# defaults.
-		syst3m.objects.Object.__init__(self)
+		Object.__init__(self)
 		self.assign(data)
 	# return raw data.
 	def raw(self):

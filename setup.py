@@ -7,7 +7,7 @@
 from setuptools import setup, find_packages
 setup(
 	name='w3bsite',
-	version='4.20.1',
+	version='4.21.0',
 	description='Some description.',
 	url='http://github.com/vandenberghinc/w3bsite',
 	author='Daan van den Bergh',
@@ -35,8 +35,8 @@ setup(
             'django',
             'xmltodict',
             'stripe',
-            'syst3m>=2.16.5',
-            'fil3s>=2.15.8',
-            'netw0rk>=1.9.1',
-            'ssht00ls>=3.20.6',
+            'syst3m>=2.16.6',
+            'fil3s>=2.15.9',
+            'netw0rk>=1.9.2',
+            'ssht00ls>=3.20.7',
         ])

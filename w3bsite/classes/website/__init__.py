@@ -8,7 +8,7 @@ from w3bsite.classes import database as _database_
 import django as pypi_django
 
 # the main website class.
-class Website(CLI.CLI,syst3m.objects.Traceback):
+class Website(CLI.CLI,Traceback):
 	def __init__(self,
 		#
 		# General.
@@ -169,7 +169,7 @@ class Website(CLI.CLI,syst3m.objects.Traceback):
 	):	
 
 		# defaults.
-		syst3m.objects.Traceback.__init__(self, traceback="w3bsite.Website",)
+		Traceback.__init__(self, traceback="w3bsite.Website",)
 
 		# w3bsite values.
 		self.SOURCE_PATH = SOURCE_PATH
