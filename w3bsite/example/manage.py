@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import os,sys
-from fil3s import *
+from dev0s import *
 def main():
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', '__defaults__.django.settings')
     try:

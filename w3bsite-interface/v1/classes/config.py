@@ -7,7 +7,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseNotAllowed, JsonResponse
 
 # inc imports.
-from fil3s import *
+from dev0s import *
 
 # fyunctions.
 def __get_file_path_base__(path, back=1):

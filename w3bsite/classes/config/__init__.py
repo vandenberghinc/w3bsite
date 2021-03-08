@@ -7,7 +7,7 @@ import os, sys, ast, json, glob, platform, subprocess, random, requests, urllib,
 # inc imports.
 import netw0rk, syst3m, ssht00ls
 from ssht00ls import ssht00ls_agent
-from fil3s import *
+from dev0s import *
 
 # source.	
 ALIAS = "w3bsite"
