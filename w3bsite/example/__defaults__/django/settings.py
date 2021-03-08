@@ -15,11 +15,11 @@ from fil3s import *
 
 # Environment.
 SOURCE = Directory(gfp.base(__file__, back=3))
-DATABASE = Directory(syst3m.env.get("DATABASE", default=str(SOURCE)))
-PRODUCTION = syst3m.env.get("PRODUCTION", default=True, format=bool)
-DOMAIN = syst3m.env.get("DOMAIN", default=None)
-SECRET_KEY = syst3m.env.get("DJANGO_SECRET_KEY", default=String().generate(length=128, capitalize=True, digits=True, special=True))
-WEBSITE_BASE = syst3m.env.get("WEBSITE_BASE", default=None)
+DATABASE = Directory(Environment.get("DATABASE", default=str(SOURCE)))
+PRODUCTION = Environment.get("PRODUCTION", default=True, format=bool)
+DOMAIN = Environment.get("DOMAIN", default=None)
+SECRET_KEY = Environment.get("DJANGO_SECRET_KEY", default=String().generate(length=128, capitalize=True, digits=True, special=True))
+WEBSITE_BASE = Environment.get("WEBSITE_BASE", default=None)
 if WEBSITE_BASE == None:
     raise ValueError("Improperly configured run, env variable [WEBSITE_BASE] is None.")
     

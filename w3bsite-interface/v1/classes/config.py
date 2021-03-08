@@ -7,8 +7,6 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseNotAllowed, JsonResponse
 
 # inc imports.
-import r3stapi
-from r3sponse import r3sponse
 from fil3s import *
 
 # fyunctions.
@@ -58,8 +56,8 @@ TEMPLATE_DATA = {
 
 # logs.
 if PRODUCTION:
-	r3sponse.log_file = f"{SOURCE_PATH}/{VERSION}/logs/logs.txt"
-	r3stapi.r3sponse.log_file = f"{SOURCE_PATH}/{VERSION}/logs/logs.txt"
+	Response.log_file = f"{SOURCE_PATH}/{VERSION}/logs/logs.txt"
+	r3stapi.Response.log_file = f"{SOURCE_PATH}/{VERSION}/logs/logs.txt"
 else:
-	r3sponse.log_file = f"logs/logs.txt"
-	r3stapi.r3sponse.log_file = f"logs/logs.txt"
+	Response.log_file = f"logs/logs.txt"
+	r3stapi.Response.log_file = f"logs/logs.txt"

@@ -3,13 +3,13 @@
 
 # imports.
 from w3bsite.classes.config import *
-if not syst3m.env.get("MIGRATIONS", format=bool, default=False):
+if not Environment.get("MIGRATIONS", format=bool, default=False):
 	try:
 		from django.contrib.auth.models import User as DjangoUser
 		from django.contrib.auth import authenticate, login
 		from django.contrib.auth import login as _login_
 	except Exception as e:
-		if syst3m.env.get_boolean("DJANGO_RUNNING") == True:
+		if Environment.get_boolean("DJANGO_RUNNING") == True:
 			raise ValueError(e)
 try:
 	from w3bsite.classes.firebase import *
@@ -100,7 +100,7 @@ class Users(_defaults_.Defaults):
 	):
 
 		# check parameters.
-		response = r3sponse.parameters.check(
+		response = Response.parameters.check(
 			traceback=self.__traceback__(function="create"),
 			parameters={
 				"username":username,
@@ -111,11 +111,11 @@ class Users(_defaults_.Defaults):
 		# check password.
 		password = str(password)
 		if len(password) < 8:
-			return r3sponse.error("The password must contain at least 8 characters.")
+			return Response.error("The password must contain at least 8 characters.")
 		elif password.lower() == password:
-			return r3sponse.error("The password must regular and capital letters.")
+			return Response.error("The password must regular and capital letters.")
 		elif verify_password != None and password != str(verify_password):
-			return r3sponse.error("Passwords do not match.")
+			return Response.error("Passwords do not match.")
 
 		# create django user.
 		response = self.django.users.create(
@@ -158,7 +158,7 @@ class Users(_defaults_.Defaults):
 		}
 
 		# handle success.
-		return r3sponse.success(f"Successfully created user [{email}].", {
+		return Response.success(f"Successfully created user [{email}].", {
 			"user":user,
 			"email":user.email,
 			"data":data,
@@ -185,15 +185,15 @@ class Users(_defaults_.Defaults):
 
 		# check password.
 		if password != None:
-			if verify_password == None: return r3sponse.error("Specify parameter: verify_password.")
+			if verify_password == None: return Response.error("Specify parameter: verify_password.")
 			password = str(password)
 			verify_password = str(verify_password)
 			if len(password) < 8:
-				return r3sponse.error("The password must contain at least 8 characters.")
+				return Response.error("The password must contain at least 8 characters.")
 			elif password.lower() == password:
-				return r3sponse.error("The password must regular and capital letters.")
+				return Response.error("The password must regular and capital letters.")
 			elif password != verify_password:
-				return r3sponse.error("Passwords do not match.")
+				return Response.error("Passwords do not match.")
 		
 		# create django user.
 		response = self.django.users.update(
@@ -225,7 +225,7 @@ class Users(_defaults_.Defaults):
 			if not response.success: return response
 
 		# handle success.
-		return r3sponse.success(f"Successfully updated user [{email}].")
+		return Response.success(f"Successfully updated user [{email}].")
 		
 		#
 	def delete(self, 
@@ -237,7 +237,7 @@ class Users(_defaults_.Defaults):
 		
 		# check parameters.
 		if [username,email] == [None,None]:
-			return r3sponse.error(self.__traceback__(function="load_data")+" Define one of the following parameters [email, username].")
+			return Response.error(self.__traceback__(function="load_data")+" Define one of the following parameters [email, username].")
 
 		# delete django user.
 		response = self.django.users.delete(username=username, email=email)
@@ -248,7 +248,7 @@ class Users(_defaults_.Defaults):
 		if not response.success: return response
 
 		# handle success.
-		return r3sponse.success(f"Successfully deleted user [{email}].")
+		return Response.success(f"Successfully deleted user [{email}].")
 
 		#
 	def exists(self, 
@@ -280,7 +280,7 @@ class Users(_defaults_.Defaults):
 	):
 
 		# check parameters.
-		response = r3sponse.parameters.check(
+		response = Response.parameters.check(
 			traceback=self.__traceback__(function="authenticate"),
 			parameters={
 				"username":username,
@@ -302,7 +302,7 @@ class Users(_defaults_.Defaults):
 				if not l_response.success: return l_response
 
 				# handler for sign in.
-				return r3sponse.error(f"Authentication verification code required.")
+				return Response.error(f"Authentication verification code required.")
 
 			# verify code.
 			response = self.verify_verification_code(username, code=_2fa_code, mode="authentication")
@@ -323,21 +323,21 @@ class Users(_defaults_.Defaults):
 
 		# by request user filled (django).
 		if request.user.is_authenticated:
-			return r3sponse.success(f"User {request.user.username} is authenticated.", {
+			return Response.success(f"User {request.user.username} is authenticated.", {
 				"api_key":None,
 				"email":request.user.email,
 				"username":request.user.username,
 			})
 
 		# by api key.
-		optional_parameters, _ = r3sponse.parameters.get(request, {
+		optional_parameters, _ = Response.parameters.get(request, {
 			"api_key":None,
 		})
 		if optional_parameters["api_key"] != None:
 			return self.verify_api_key(api_key=optional_parameters["api_key"])
 
 		# error.
-		return r3sponse.error("User is not authenticated, please specify your api key or login.")
+		return Response.error("User is not authenticated, please specify your api key or login.")
 
 		#
 	def root_permission(self, 
@@ -347,7 +347,7 @@ class Users(_defaults_.Defaults):
 
 		# by request user filled (django).
 		if request.user != None and request.user.is_authenticated and request.user.is_superuser:
-			return r3sponse.success(f"Root permission granted ({request.user.username}).", {
+			return Response.success(f"Root permission granted ({request.user.username}).", {
 				"api_key":None,
 				"email":request.user.email,
 				"username":request.user.username,
@@ -357,7 +357,7 @@ class Users(_defaults_.Defaults):
 		# never root permission.
 
 		# error.
-		return r3sponse.error("Root permission denied.")
+		return Response.error("Root permission denied.")
 
 		#
 	def load_data(self,
@@ -369,10 +369,10 @@ class Users(_defaults_.Defaults):
 		create=False,
 	):	
 		if [username,email] == [None,None]:
-			return r3sponse.error(self.__traceback__(function="load_data")+" Define one of the following parameters [email, username].")
+			return Response.error(self.__traceback__(function="load_data")+" Define one of the following parameters [email, username].")
 		response = self.db.load(path=self.__get_path__(email=email, username=username, create=create))
 		if response.error != None: return response
-		return r3sponse.success(f"Successfully loaded the data of user [{email}].", {
+		return Response.success(f"Successfully loaded the data of user [{email}].", {
 			"data":response["data"],
 		})
 	def save_data(self,
@@ -386,10 +386,10 @@ class Users(_defaults_.Defaults):
 		overwrite=False,
 	):
 		if [username,email] == [None,None]:
-			return r3sponse.error(self.__traceback__(function="load_data")+" Define one of the following parameters [email, username].")
+			return Response.error(self.__traceback__(function="load_data")+" Define one of the following parameters [email, username].")
 		response = self.db.save(path=self.__get_path__(email=email, username=username, create=True), data=data, overwrite=overwrite)
 		if response.error != None: return response
-		return r3sponse.success(f"Successfully saved the data of user [{email}].")
+		return Response.success(f"Successfully saved the data of user [{email}].")
 	def send_email(self, 
 		# define email to retrieve user.
 		email=None, 
@@ -413,8 +413,8 @@ class Users(_defaults_.Defaults):
 		user = response["user"]
 		
 		# send email.
-		if syst3m.defaults.options.log_level >= 1:
-			r3sponse.log(f"Sending email to user [{user.username}], email [{user.email}].")
+		if Defaults.options.log_level >= 1:
+			Response.log(f"Sending email to user [{user.username}], email [{user.email}].")
 		response = self.email.send(
 			subject=title,
 			recipients=[user.email], 
@@ -429,7 +429,7 @@ class Users(_defaults_.Defaults):
 			if response.error != None: return response
 
 		# success.
-		return r3sponse.success(f"Successfully send an email to user [{user.email}].")
+		return Response.success(f"Successfully send an email to user [{user.email}].")
 
 		#
 	def send_code(self, 
@@ -470,8 +470,8 @@ class Users(_defaults_.Defaults):
 		}
 		
 		# send email.
-		if syst3m.defaults.options.log_level >= 1:
-			r3sponse.log(f"Sending [{mode}] code to user [{user.username}], email [{user.email}].")
+		if Defaults.options.log_level >= 1:
+			Response.log(f"Sending [{mode}] code to user [{user.username}], email [{user.email}].")
 		response = self.email.send(
 			subject=f'{title} - Verification Code',
 			recipients=[user.email], 
@@ -486,7 +486,7 @@ class Users(_defaults_.Defaults):
 			if response.error != None: return response
 
 		# success.
-		return r3sponse.success(f"Successfully send a verification code to user [{user.email}].")
+		return Response.success(f"Successfully send a verification code to user [{user.email}].")
 
 		#
 	def verify_code(self, 
@@ -513,20 +513,20 @@ class Users(_defaults_.Defaults):
 
 		# handle.
 		if fail: 
-			return r3sponse.error("Incorrect verification code.")
+			return Response.error("Incorrect verification code.")
 		elif not success: 
 			self.verification_codes[mode][user.email]["attempts"] -= 1
-			return r3sponse.error("Incorrect verification code.")
+			return Response.error("Incorrect verification code.")
 		else:
 			del self.verification_codes[mode][user.email]
-			return r3sponse.success("Successfull verification.")
+			return Response.success("Successfull verification.")
 
 		#
 	def verify_api_key(self, api_key=None, request=None):
 		
 		# by request.
 		if request != None:
-			parameters, response = r3sponse.parameters.get(request, ["api_key"])
+			parameters, response = Response.parameters.get(request, ["api_key"])
 			if not response.success: return response
 			return self.verify_api_key(api_key=parameters["api_key"])
 		
@@ -542,14 +542,14 @@ class Users(_defaults_.Defaults):
 			for _api_key_, info in api_keys.items():
 				#print(f"api_key [{api_key}] vs _api_key_ [{_api_key_}].")
 				if _api_key_ == api_key: 
-					return r3sponse.success(f"Successfully verified api key [{api_key}].", {
+					return Response.success(f"Successfully verified api key [{api_key}].", {
 						"email":info["email"],
 						"username":info["username"],
 						"api_key":api_key,
 					})
 
 			# error.
-			return r3sponse.error(f"Unable to verify api key [{api_key}].")
+			return Response.error(f"Unable to verify api key [{api_key}].")
 
 			#
 	def verify_subscription(self,
@@ -614,7 +614,7 @@ class Users(_defaults_.Defaults):
 
 		# handlers.
 		if verified:
-			return r3sponse.success(f"Successfully verified subscription {product} for user {id}.", {
+			return Response.success(f"Successfully verified subscription {product} for user {id}.", {
 				"email":email,
 				"api_key":api_key,
 				"product":product,
@@ -625,7 +625,7 @@ class Users(_defaults_.Defaults):
 			for i in required_plans: 
 				if _required_plans_ == "": _required_plans_ = i
 				else: _required_plans_ += ", "+i
-			return r3sponse.error(f"Permission denied ({email}). This request requires at least one of the following plans for {product} [{_required_plans_}].")
+			return Response.error(f"Permission denied ({email}). This request requires at least one of the following plans for {product} [{_required_plans_}].")
 
 		#
 	def create_subscription(self,
@@ -649,8 +649,8 @@ class Users(_defaults_.Defaults):
 	):
 
 		# checkparameters.
-		if email == None and api_key == None: return r3sponse.error("Define one of the following parameters: [email, api_key].")
-		response = r3sponse.parameters.check(
+		if email == None and api_key == None: return Response.error("Define one of the following parameters: [email, api_key].")
+		response = Response.parameters.check(
 			traceback=self.__traceback__(function="create_subscription"),
 			parameters={
 				"product":product,
@@ -661,7 +661,7 @@ class Users(_defaults_.Defaults):
 		if card_cvc == "***" and "************" in card_number:
 			blinded = True
 		if not blinded:
-			response = r3sponse.parameters.check(
+			response = Response.parameters.check(
 				traceback=self.__traceback__(function="create_subscription"),
 				parameters={
 					"card_name":card_name,
@@ -718,7 +718,7 @@ class Users(_defaults_.Defaults):
 
 		# check already subscribed.
 		if plan_id in plan_ids:
-			return r3sponse.error(f"User {email} is already subscribed to plan {plan} from product {product}.")
+			return Response.error(f"User {email} is already subscribed to plan {plan} from product {product}.")
 
 		# create card when card is not blinded (aka retrieved from user).
 		if not blinded:
@@ -741,14 +741,14 @@ class Users(_defaults_.Defaults):
 		if not response.success: return response
 		
 		# handlers.
-		return r3sponse.success(f"Successfully created subscription {product} {plan} for user {id}.")
+		return Response.success(f"Successfully created subscription {product} {plan} for user {id}.")
 
 		#
 	def get_api_key(self, email=None, username=None):
 
 		# check.
 		if [username,email] == [None,None]:
-			return r3sponse.error("Define one of the following parameters: [email, username].")
+			return Response.error("Define one of the following parameters: [email, username].")
 		if username == None: id = email
 		elif email == None: id = username
 
@@ -763,11 +763,11 @@ class Users(_defaults_.Defaults):
 				api_key = _api_key_
 				break
 		if api_key != None:
-			return r3sponse.success(f"Successfully retrieved the api key [{id}].", {
+			return Response.success(f"Successfully retrieved the api key [{id}].", {
 				"api_key":api_key,
 			})
 		else:
-			return r3sponse.error(f"Unable to find api key [{id}].")
+			return Response.error(f"Unable to find api key [{id}].")
 
 		#
 	def set_permission(self, email=None, username=None, permission_id=None, permission=True):
@@ -785,7 +785,7 @@ class Users(_defaults_.Defaults):
 		if response.error != None: return response
 
 		# handlers.
-		return r3sponse.success(f"Successfully set the {permission_id} permission of user [{email}] to [{permission}].")
+		return Response.success(f"Successfully set the {permission_id} permission of user [{email}] to [{permission}].")
 		#
 	def check_password(self, 
 		# password (#1).
@@ -795,7 +795,7 @@ class Users(_defaults_.Defaults):
 		# the strong password boolean.
 		strong=False,
 	):
-		response =r3sponse.parameters.check(
+		response =Response.parameters.check(
 			traceback=self.__traceback__(function="check_password"),
 			parameters={
 				"password:str,String":password,
@@ -804,34 +804,34 @@ class Users(_defaults_.Defaults):
 			})
 		if not response.success: return response
 		if password != verify_password:
-			return r3sponse.error("Passwords do not match.")
+			return Response.error("Passwords do not match.")
 		elif (not strong and len(password) < 6) or (strong and len(password) < 12):
-			return r3sponse.error("The password must contain at least 12 characters.")
+			return Response.error("The password must contain at least 12 characters.")
 		elif password.lower() == password:
-			return r3sponse.error("The password must contain capital letters.")
+			return Response.error("The password must contain capital letters.")
 		match = False
 		for i in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]:
 			if  str(i) in password: match = True ; break
 		if match == False:
-			return r3sponse.error("The password must contain digits.")
-		return r3sponse.success("Succesfully checked the password.")
+			return Response.error("The password must contain digits.")
+		return Response.success("Succesfully checked the password.")
 	def load_password(self, email=None, username=None):
 		if [username,email] == [None,None]:
-			return r3sponse.error(self.__traceback__(function="load_data")+" Define one of the following parameters [email, username].")
+			return Response.error(self.__traceback__(function="load_data")+" Define one of the following parameters [email, username].")
 		response = self.load_data(email=email, username=username)
 		if not response.success: return response
 		data = response.data
 		_response_ = self.aes.decrypt(data["account"]["password"])
 		if not _response_.success: return _response_
 		password = _response_["decrypted"].decode()
-		return r3sponse.success(f"Successfully retrieved the password of user {email}.",{
+		return Response.success(f"Successfully retrieved the password of user {email}.",{
 			"password":password,
 			"data":data,
 		})
 	def save_password(self, email=None, username=None, password=None):
 		if [username,email] == [None,None]:
-			return r3sponse.error(self.__traceback__(function="load_data")+" Define one of the following parameters [email, username].")
-		response = r3sponse.parameters.check(
+			return Response.error(self.__traceback__(function="load_data")+" Define one of the following parameters [email, username].")
+		response = Response.parameters.check(
 			traceback=self.__traceback__(function="save_password"),
 			parameters={
 				"password":password,
@@ -847,7 +847,7 @@ class Users(_defaults_.Defaults):
 		data["account"]["password"] = _response_["encrypted"].decode()
 		response = self.save_data(email=email, username=username, data=data)
 		if not response.success: return response
-		return r3sponse.success(f"Successfully saved the password of user {email}.")
+		return Response.success(f"Successfully saved the password of user {email}.")
 	def iterate(self, 
 		# iterating user objects (True) or email strings (False).
 		users=True,
@@ -954,7 +954,7 @@ class Users(_defaults_.Defaults):
 			}
 
 		# success.
-		return r3sponse.success(f"Successfully synchronized {len(ids)} user(s).", {
+		return Response.success(f"Successfully synchronized {len(ids)} user(s).", {
 			"api_keys":api_keys,
 		})
 
@@ -963,9 +963,9 @@ class Users(_defaults_.Defaults):
 	def __initialize_email__(self):
 		# the email object.
 		if not self.email_enabled:
-			return r3sponse.error("The email object is disabled.")
+			return Response.error("The email object is disabled.")
 		if self.email_address == None or self.email_password == None:
-			return r3sponse.error("Define the firebase.users.email_address & firebase.users.email_password variables to send emails.")
+			return Response.error("Define the firebase.users.email_address & firebase.users.email_password variables to send emails.")
 		self.email = email.Email(
 			email=self.email_address,
 			password=self.email_password,
@@ -974,7 +974,7 @@ class Users(_defaults_.Defaults):
 			visible_email=self.visible_email,)
 		response = self.email.login()
 		if response["success"]:
-			return r3sponse.success("Successfully initialized the mail object.")
+			return Response.success("Successfully initialized the mail object.")
 		else: 
 			self.email = None
 			return response
@@ -999,7 +999,7 @@ class Users(_defaults_.Defaults):
 			self.__subscriptions__ = dict(subscriptions)
 
 		# handler.
-		return r3sponse.success("Successfully retrieved the stripe subscriptions cache.", {
+		return Response.success("Successfully retrieved the stripe subscriptions cache.", {
 			"subscriptions":subscriptions,
 		})
 
@@ -1025,7 +1025,7 @@ class Users(_defaults_.Defaults):
 			self.__api_keys__ = dict(api_keys)
 
 		# handler.
-		return r3sponse.success("Successfully retrieved the api keys cache.", {
+		return Response.success("Successfully retrieved the api keys cache.", {
 			"api_keys":api_keys,
 		})
 

@@ -47,7 +47,7 @@ class Firebase {
 
 	// sign out the signed in user.
 	signout(redirect=true) {
-		var response = r3sponse.default()
+		var response = Response.default()
 		this.auth.signOut()
 		.then(function() {
 			// sign out successful.
@@ -67,7 +67,7 @@ class Firebase {
 
 	// sign in with email & password.
 	signin(email, password, authenticated_handler=null, unauthenticated_handler=null, timeout=1000) {
-		var response = r3sponse.default()
+		var response = Response.default()
 		__reset_local_storage__()
 
 		// sign in.
@@ -104,7 +104,7 @@ class Firebase {
 
 	// check if user is authenticated.
 	authenticated(authenticated_handler=null, unauthenticated_handler=null) {
-		var response = r3sponse.default()
+		var response = Response.default()
 		__firebase__.auth().onAuthStateChanged(
 			function(user) {
 				if (user) {
@@ -169,23 +169,23 @@ class Firebase {
 						this.id_token = id_token
 						localStorage.setItem("ID_TOKEN", this.id_token)
 						if (handler != null) {
-							handler(r3sponse.success("Successfully retrieved the id token.", {id_token:id_token}))
+							handler(Response.success("Successfully retrieved the id token.", {id_token:id_token}))
 						}
 					}).catch(function(error) {
 						this.id_token = null
 						localStorage.setItem("ID_TOKEN", this.id_token)
-						if (handler != null) { handler(r3sponse.error("Failed to retrieve the id token."))}
+						if (handler != null) { handler(Response.error("Failed to retrieve the id token."))}
 					})
 				} else {
 				  	this.id_token = null
 					localStorage.setItem("ID_TOKEN", this.id_token)
-				    if (handler != null) { handler(r3sponse.error("Failed to retrieve the id token."))}
+				    if (handler != null) { handler(Response.error("Failed to retrieve the id token."))}
 				}
 			})
 		} catch(error) {
 			this.id_token = null
 			localStorage.setItem("ID_TOKEN", this.id_token)
-		    if (handler != null) { handler(r3sponse.error("Failed to retrieve the id token."))}
+		    if (handler != null) { handler(Response.error("Failed to retrieve the id token."))}
 		}
 	}
 

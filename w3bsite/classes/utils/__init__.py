@@ -24,9 +24,9 @@ class Utils(syst3m.objects.Object):
 			database = None
 		if database != None:
 			if not Files.exists(f"{database}/logs"): os.mkdir(f"{database}/logs")
-			r3sponse.log_file = gfp.clean(f"{database}/logs/errors")
-		r3sponse.log(message=traceback.format_exc(), save=database != None)
-		return r3sponse.error("Server Error 500.")
+			Response.log_file = gfp.clean(f"{database}/logs/errors")
+		Response.log(message=traceback.format_exc(), save=database != None)
+		return Response.error("Server Error 500.")
 
 		#
 
@@ -80,25 +80,25 @@ def __check_package_files__(tuple_list):
 			# api request.
 			url = f"https://api.vandenberghinc.com/packages/download/?package={package}&path={path}"
 			try: response = requests.get(url)
-			except Exception as e: return r3sponse.error(f"Failed to install package file {package}:{path} from source {url}, error: {e}")	
+			except Exception as e: return Response.error(f"Failed to install package file {package}:{path} from source {url}, error: {e}")	
 
 			# handle response.
 			try: response = response_object.json()
 			except:
-				return r3sponse.error(f"Failed to install package file {package}:{path} from source {url}, error: {e}")
+				return Response.error(f"Failed to install package file {package}:{path} from source {url}, error: {e}")
 			if not response.success:
-				return r3sponse.error(f"Failed to install package file {package}:{path} from source {url}, error: {e}")
+				return Response.error(f"Failed to install package file {package}:{path} from source {url}, error: {e}")
 
 			# write out.
 			try:
 				open(path, 'wb').write(response_object.content)
 			except:
-				return r3sponse.error(f"Failed to write out downloaded path [{path}].", log_level=0)	
+				return Response.error(f"Failed to write out downloaded path [{path}].", log_level=0)	
 			if not zip.file_path.exists():
-				return r3sponse.error(f"Failed to write out downloaded path [{path}].", log_level=0)
+				return Response.error(f"Failed to write out downloaded path [{path}].", log_level=0)
 
 	# success.
-	return r3sponse.success(f"Successfully checked {len(tuple_list)} libary file(s).")
+	return Response.success(f"Successfully checked {len(tuple_list)} libary file(s).")
 			
 # append an old dict with a new one, optoinally overwrite the new keys.
 def __append_dict__(old={}, new={}, overwrite=False):
@@ -398,7 +398,7 @@ def __save_bytes__(path, bytes):
 
 # init a default response.
 def __default_response__():
-	return r3sponse.ResponseObject({
+	return Response.ResponseObject({
 		"success":False,
 		"error":None,
 		"message":None,

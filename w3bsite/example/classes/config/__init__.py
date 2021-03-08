@@ -8,19 +8,18 @@ from django.http import HttpResponse, HttpResponseNotAllowed, JsonResponse
 
 # inc imports.
 import syst3m, w3bsite
-from r3sponse import r3sponse
 from fil3s import *
 
 # source.
 SOURCE_NAME = ALIAS = "api.vandenberghinc.com"
-SOURCE_PATH = syst3m.defaults.source_path(__file__, back=3)
-OS = syst3m.defaults.operating_system(supported=["linux", "macos"])
-#syst3m.defaults.alias(alias=ALIAS, executable=SOURCE_PATH, sudo=True)
+SOURCE_PATH = Defaults.source_path(__file__, back=3)
+OS = Defaults.operating_system(supported=["linux", "macos"])
+#Defaults.alias(alias=ALIAS, executable=SOURCE_PATH, sudo=True)
 
 # production settings.
 # do not deploy to heroku with production disabled.
-PRODUCTION = syst3m.env.get_boolean("PRODUCTION", default=True)
-MAINTENANCE = syst3m.env.get_boolean("MAINTENANCE", default=True)
+PRODUCTION = Environment.get_boolean("PRODUCTION", default=True)
+MAINTENANCE = Environment.get_boolean("MAINTENANCE", default=True)
 
 # website.
 website = w3bsite.Website(
@@ -31,7 +30,7 @@ website = w3bsite.Website(
 	production=PRODUCTION,)
 
 # synchronize users.
-if syst3m.env.get_boolean("MIGRATIONS") == False:
+if Environment.get_boolean("MIGRATIONS") == False:
 	response = website.users.synchronize()
 	if not response.success: raise ValueError(response['error'])
 
@@ -87,6 +86,6 @@ website.template_data["COLORS"] = COLORS
 
 # database.
 DATABASE = website.database
-if not Files.exists(DATABASE): os.system(f"sudo mkdir {DATABASE} && sudo chown {syst3m.defaults.vars.user}:{syst3m.defaults.vars.group} {DATABASE}")
+if not Files.exists(DATABASE): os.system(f"sudo mkdir {DATABASE} && sudo chown {Defaults.vars.user}:{Defaults.vars.group} {DATABASE}")
 if not Files.exists(f"{DATABASE}/data/"): os.mkdir(f"{DATABASE}/data/") # for database.
 if not Files.exists(f"{DATABASE}/packages/"): os.mkdir(f"{DATABASE}/packages/")

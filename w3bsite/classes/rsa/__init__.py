@@ -32,7 +32,7 @@ class RSA(object):
 		self.public_key_pem = public_key_pem.decode()
 		
 		# response.
-		return r3sponse.success("Successfully generated a key pair.")
+		return Response.success("Successfully generated a key pair.")
 
 		#
 	def load_private_key(self):
@@ -40,17 +40,17 @@ class RSA(object):
 		# load keys.
 		private_key = self.private_key_pem
 		if private_key == None:
-			return r3sponse.error("The private key is undefined.")
+			return Response.error("The private key is undefined.")
 
 		# initialize keys.
 		try:
 			private_key = _RSA_.importKey(private_key)
 		except Exception as e:
-			return r3sponse.error(f"Exception: {e}")
+			return Response.error(f"Exception: {e}")
 		
 		# response.
 		self.private_key = private_key
-		return r3sponse.success("Successfully loaded the private key.")
+		return Response.success("Successfully loaded the private key.")
 
 		#
 	def load_public_key(self):
@@ -58,17 +58,17 @@ class RSA(object):
 		# load keys.
 		public_key = self.public_key_pem
 		if public_key == None:
-			return r3sponse.error("The public key is undefined.")
+			return Response.error("The public key is undefined.")
 
 		# initialize keys.
 		try:
 			public_key = _RSA_.importKey(public_key)
 		except Exception as e:
-			return r3sponse.error(f"Exception: {e}")
+			return Response.error(f"Exception: {e}")
 		
 		# response.
 		self.public_key = public_key
-		return r3sponse.success("Successfully loaded the public key.")
+		return Response.success("Successfully loaded the public key.")
 
 		#
 	# encrypting & decrypting.
@@ -78,7 +78,7 @@ class RSA(object):
 		encrypted = self.__encrypt_blob__(string, self.public_key)
 
 		# response.
-		return r3sponse.success(f"Successfully encrypted the string.", {
+		return Response.success(f"Successfully encrypted the string.", {
 			"encrypted": encrypted,
 		})
 
@@ -90,7 +90,7 @@ class RSA(object):
 		decrypted = self.__decrypt_blob__(string, self.private_key)
 		
 		# response.
-		return r3sponse.success(f"Successfully decrypted the string.", {
+		return Response.success(f"Successfully decrypted the string.", {
 			"decrypted": decrypted,
 		})
 

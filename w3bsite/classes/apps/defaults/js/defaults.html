@@ -57,7 +57,7 @@ function request(
 	if (loader != null) {
 		loader.style.display = "block"
 	}
-	r3sponse.log("CLEANED REQUEST DATA: "+r3sponse.dump(data))
+	Response.log("CLEANED REQUEST DATA: "+Response.dump(data))
 	$.ajax({
 			url: url,
 			data: data,
@@ -66,7 +66,7 @@ function request(
 			success: function (data, status, xhr) {
 
 				// serialize.
-				data = r3sponse.serialize(data)
+				data = Response.serialize(data)
 
 				// loader.
 				if (loader != null) {

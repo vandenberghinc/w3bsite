@@ -166,7 +166,7 @@ class Requests(_defaults_.Defaults):
 				title = "Account Activation - Verification Code"
 				path = f"{SOURCE_PATH}/classes/apps/authentication/mail/activation.html"
 			else:
-				return r3sponse.error("Selected an invalid mode.")
+				return Response.error("Selected an invalid mode.")
 
 			# parse html.
 			ip = utils.__get_client_ip__(request)

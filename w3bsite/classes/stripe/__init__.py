@@ -10,8 +10,8 @@ import stripe
 
 # univeral functions.
 def __handle_stripe_exception__(exception):
-	if "Request req_" in f"{exception}": return r3sponse.error(f"{exception}".split(": ")[1])
-	else: return r3sponse.error(f"{exception}")
+	if "Request req_" in f"{exception}": return Response.error(f"{exception}".split(": ")[1])
+	else: return Response.error(f"{exception}")
 
 # the stripe object class.
 class Stripe(_defaults_.Defaults):
@@ -130,22 +130,22 @@ class Stripe(_defaults_.Defaults):
 						response = self.products.create(
 							id=product,
 							description=None,)
-						r3sponse.log(response=response)
+						Response.log(response=response)
 						edits += 1
 						if not response.success: return response
 					else:
-						return r3sponse.error(f"Aborted.")
+						return Response.error(f"Aborted.")
 				else:
-					return r3sponse.error(f"Stripe product {product} does not exist.")
+					return Response.error(f"Stripe product {product} does not exist.")
 
 			# iterate plans.
 			for plan_name, plan_info in plans.items():
 
 				# check plan info.
 				try: plan_info["price"]
-				except KeyError: return r3sponse.error(f"Invalid <Website.stripe_products> parameter. Stripe plan {plan_name} from product {product} does not contain a price value.")
+				except KeyError: return Response.error(f"Invalid <Website.stripe_products> parameter. Stripe plan {plan_name} from product {product} does not contain a price value.")
 				try: plan_info["currency"]
-				except KeyError: return r3sponse.error(f"Invalid <Website.stripe_products> parameter. Stripe plan {plan_name} from product {product} does not contain a currency value.")
+				except KeyError: return Response.error(f"Invalid <Website.stripe_products> parameter. Stripe plan {plan_name} from product {product} does not contain a currency value.")
 
 				# check plan.
 				if product not in list(plan_names.keys()) or plan_name not in plan_names[product]:
@@ -157,18 +157,18 @@ class Stripe(_defaults_.Defaults):
 								product=product,
 								price=plan_info["price"],
 								currency=plan_info["currency"],)
-							r3sponse.log(response=response)
+							Response.log(response=response)
 							edits += 1
 							if not response.success: return response
 						else:
-							return r3sponse.error(f"Aborted.")
+							return Response.error(f"Aborted.")
 					else:
-						return r3sponse.error(f"Stripe product {product} does not exist.")
+						return Response.error(f"Stripe product {product} does not exist.")
 
 				# check plan price change.
 				elif plan_info["price"] != products[product_ids[product]]["plans"][plan_ids[product][plan_name]]["price"]:
 					# handle soon.
-					return r3sponse.error(f'Price change in product {product} plan {plan_name}, previous price: {products[product_ids[product]]["plans"][plan_ids[product][plan_name]]["price"]}, new price: {plan_info["price"]}.')
+					return Response.error(f'Price change in product {product} plan {plan_name}, previous price: {products[product_ids[product]]["plans"][plan_ids[product][plan_name]]["price"]}, new price: {plan_info["price"]}.')
 				
 
 		# add plan id to tempalte data.
@@ -181,7 +181,7 @@ class Stripe(_defaults_.Defaults):
 			self.template_data["STRIPE"]["PRODUCTS"][product] = {}
 			for plan_name, plan_info in plans.items():
 				try: plan_id = plan_ids[product][plan_name]
-				except KeyError: return r3sponse.error(f"Unable to find the id from plan {plan_name} product {product}.")
+				except KeyError: return Response.error(f"Unable to find the id from plan {plan_name} product {product}.")
 				try: favicon = plan_info["favicon"]
 				except KeyError: favicon = None
 				self.template_data["STRIPE"]["PRODUCTS"][product][plan_name] = {
@@ -194,42 +194,42 @@ class Stripe(_defaults_.Defaults):
 				}
 
 		# handler.
-		return r3sponse.success(f"Successfully checked the stripe products & plans.")
+		return Response.success(f"Successfully checked the stripe products & plans.")
 	def get_product_id(self, product=None):
 		try: plan_id = self.product_ids[product]
-		except KeyError: return r3sponse.error(f"Unable to find the id from product {product}.")
-		return r3sponse.success(f"Successfully retrieved the id from product {product}.", {
+		except KeyError: return Response.error(f"Unable to find the id from product {product}.")
+		return Response.success(f"Successfully retrieved the id from product {product}.", {
 		 	"id":plan_id,
 		})
 	def get_plan_id(self, product=None, plan=None):
 		try: plan_id = self.plan_ids[product][plan]
-		except KeyError: return r3sponse.error(f"Unable to find the id from plan {plan} product {product}.")
-		return r3sponse.success(f"Successfully retrieved the id from plan {plan} product {product}.", {
+		except KeyError: return Response.error(f"Unable to find the id from plan {plan} product {product}.")
+		return Response.success(f"Successfully retrieved the id from plan {plan} product {product}.", {
 		 	"id":plan_id,
 		})
 	def get_product_id_by_plan_id(self, plan_id):
 		for _product_, _plans_ in self._subscriptions_.items():
 			for _plan_name_, plan_info in _plans_.items():
 				if self.plan_ids[_product_][_plan_name_] == plan_id:
-					return r3sponse.success(f"Successfully retrieved the product id of plan id {plan_id}.", {
+					return Response.success(f"Successfully retrieved the product id of plan id {plan_id}.", {
 						"id":self.product_ids[_product_],
 					})
-		return r3sponse.success(f"Unable to find the the product id of plan id {plan_id}.")
+		return Response.success(f"Unable to find the the product id of plan id {plan_id}.")
 	def get_product_name(self, id=None):
 		for product, _id_ in self.product_ids.items():
 			if _id_ == id:
-				return r3sponse.success(f"Successfully retrieved the name of product {id}.", {
+				return Response.success(f"Successfully retrieved the name of product {id}.", {
 				 	"name":product,
 				})
-		return r3sponse.error(f"Unable to find the name of product {id}.")
+		return Response.error(f"Unable to find the name of product {id}.")
 	def get_plan_name(self, id=None):
 		for product, ids in self.plan_ids.items():
 			for plan, _id_ in ids.items():
 				if _id_ == id:
-					return r3sponse.success(f"Successfully retrieved the name of plan {id}.", {
+					return Response.success(f"Successfully retrieved the name of plan {id}.", {
 					 	"name":plan,
 					})
-		return r3sponse.error(f"Unable to find the name of plan {id}.")
+		return Response.error(f"Unable to find the name of plan {id}.")
 
 	# the defaults object.
 	class Defaults(syst3m.objects.Object):
@@ -277,7 +277,7 @@ class Stripe(_defaults_.Defaults):
 		):
 
 			# params.
-			response = r3sponse.parameters.check(
+			response = Response.parameters.check(
 				traceback=self.__traceback__(function="check"),
 				parameters={
 					"email":email,
@@ -295,7 +295,7 @@ class Stripe(_defaults_.Defaults):
 					break
 
 			# handler.
-			return r3sponse.success(f"Successfully checked the stripe customer existsance of user {email}.", {
+			return Response.success(f"Successfully checked the stripe customer existsance of user {email}.", {
 				"exists":exists,
 				"id":id,
 			})
@@ -305,7 +305,7 @@ class Stripe(_defaults_.Defaults):
 		):
 
 			# params.
-			response = r3sponse.parameters.check(
+			response = Response.parameters.check(
 				traceback=self.__traceback__(function="create"),
 				parameters={
 					"email":email,
@@ -316,7 +316,7 @@ class Stripe(_defaults_.Defaults):
 			response = self.check(email)
 			if not response.success: return response
 			if response["exists"]:
-				return r3sponse.error(f"User {email} already has a stripe customer [{response['id']}].")
+				return Response.error(f"User {email} already has a stripe customer [{response['id']}].")
 
 			# request.
 			try:
@@ -328,12 +328,12 @@ class Stripe(_defaults_.Defaults):
 				customer_id = response["id"]
 				success = response["object"] == "customer" and "cus_" in customer_id
 				if not success: raise KeyError("")
-				return r3sponse.success(f"Successfully created a stripe customer for user {email}.", {
+				return Response.success(f"Successfully created a stripe customer for user {email}.", {
 					"email":email,
 					"id":customer_id,
 				})
 			except KeyError:
-				return r3sponse.error(f"Failed to create stripe customer for user {email}, stripe response: {response}.")
+				return Response.error(f"Failed to create stripe customer for user {email}, stripe response: {response}.")
 
 			#
 		def delete(self, 
@@ -342,7 +342,7 @@ class Stripe(_defaults_.Defaults):
 		):
 
 			# params.
-			response = r3sponse.parameters.check(
+			response = Response.parameters.check(
 				traceback=self.__traceback__(function="delete"),
 				parameters={
 					"id":id,
@@ -358,11 +358,11 @@ class Stripe(_defaults_.Defaults):
 			try:
 				success = response["deleted"] == True
 				if not success: raise KeyError("")
-				return r3sponse.success(f"Successfully deleted stripe customer {id}.", {
+				return Response.success(f"Successfully deleted stripe customer {id}.", {
 					"id":id,
 				})
 			except KeyError:
-				return r3sponse.error(f"Failed to delete stripe customer {id}, stripe response: {response}.")
+				return Response.error(f"Failed to delete stripe customer {id}, stripe response: {response}.")
 
 			#
 		def get_id(self,
@@ -373,10 +373,10 @@ class Stripe(_defaults_.Defaults):
 			if not response.success: return response
 			for customer_id, info in response.customers.items():
 				if info["email"] == email:
-					return r3sponse.success(f"Successfully retrieved the stripe customer id of user {email}.", {
+					return Response.success(f"Successfully retrieved the stripe customer id of user {email}.", {
 						"id":customer_id,
 					})
-			return r3sponse.error(f"Unable to find a stripe customer for user {email}.")		
+			return Response.error(f"Unable to find a stripe customer for user {email}.")		
 		def get(self,
 			# the stripe customer id (optional).
 			id=None,
@@ -395,18 +395,18 @@ class Stripe(_defaults_.Defaults):
 			if id == None:
 				
 				# success.
-				return r3sponse.success(f"Successfully retrieved {len(customers)} customer(s).", {
+				return Response.success(f"Successfully retrieved {len(customers)} customer(s).", {
 					"customers":customers,
 				})
 
 			# by id.
 			else:
 				try:
-					return r3sponse.success(f"Successfully retrieved the customer [{id}].", {
+					return Response.success(f"Successfully retrieved the customer [{id}].", {
 						"customer":customers[id],
 					})
 				except KeyError:
-					return r3sponse.error(f"Unable to find customer [{id}].")
+					return Response.error(f"Unable to find customer [{id}].")
 
 			#
 		def get_cards(self, 
@@ -415,7 +415,7 @@ class Stripe(_defaults_.Defaults):
 		):
 
 			# params.
-			response = r3sponse.parameters.check(
+			response = Response.parameters.check(
 				traceback=self.__traceback__(function="get_cards"),
 				parameters={
 				"id":id,})
@@ -434,7 +434,7 @@ class Stripe(_defaults_.Defaults):
 			try:
 				data = response["data"]
 			except KeyError:
-				return r3sponse.error(f"Failed to retrieve the cards of user {id}, stripe response: {response}.")
+				return Response.error(f"Failed to retrieve the cards of user {id}, stripe response: {response}.")
 
 			# serialize.
 			cards = {}
@@ -450,7 +450,7 @@ class Stripe(_defaults_.Defaults):
 				cards[item["id"]] = item
 
 			# success.
-			return r3sponse.success(f"Successfully listed {len(cards)} card(s) of user {id}.", {
+			return Response.success(f"Successfully listed {len(cards)} card(s) of user {id}.", {
 				"cards":cards,
 			})
 
@@ -471,7 +471,7 @@ class Stripe(_defaults_.Defaults):
 		):
 
 			# params.
-			response = r3sponse.parameters.check(
+			response = Response.parameters.check(
 				traceback=self.__traceback__(function="create_card"),
 				parameters={
 					"id":id,
@@ -505,7 +505,7 @@ class Stripe(_defaults_.Defaults):
 				success = token["object"] == "token" and "tok_" in token_id
 				if not success: raise KeyError("")
 			except KeyError:
-				return r3sponse.error(f"Failed to create a card for user {id}, stripe response: {token}.")
+				return Response.error(f"Failed to create a card for user {id}, stripe response: {token}.")
 
 			# create request.
 			if len(cards) == 0:
@@ -524,7 +524,7 @@ class Stripe(_defaults_.Defaults):
 					success = response["deleted"] == True
 					if not success: raise KeyError("")
 				except KeyError:
-					return r3sponse.error(f"Failed to delete card {card} from user {id}, stripe response: {response}.")
+					return Response.error(f"Failed to delete card {card} from user {id}, stripe response: {response}.")
 
 				# create.
 				try:
@@ -536,13 +536,13 @@ class Stripe(_defaults_.Defaults):
 				card_id = response["id"]
 				success = response["object"] == "card" and "card_" in card_id
 				if not success: raise KeyError("")
-				return r3sponse.success(f"Successfully saved payment method ************{response['last4']}.", {
+				return Response.success(f"Successfully saved payment method ************{response['last4']}.", {
 					"customer_id":id,
 					"card_id":card_id,
 					#"source_id":"@@"
 				})
 			except KeyError:
-				return r3sponse.error(f"Failed to create a card for user {id}, stripe response: {response}.")
+				return Response.error(f"Failed to create a card for user {id}, stripe response: {response}.")
 
 			#
 		def delete_card(self, 
@@ -551,7 +551,7 @@ class Stripe(_defaults_.Defaults):
 		):
 			
 			# params.
-			response = r3sponse.parameters.check(
+			response = Response.parameters.check(
 				traceback=self.__traceback__(function="delete_card"),
 				parameters={
 					"id":id,
@@ -562,7 +562,7 @@ class Stripe(_defaults_.Defaults):
 			response = self.get_cards(id=id)
 			if not response.success: return response
 			if len(response.cards) == 0:
-				return r3sponse.error("There are no payment methods stored.")
+				return Response.error("There are no payment methods stored.")
 			card = list(response.cards,keys())[0]
 
 			# delete request.
@@ -574,11 +574,11 @@ class Stripe(_defaults_.Defaults):
 			try:
 				success = response["deleted"] == True
 				if not success: raise KeyError("")
-				return r3sponse.success(f"Successfully deleted card {id}.", {
+				return Response.success(f"Successfully deleted card {id}.", {
 					"card_id":card_id,
 				})
 			except KeyError:
-				return r3sponse.error(f"Failed to delete card {card} from user {id}, stripe response: {response}.")
+				return Response.error(f"Failed to delete card {card} from user {id}, stripe response: {response}.")
 
 	# the subscriptions object.
 	class Subscriptions(syst3m.objects.Object):
@@ -600,8 +600,8 @@ class Stripe(_defaults_.Defaults):
 		):
 
 			# params.
-			if email == None and customer_id == None: return r3sponse.error("Specify one of the following parameters: [email, customer_id].")
-			if not isinstance(plans, list): return r3sponse.error("The plans <website.stripe.subscriptions.create:plans> parameter requires to be a list.")
+			if email == None and customer_id == None: return Response.error("Specify one of the following parameters: [email, customer_id].")
+			if not isinstance(plans, list): return Response.error("The plans <website.stripe.subscriptions.create:plans> parameter requires to be a list.")
 
 			# get customer id.
 			if customer_id == None:
@@ -625,11 +625,11 @@ class Stripe(_defaults_.Defaults):
 				subscription_id = response["id"]
 				success = response["object"] == "subscription" and response["status"] == "active"
 				if not success: raise KeyError("")
-				return r3sponse.success(f"Successfully created subscription {id}.", {
+				return Response.success(f"Successfully created subscription {id}.", {
 					"id":subscription_id,
 				})
 			except KeyError:
-				return r3sponse.error(f"Failed to create subscription {id}, stripe response: {response}.")
+				return Response.error(f"Failed to create subscription {id}, stripe response: {response}.")
 
 			#
 		def get(self, 
@@ -686,22 +686,22 @@ class Stripe(_defaults_.Defaults):
 			if email == None:
 				
 				# success.
-				return r3sponse.success("Successfully retrieved the subscriptions.", {
+				return Response.success("Successfully retrieved the subscriptions.", {
 					"subscriptions":subscriptions,
 				})
 
 			# by email.
 			else:
 				try:
-					return r3sponse.success(f"Successfully retrieved the subscriptions of user [{email}].", {
+					return Response.success(f"Successfully retrieved the subscriptions of user [{email}].", {
 						"subscriptions":subscriptions[email],
 					})
 				except KeyError:
-					return r3sponse.error(f"No subscriptions found for user [{email}].")
+					return Response.error(f"No subscriptions found for user [{email}].")
 
 			# error.
 			#except Exception as e:
-			#	return r3sponse.error(f"Failed to retrieve the subscriptions, error: {e}.")
+			#	return Response.error(f"Failed to retrieve the subscriptions, error: {e}.")
 
 			#
 		def cancel(self, 
@@ -717,7 +717,7 @@ class Stripe(_defaults_.Defaults):
 			
 			# check options.
 			if subscription_id == None and (email == None or plan == None):
-				return r3sponse.error(f"Define option 1 parameter [subscription_id], option 2: parameters [email, plan].")	
+				return Response.error(f"Define option 1 parameter [subscription_id], option 2: parameters [email, plan].")	
 
 			# get subscription id.
 			if subscription_id == None:
@@ -728,7 +728,7 @@ class Stripe(_defaults_.Defaults):
 						subscription_id = _subscription_id_
 						break
 				if subscription_id == None:
-					return r3sponse.error(f"Unable to find any subscriptions for user {email} plan {plan}.")	
+					return Response.error(f"Unable to find any subscriptions for user {email} plan {plan}.")	
 
 			# delete.
 			try:
@@ -738,12 +738,12 @@ class Stripe(_defaults_.Defaults):
 
 			# handle success.
 			if success == True:
-				return r3sponse.success(f"Successfully canceled the subscription for user [{email}] from plan [{plan}].")
+				return Response.success(f"Successfully canceled the subscription for user [{email}] from plan [{plan}].")
 			else:
 				if isinstance(success, str):
-					return r3sponse.error(f"Failed to cancel the subscription for user [{email}] from plan [{plan}], error: {success}.")
+					return Response.error(f"Failed to cancel the subscription for user [{email}] from plan [{plan}], error: {success}.")
 				else:
-					return r3sponse.error(f"Failed to cancel the subscription for user [{email}] from plan [{plan}]")
+					return Response.error(f"Failed to cancel the subscription for user [{email}] from plan [{plan}]")
 
 			#
 	
@@ -777,7 +777,7 @@ class Stripe(_defaults_.Defaults):
 			try:
 				data = response["data"]
 			except KeyError:
-				return r3sponse.error(f"Failed to retrieve the plans, stripe response: {response}.")
+				return Response.error(f"Failed to retrieve the plans, stripe response: {response}.")
 
 			# get subscriptions.
 			subscriptions = {}
@@ -803,21 +803,21 @@ class Stripe(_defaults_.Defaults):
 					item["price"] = item["unit_amount"]/100 # round(item["unit_amount"]/100,2)
 					plans[item["id"]] = item
 			else: 
-				return r3sponse.error(f"Failed to retrieve the plans, unkown data instance, data: {data}.")
+				return Response.error(f"Failed to retrieve the plans, unkown data instance, data: {data}.")
 
 			# by no id.
 			if id == None:
-				return r3sponse.success(f"Successfully listed {len(plans)} plan(s).", {
+				return Response.success(f"Successfully listed {len(plans)} plan(s).", {
 					"plans":plans,
 				})
 			# by id.
 			else:
 				try:
-					return r3sponse.success(f"Successfully listed the plan {id}.", {
+					return Response.success(f"Successfully listed the plan {id}.", {
 						"plans":plans[id],
 					})
 				except KeyError:
-					return r3sponse.error(f"Unable to find plan {id}.")
+					return Response.error(f"Unable to find plan {id}.")
 		def create(self,
 			# the plan id.
 			id=None,
@@ -832,7 +832,7 @@ class Stripe(_defaults_.Defaults):
 		):
 
 			# params.
-			response = r3sponse.parameters.check(
+			response = Response.parameters.check(
 				traceback=self.__traceback__(function="create"),
 				parameters={
 					"id":id,
@@ -858,7 +858,7 @@ class Stripe(_defaults_.Defaults):
 				plan_id = response["id"]
 				success = response["active"] == True
 				if not success: raise KeyError("")
-				return r3sponse.success(f"Successfully created product {id}.", {
+				return Response.success(f"Successfully created product {id}.", {
 					"name":id,
 					"id":plan_id,
 					"price":price,
@@ -866,7 +866,7 @@ class Stripe(_defaults_.Defaults):
 					"product":product,
 				})
 			except KeyError:
-				return r3sponse.error(f"Failed to create product {id}, stripe response: {response}.")
+				return Response.error(f"Failed to create product {id}, stripe response: {response}.")
 
 	# the products object.
 	class Products(syst3m.objects.Object):
@@ -900,7 +900,7 @@ class Stripe(_defaults_.Defaults):
 			try:
 				data = response["data"]
 			except KeyError:
-				return r3sponse.error(f"Failed to retrieve the products, stripe response: {response}.")
+				return Response.error(f"Failed to retrieve the products, stripe response: {response}.")
 
 			# get plans.
 			plans = {}
@@ -921,21 +921,21 @@ class Stripe(_defaults_.Defaults):
 						item["plans"] = product_plans
 					products[item["id"]] = item
 			else: 
-				return r3sponse.error(f"Failed to retrieve the products, unkown data instance, data: {data}.")
+				return Response.error(f"Failed to retrieve the products, unkown data instance, data: {data}.")
 
 			# by no id.
 			if id == None:
-				return r3sponse.success(f"Successfully listed {len(products)} product(s).", {
+				return Response.success(f"Successfully listed {len(products)} product(s).", {
 						"products":products,
 					})
 			# by id.
 			else:
 				try:
-					return r3sponse.success(f"Successfully listed the product {id}.", {
+					return Response.success(f"Successfully listed the product {id}.", {
 						"products":products[id],
 					})
 				except KeyError:
-					return r3sponse.error(f"Unable to find product {id}.")
+					return Response.error(f"Unable to find product {id}.")
 		def create(self,
 			# the product id.
 			id=None,
@@ -944,7 +944,7 @@ class Stripe(_defaults_.Defaults):
 		):
 			
 			# params.
-			response = r3sponse.parameters.check(
+			response = Response.parameters.check(
 				traceback=self.__traceback__(function="create"),
 				parameters={
 					"id":id,
@@ -966,9 +966,9 @@ class Stripe(_defaults_.Defaults):
 				id = response["id"]
 				success = response["active"] == True
 				if not success: raise KeyError("")
-				return r3sponse.success(f"Successfully created product {id}.", {
+				return Response.success(f"Successfully created product {id}.", {
 					"name":id,
 					"id":id,
 				})
 			except KeyError:
-				return r3sponse.error(f"Failed to create product {id}, stripe response: {response}.")
+				return Response.error(f"Failed to create product {id}, stripe response: {response}.")

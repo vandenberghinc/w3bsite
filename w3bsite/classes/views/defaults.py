@@ -67,7 +67,7 @@ class Request(syst3m.objects.Object):
 
 		# defaultss.
 		syst3m.objects.Object.__init__(self)
-		self.parameters = r3sponse.parameters
+		self.parameters = Response.parameters
 
 		# variables.
 		self.base = base
@@ -90,9 +90,9 @@ class Request(syst3m.objects.Object):
 		except Exception as e: return self.response(utils.utils.catch_error(e))
 		return self.response(response)
 	def success(self, message, arguments={}):
-		return r3sponse.success(message, arguments, django=True)
+		return Response.success(message, arguments, django=True)
 	def error(self, error):
-		return r3sponse.error(error, django=True)
+		return Response.error(error, django=True)
 	def response(self, response):
 		if isinstance(response, JsonResponse):
 			return response
@@ -102,7 +102,7 @@ class Request(syst3m.objects.Object):
 			except AttributeError:
 				return JsonResponse(response)
 	def maintenance(self, request=None):
-		return r3sponse.error("Domain is under maintenance.")
+		return Response.error("Domain is under maintenance.")
 	def permission_denied(self, request=None):
 		return self.error("Permission denied.")
 	# do not forget the self.parameters's functions.
@@ -128,7 +128,7 @@ class View(syst3m.objects.Object):
 
 		# defaults.
 		syst3m.objects.Object.__init__(self)
-		self.parameters = r3sponse.parameters
+		self.parameters = Response.parameters
 
 		# vars.
 		self.base = base
@@ -164,11 +164,11 @@ class View(syst3m.objects.Object):
 			if Files.exists(path):
 				path = Files.join(path, "html")
 				if not Files.exists(path): 
-					r3sponse.log(f"&ORANGE&Creating&END& html base [{path}].")
+					Response.log(f"&ORANGE&Creating&END& html base [{path}].")
 					Files.create(path, directory=True)
 				path = Files.join("apps", self.html)
 				if not Files.exists(path):
-					r3sponse.log(f"&ORANGE&Creating&END& default html view [{path}].")
+					Response.log(f"&ORANGE&Creating&END& default html view [{path}].")
 					base = FilePath(path).base(back=1)
 					if not Files.exists(base): Files.create(base, directory=True)
 					os.system(f"cp {SOURCE_PATH}/example/view.html {path}")
@@ -185,7 +185,7 @@ class View(syst3m.objects.Object):
 	):
 		if template_data == None: template_data = self.template_data
 		if html == None: html = self.html
-		if isinstance(template_data, (Dictionary, r3sponse.ResponseObject)): 
+		if isinstance(template_data, (Dictionary, Response.ResponseObject)): 
 			template_data = template_data.raw()
 		return render(request, html, template_data)
 	def error(self, 
@@ -213,17 +213,17 @@ class View(syst3m.objects.Object):
 			"redirect":redirect,
 			"redirect_button":redirect_button,
 		}
-		if isinstance(template_data, (Dictionary, r3sponse.ResponseObject)): 
+		if isinstance(template_data, (Dictionary, Response.ResponseObject)): 
 			template_data = template_data.raw()
 		return render(request, f"w3bsite/classes/apps/defaults/html/error.html", template_data)
 	def maintenance(self, request, template_data=None):
 		if template_data == None: template_data = self.template_data
-		if isinstance(template_data, (Dictionary, r3sponse.ResponseObject)): 
+		if isinstance(template_data, (Dictionary, Response.ResponseObject)): 
 			template_data = template_data.raw()
 		return render(request, f"w3bsite/classes/apps/defaults/html/maintenance.html", template_data)
 	def permission_denied(self, request, template_data=None):
 		if template_data == None: template_data = self.template_data
-		if isinstance(template_data, (Dictionary, r3sponse.ResponseObject)): 
+		if isinstance(template_data, (Dictionary, Response.ResponseObject)): 
 			template_data = template_data.raw()
 		return render(request, f"w3bsite/classes/apps/defaults/html/permission_denied.html", template_data)
 	# do not forget the self.parameters's functions.

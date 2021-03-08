@@ -37,7 +37,7 @@ class Synchronize(threading.Thread):
 			if new:
 				last = date.timestamp
 				response = self.users.synchronize()
-				r3sponse.log(response, log_level=-1, save_errors=True)
+				Response.log(response, log_level=-1, save_errors=True)
 			time.sleep(self.sleep_interval*60)
 	def get_costs(self, synchronize_interval=None, total_users=None):
 		monthly_requests = ( total_users * (( 60 * 24 ) / synchronize_interval )) * 30.5

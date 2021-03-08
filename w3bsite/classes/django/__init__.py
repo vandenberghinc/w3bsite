@@ -5,13 +5,13 @@
 from w3bsite.classes.config import *
 from w3bsite.classes import utils
 from w3bsite.classes import defaults as _defaults_
-if not syst3m.env.get("MIGRATIONS", format=bool, default=False):
+if not Environment.get("MIGRATIONS", format=bool, default=False):
 	try:
 		from django.contrib.auth.models import User as DjangoUser
 		from django.contrib.auth import authenticate, login
 		from django.contrib.auth import login as _login_
 	except Exception as e:
-		if syst3m.env.get_boolean("DJANGO_RUNNING") == True:
+		if Environment.get_boolean("DJANGO_RUNNING") == True:
 			raise ValueError(e)
 
 # the django object class.
@@ -38,13 +38,13 @@ class Django(_defaults_.Defaults):
 	def start(self, host="127.0.0.1", port="8000", production=False):
 
 		# import main.
-		syst3m.env.export(export="__defaults__/env/json", env={
+		Environment.export(export="__defaults__/env/json", env={
 			"PRODUCTION": str(production),
 			"INTERACTIVE":False,
 		})
 		self.migrations()
-		if syst3m.defaults.options.log_level >= 1:
-			r3sponse.log(f"Starting {self.name}.", save=True)
+		if Defaults.options.log_level >= 1:
+			Response.log(f"Starting {self.name}.", save=True)
 		os.chdir(self.root)
 		import manage
 		sys.argv = [f"{self.root}/manage.py", "runserver", f"{host}:{port}"]
@@ -89,7 +89,7 @@ class Django(_defaults_.Defaults):
 		'''
 
 		# handlers.
-		return r3sponse.success(f"Successfully stopped website [{self.root}].")
+		return Response.success(f"Successfully stopped website [{self.root}].")
 
 		#
 	def create(self):
@@ -132,45 +132,45 @@ class Django(_defaults_.Defaults):
 		#os.system(f"chmod +x {path}")
 
 		# handlers.
-		return r3sponse.success(f"Successfully created django website [{self.root}].")
+		return Response.success(f"Successfully created django website [{self.root}].")
 	def create_app(self, name="home"):
 
 		# checks.
 		path = f"{self.root}/apps/{name}"
 		if Files.exists(path):
-			return r3sponse.error(f"App [{name}] already exists.")
+			return Response.error(f"App [{name}] already exists.")
 
 		# copy.
 		os.system(f"cp -r {SOURCE_PATH}/example/app {path}")
 
 		# handlers.
-		return r3sponse.success(f"Successfully created app [{name}].")
-	def migrations(self, forced=False, log_level=syst3m.defaults.options.log_level):
+		return Response.success(f"Successfully created app [{name}].")
+	def migrations(self, forced=False, log_level=Defaults.options.log_level):
 		if not Files.exists(f"{self.database}/data/"): os.mkdir(f"{self.database}/data/")
 		if forced or not Files.exists(f"{self.database}/data/db.sqlite3"):
-			r3sponse.log(f"Applying {ALIAS} webserver migrations.")
-			syst3m.env.export(export="__defaults__/env/json", env={"MIGRATIONS": True,})
+			Response.log(f"Applying {ALIAS} webserver migrations.")
+			Environment.export(export="__defaults__/env/json", env={"MIGRATIONS": True,})
 			os.chdir(self.root)
 			#import manage
 			#old_argv = list(sys.argv)
 			#sys.argv = [f"{self.root}/manage.py", "migrate"]
 			#manage.main()
 			os.system(f"cd {self.root} && python3 ./manage.py migrate")
-			syst3m.env.export(export="__defaults__/env/json", env={"MIGRATIONS": False,})
+			Environment.export(export="__defaults__/env/json", env={"MIGRATIONS": False,})
 			#sys.argv = old_argv
-		return r3sponse.success(f"Successfully checked the migrations.")
-	def collect_static(self, log_level=syst3m.defaults.options.log_level):
+		return Response.success(f"Successfully checked the migrations.")
+	def collect_static(self, log_level=Defaults.options.log_level):
 		if log_level >= 1:
-			r3sponse.log(f"Checking the {ALIAS} webserver migrations.")
+			Response.log(f"Checking the {ALIAS} webserver migrations.")
 		if not Files.exists(f"{self.database}/data/"): os.mkdir(f"{self.database}/data/")
-		syst3m.env.export(export="__defaults__/env/json", env={
+		Environment.export(export="__defaults__/env/json", env={
 			"MIGRATIONS": str(True),
 		})
 		os.system(f"cd {self.root}/ && . __defaults__/env/bash && export MIGRATIONS='true' && ./manage.py collectstatic" )
-		syst3m.env.export(export="__defaults__/env/json", env={
+		Environment.export(export="__defaults__/env/json", env={
 			"MIGRATIONS": str(False),
 		})
-		return r3sponse.success(f"Successfully checked the static files.")
+		return Response.success(f"Successfully checked the static files.")
 
 # the django database users.
 class Users(_defaults_.Defaults):
@@ -192,7 +192,7 @@ class Users(_defaults_.Defaults):
 		superuser=False,
 	):
 		# check arguments.
-		response = r3sponse.parameters.check(
+		response = Response.parameters.check(
 			traceback=self.__traceback__(function="create"),
 			parameters={
 				"username":username,
@@ -209,12 +209,12 @@ class Users(_defaults_.Defaults):
 			django_user.save()
 
 			# success.
-			return r3sponse.success(f"Successfully created django user {username}.", {
+			return Response.success(f"Successfully created django user {username}.", {
 				"user":django_user,
 			})
 
 		# error.
-		except Exception as e:  return r3sponse.error(f"Failed to create django user {username}, error: {e}.")
+		except Exception as e:  return Response.error(f"Failed to create django user {username}, error: {e}.")
 
 		#
 	def update(self,
@@ -227,7 +227,7 @@ class Users(_defaults_.Defaults):
 		superuser=None,
 	):
 		# check arguments.
-		response = r3sponse.parameters.check(
+		response = Response.parameters.check(
 			traceback=self.__traceback__(function="update"),
 			parameters={
 				"username":username,
@@ -257,12 +257,12 @@ class Users(_defaults_.Defaults):
 			if edits > 0: django_user.save()
 
 			# success.
-			return r3sponse.success(f"Successfully updated django user {username}.", {
+			return Response.success(f"Successfully updated django user {username}.", {
 				#"user":django_user,
 			})
 
 		# error.
-		except Exception as e:  return r3sponse.error(f"Failed to update django user {username}, error: {e}.")
+		except Exception as e:  return Response.error(f"Failed to update django user {username}, error: {e}.")
 
 		#
 	def authenticate(self, 
@@ -276,7 +276,7 @@ class Users(_defaults_.Defaults):
 	):
 
 		# check arguments.
-		response = r3sponse.parameters.check(
+		response = Response.parameters.check(
 			traceback=self.__traceback__(function="authenticate"),
 			parameters={
 				"username":username,
@@ -290,7 +290,7 @@ class Users(_defaults_.Defaults):
 			if user is not None: a=1
 			else:
 				response["error"] = f"Invalid verification."
-				r3sponse.log(f"Invalid verification attempt for user [{username}] ip address [{ip}].")
+				Response.log(f"Invalid verification attempt for user [{username}] ip address [{ip}].")
 				return response
 
 			# success.
@@ -298,17 +298,17 @@ class Users(_defaults_.Defaults):
 				_login_(request, user)
 
 			# success.
-			return r3sponse.success(f"Successfully authenticated user {username}.", {
+			return Response.success(f"Successfully authenticated user {username}.", {
 				#"user":django_user,
 			})
 		# error.
-		except Exception as e:  return r3sponse.error(f"Failed to login user {username}, error: {e}.")
+		except Exception as e:  return Response.error(f"Failed to login user {username}, error: {e}.")
 
 		#
 	def delete(self, username=None):
 
 		# check arguments.
-		response = r3sponse.parameters.check(
+		response = Response.parameters.check(
 			traceback=self.__traceback__(function="delete"),
 			parameters={
 				"username":username,
@@ -321,12 +321,12 @@ class Users(_defaults_.Defaults):
 			django_user.delete()
 
 			# success.
-			return r3sponse.success(f"Successfully deleted django user {username}.", {
+			return Response.success(f"Successfully deleted django user {username}.", {
 				#"user":django_user,
 			})
 
 		# error.
-		except Exception as e:  return r3sponse.error(f"Failed to delete django user {username}, error: {e}.")
+		except Exception as e:  return Response.error(f"Failed to delete django user {username}, error: {e}.")
 
 		#
 	def get(self, 
@@ -345,7 +345,7 @@ class Users(_defaults_.Defaults):
 				django_user = DjangoUser.objects.get(username=username)
 
 			# error.
-			except Exception as e:  return r3sponse.error(f"Failed to retrieve django user {username}, error: {e}.")
+			except Exception as e:  return Response.error(f"Failed to retrieve django user {username}, error: {e}.")
 
 		# by email.
 		elif email not in [None,"None"]:
@@ -356,13 +356,13 @@ class Users(_defaults_.Defaults):
 				django_user = DjangoUser.objects.get(email=email)
 
 			# error.
-			except Exception as e:  return r3sponse.error(f"Failed to retrieve django user {email}, error: {e}.")
+			except Exception as e:  return Response.error(f"Failed to retrieve django user {email}, error: {e}.")
 
 		# invalid.
-		else: return r3sponse.error(f"Define one of the following parameters: [username, email].")
+		else: return Response.error(f"Define one of the following parameters: [username, email].")
 
 		# success.
-		return r3sponse.success(f"Successfully retrieved django user {identifier}.", {
+		return Response.success(f"Successfully retrieved django user {identifier}.", {
 			"user":django_user,
 			"username":django_user.username,
 			"email":django_user.email,
@@ -390,12 +390,12 @@ class Users(_defaults_.Defaults):
 				exists = DjangoUser.objects.filter(username=username).exists()
 
 				# success.
-				return r3sponse.success(f"Successfully checked the existsance of django user {username}.", {
+				return Response.success(f"Successfully checked the existsance of django user {username}.", {
 					"exists":exists,
 				})
 
 			# error.
-			except Exception as e:  return r3sponse.error(f"Failed to check the existsance of django user {username}, error: {e}.")
+			except Exception as e:  return Response.error(f"Failed to check the existsance of django user {username}, error: {e}.")
 
 		# by email.
 		elif email != None:
@@ -406,12 +406,12 @@ class Users(_defaults_.Defaults):
 			response = self.get(email=email)
 			if response.error != None and "User matching query does not exist" not in response.error: return response
 			elif response.error != None and "User matching query does not exist" in response.error: exists = False
-			return r3sponse.success(f"Successfully checked the existsance of django user {identifier}.", {
+			return Response.success(f"Successfully checked the existsance of django user {identifier}.", {
 				"exists":exists,
 			})
 
 		# invalid.
-		else: return r3sponse.error(f"Define one of the following parameters: [username, email].")
+		else: return Response.error(f"Define one of the following parameters: [username, email].")
 
 
 		#

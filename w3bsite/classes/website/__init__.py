@@ -8,7 +8,7 @@ from w3bsite.classes import database as _database_
 import django as pypi_django
 
 # the main website class.
-class Website(cl1.CLI,syst3m.objects.Traceback):
+class Website(CLI.CLI,syst3m.objects.Traceback):
 	def __init__(self,
 		#
 		# General.
@@ -159,7 +159,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		id_by_username=True,
 		#
 		# the logs.
-		log_level=syst3m.defaults.options.log_level,
+		log_level=Defaults.options.log_level,
 		# styling options.
 		styling={},
 		#
@@ -254,7 +254,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 	def initialize(self):
 
 		# overall arguments.
-		response = r3sponse.parameters.check(
+		response = Response.parameters.check(
 			traceback=self.__traceback__(),
 			parameters={
 				"root":self.root,
@@ -270,7 +270,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 
 		# namecheap arguments.
 		if self.namecheap_enabled:
-			response = r3sponse.parameters.check(
+			response = Response.parameters.check(
 				traceback=self.__traceback__(),
 				parameters={
 					"author":self.author,
@@ -286,7 +286,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 
 		# firebase arguments.
 		if self.firebase_enabled:
-			response = r3sponse.parameters.check(
+			response = Response.parameters.check(
 				traceback=self.__traceback__(),
 				parameters={
 					"firebase_admin":self.firebase_admin,
@@ -296,7 +296,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 
 		# stripe arguments.
 		if self.stripe_enabled:
-			response = r3sponse.parameters.check(
+			response = Response.parameters.check(
 				traceback=self.__traceback__(),
 				parameters={
 					"stripe_secret_key":self.stripe_secret_key,
@@ -308,7 +308,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 
 		# email arguments.
 		if self.email_enabled:
-			response = r3sponse.parameters.check(
+			response = Response.parameters.check(
 				traceback=self.__traceback__(),
 				parameters={
 					"email_address":self.email_address,
@@ -320,7 +320,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 
 		# remote: vps arguments.
 		if self.remote in ["vps"]:
-			response = r3sponse.parameters.check(
+			response = Response.parameters.check(
 				traceback=self.__traceback__(),
 				parameters={
 					"vps_ip":self.vps_ip,
@@ -337,9 +337,9 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		# environment for settings.py.
 		os.chdir(gfp.clean(self.root))
 		if not os.path.exists("__defaults__/env"): os.mkdir("__defaults__/env")
-		SECRET_KEY = syst3m.env.get("DJANGO_SECRET_KEY", default=None)
+		SECRET_KEY = Environment.get("DJANGO_SECRET_KEY", default=None)
 		if SECRET_KEY == None:  SECRET_KEY = String().generate(length=128, capitalize=True, digits=True, special=True)
-		syst3m.env.export(export="__defaults__/env/json", env={
+		Environment.export(export="__defaults__/env/json", env={
 			"DJANGO_SECRET_KEY":SECRET_KEY,
 			"WEBSITE_BASE":gfp.base(SOURCE_PATH),
 			"DOMAIN":str(self.domain),
@@ -464,7 +464,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		# objects.
 		self.security = security.Security(
 			defaults=self.defaults,)
-		if self.firebase_enabled and syst3m.defaults.vars.os not in ["macos"]:
+		if self.firebase_enabled and Defaults.vars.os not in ["macos"]:
 			from w3bsite.classes import firebase
 			self.firebase = firebase.Firebase(
 				key=self.firebase_admin,
@@ -558,7 +558,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 			defaults=self.defaults,)
 
 		# defaults.
-		cl1.CLI.__init__(self,
+		CLI.CLI.__init__(self,
 			modes={
 				"Development":"*chapter*",
 				"    --create":"Create the website.",
@@ -588,18 +588,18 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		)
 
 		# logs.
-		if syst3m.defaults.options.log_level >= 1:
+		if Defaults.options.log_level >= 1:
 			print(f"Website: {self.name}")
 			print(f" * domain: {self.domain}")
 			print(f" * root: {self.root}")
 			print(f" * library: {self.library}")
 			print(f" * database: {self.database}")
-			print(f" * pwd: {syst3m.defaults.pwd()}")
+			print(f" * pwd: {Defaults.pwd()}")
 			print(f" * remote: {self.remote}")
 			print(f" * live: {self.live}")
 
 		# handler.
-		return r3sponse.success(f"Successfully initialized website [{self.name}].")
+		return Response.success(f"Successfully initialized website [{self.name}].")
 
 		#
 	def cli(self):
@@ -611,10 +611,10 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		if self.remote in ["vps"] and not self.vps.live:
 			if not ssht00ls_agent.generated:
 				response = ssht00ls_agent.generate()
-				if not response.success: self.stop(response=response, json=syst3m.defaults.options.json)
+				if not response.success: self.stop(response=response, json=Defaults.options.json)
 			elif not ssht00ls_agent.activated:
 				response = ssht00ls_agent.activate()
-				if not response.success: self.stop(response=response, json=syst3m.defaults.options.json)
+				if not response.success: self.stop(response=response, json=Defaults.options.json)
 
 		# help.
 		if self.arguments.present("-h"):
@@ -622,19 +622,19 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 
 		# version.
 		elif self.arguments.present(['--version']):
-			self.stop(message=f"{ALIAS} version:"+Files.load(f"{SOURCE_PATH}/.version.py").replace("\n",""), json=syst3m.defaults.options.json)
+			self.stop(message=f"{ALIAS} version:"+Files.load(f"{SOURCE_PATH}/.version.py").replace("\n",""), json=Defaults.options.json)
 
 		# developer start.
 		elif self.arguments.present("--start") and self.arguments.present("--developer"):
 			response = self.django.start()
-			r3sponse.log(response=response)
+			Response.log(response=response)
 
 		# start.
 		elif self.arguments.present('--start'):
 			if not self.live: 
-				r3sponse.log(error="The executing library is not live.")
+				Response.log(error="The executing library is not live.")
 				sys.exit(1)
-			syst3m.defaults.operating_system(supported=["linux"])
+			Defaults.operating_system(supported=["linux"])
 			command = ""
 			for i in ["gunicorn.socket", "gunicorn", "nginx"]:
 				command += f"sudo systemctl start {i} &&"
@@ -648,9 +648,9 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		# stop.
 		elif self.arguments.present('--stop'):
 			if not self.live: 
-				r3sponse.log(error="The executing library is not live.")
+				Response.log(error="The executing library is not live.")
 				sys.exit(1)
-			syst3m.defaults.operating_system(supported=["linux"])
+			Defaults.operating_system(supported=["linux"])
 			command = ""
 			for i in ["gunicorn.socket", "gunicorn", "nginx"]:
 				command += f"sudo systemctl stop {i} &&"
@@ -664,9 +664,9 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		# restart.
 		elif self.arguments.present('--restart'):
 			if not self.live: 
-				r3sponse.log(error="The executing library is not live.")
+				Response.log(error="The executing library is not live.")
 				sys.exit(1)
-			syst3m.defaults.operating_system(supported=["linux"])
+			Defaults.operating_system(supported=["linux"])
 			command = ""
 			for i in ["gunicorn.socket", "gunicorn", "nginx"]:
 				command += f"sudo systemctl restart {i} &&"
@@ -680,23 +680,23 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		# status.
 		elif self.arguments.present('--status'):
 			if not self.live: 
-				r3sponse.log(error="The executing library is not live.")
+				Response.log(error="The executing library is not live.")
 				sys.exit(1)
-			syst3m.defaults.operating_system(supported=["linux"])
+			Defaults.operating_system(supported=["linux"])
 			os.system("sudo systemctl status gunicorn")
 
 		# reset logs.
 		elif self.arguments.present('--reset-logs'):
 			if not self.live: 
-				r3sponse.log(error="The executing library is not live.")
+				Response.log(error="The executing library is not live.")
 				sys.exit(1)
 			os.system(f"echo '' > {self.database}/logs/logs.txt")
-			r3sponse.log("Successfully resetted the logs.", log_level=0, save=True)
+			Response.log("Successfully resetted the logs.", log_level=0, save=True)
 
 		# tail.
 		elif self.arguments.present('--tail'):
 			if not self.live: 
-				r3sponse.log(error="The executing library is not live.")
+				Response.log(error="The executing library is not live.")
 				sys.exit(1)
 			if self.arguments.present(["--nginx", "-n"]):
 				if self.arguments.present(["--debug", "-d"]):
@@ -712,32 +712,32 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 				code_update=self.arguments.present("--code-update"),
 				reinstall=self.arguments.present("--reinstall"),
 			)
-			r3sponse.log(response=response)
+			Response.log(response=response)
 
 		# generate tls.
 		elif self.arguments.present("--generate-tls"):
 			response = self.deployment.generate_tls()
-			r3sponse.log(response=response)
+			Response.log(response=response)
 
 		# activate tls.
 		elif self.arguments.present("--activate-tls"):
 			response = self.deployment.activate_tls()
-			r3sponse.log(response=response)
+			Response.log(response=response)
 
 		# bundle tls.
 		elif self.arguments.present("--bundle-tls"):
 			response = self.deployment.bundle_tls(directory=self.arguments.get("--bundle-tls"))
-			r3sponse.log(response=response)
+			Response.log(response=response)
 		
 		# create.
 		elif self.arguments.present("--create"):
 			response = self.create()
-			r3sponse.log(response=response)
+			Response.log(response=response)
 
 		# create app.
 		elif self.arguments.present("--create-app"):
 			response = self.django.create_app(name=self.arguments.get("--create-app"))
-			r3sponse.log(response=response)
+			Response.log(response=response)
 
 		# generate aes passphrase.
 		elif self.arguments.present("--generate-aes"):
@@ -791,9 +791,9 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		if not code_update:
 			response = self.check_dns(log_level=log_level)
 			if response.error != None: return response
-			return r3sponse.success(f"Successfully deployed website https://{self.domain}.")
+			return Response.success(f"Successfully deployed website https://{self.domain}.")
 		else:
-			return r3sponse.success(f"Successfully deployed the code updates of website https://{self.domain}.")
+			return Response.success(f"Successfully deployed the code updates of website https://{self.domain}.")
 
 		#
 	def check_dns(self, log_level=0):
@@ -810,14 +810,14 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 				if not response.success: return response
 
 		# handlers.
-		return r3sponse.success(f"Successfully checked the dns settings of website [{self.name}].", log_level=log_level)
+		return Response.success(f"Successfully checked the dns settings of website [{self.name}].", log_level=log_level)
 
 		#
 	def create(self):
 
 		# create root.
 		if not Files.exists(self.root):
-			#return r3sponse.error(f"Website [{self.root}] already exists.")
+			#return Response.error(f"Website [{self.root}] already exists.")
 			os.mkdir(self.root)
 
 		# create django.
@@ -833,7 +833,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 		if response.error != None: return response
 
 		# handlers.
-		return r3sponse.success(f"Successfully created website [{self.name}].")
+		return Response.success(f"Successfully created website [{self.name}].")
 
 		#
 	def serialize(self, save=False):
@@ -995,7 +995,7 @@ class Website(cl1.CLI,syst3m.objects.Traceback):
 			# the root path.
 			root=self.root,)
 		required = False
-		migrations = syst3m.env.get("MIGRATIONS", format=bool, default=False)
+		migrations = Environment.get("MIGRATIONS", format=bool, default=False)
 		if self.firebase_enabled and not migrations: required = True
 		self.firebase_admin = {
 			"type":local_security.get_secret_env("FIREBASE_ADMIN_"+"type".upper(), default=None, required=required),

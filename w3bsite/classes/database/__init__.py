@@ -21,10 +21,10 @@ class Database(syst3m.objects.Traceback):
 		self.path = gfp.clean(path)
 		self.file_path = self.fp = FilePath(self.path)
 		if not self.fp.exists():
-			r3sponse.log(f"&ORANGE&Root permission&END& required to create database [{self.path}].")
+			Response.log(f"&ORANGE&Root permission&END& required to create database [{self.path}].")
 			os.system(f"sudo mkdir {self.path}")
 			Files.chmod(path=self.path, permission=700, sudo=True)
-			Files.chown(path=self.path, owner=syst3m.defaults.vars.user, group=syst3m.defaults.vars.group, sudo=True)
+			Files.chown(path=self.path, owner=Defaults.vars.user, group=Defaults.vars.group, sudo=True)
 		if firestore == None:
 			self.mode = "cache"
 
@@ -32,21 +32,21 @@ class Database(syst3m.objects.Traceback):
 
 	# functions.
 	def load(self, path=None):
-		if path == None: return r3sponse.error(self.__traceback__(function="load")+" Define parameter: [path].")
+		if path == None: return Response.error(self.__traceback__(function="load")+" Define parameter: [path].")
 		if self.mode == "firestore":
 			return self.firestore.load(path)
 		elif self.mode == "cache":
 			path = gfp.clean(f"{self.path}/{path}")
 			try:
 				data = Files.load(path=path, format="json")
-			except Exception as e: return r3sponse.error(str(e))
-			return r3sponse.success(f"Successfully loaded [{path}].", {
+			except Exception as e: return Response.error(str(e))
+			return Response.success(f"Successfully loaded [{path}].", {
 				"data":data,
 			})
 		else: raise exceptions.InvalidUsage(self.__traceback__(function="load")+f" Unknown mode [{self.mode}].")
 	def save(self, path=None, data=None, overwrite=False):
-		if path == None: return r3sponse.error(self.__traceback__(function="save")+" Define parameter: [path].")
-		if data == None: return r3sponse.error(self.__traceback__(function="save")+" Define parameter: [data].")
+		if path == None: return Response.error(self.__traceback__(function="save")+" Define parameter: [path].")
+		if data == None: return Response.error(self.__traceback__(function="save")+" Define parameter: [data].")
 		if self.mode == "firestore":
 			return self.firestore.save(path, data)
 		elif self.mode == "cache":
@@ -76,20 +76,20 @@ class Database(syst3m.objects.Traceback):
 				data = insert(old_data, data)
 			try:
 				Files.save(path=path, data=data, format="json")
-			except Exception as e: return r3sponse.error(str(e))
-			return r3sponse.success(f"Successfully saved [{path}].")
+			except Exception as e: return Response.error(str(e))
+			return Response.success(f"Successfully saved [{path}].")
 		else: raise exceptions.InvalidUsage(self.__traceback__(function="save")+f" Unknown mode [{self.mode}].")
 	def delete(self, path=None, data=None):
-		if path == None: return r3sponse.error(self.__traceback__(function="delete")+" Define parameter: [path].")
+		if path == None: return Response.error(self.__traceback__(function="delete")+" Define parameter: [path].")
 		if self.mode == "firestore":
 			return self.firestore.delete(path)
 		elif self.mode == "cache":
 			path = gfp.clean(f"{self.path}/{path}")
 			try:
 				Files.delete(path=path)
-			except Exception as e: return r3sponse.error(str(e))
-			if Files.exists(path): return r3sponse.error(f"Failed to delete [{path}].")
-			return r3sponse.success(f"Successfully deleted [{path}].")
+			except Exception as e: return Response.error(str(e))
+			if Files.exists(path): return Response.error(f"Failed to delete [{path}].")
+			return Response.success(f"Successfully deleted [{path}].")
 		else: raise exceptions.InvalidUsage(self.__traceback__(function="delete")+f" Unknown mode [{self.mode}].")
 
 	# representation.

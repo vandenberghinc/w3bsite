@@ -130,7 +130,7 @@ if [ ! -d "/www-data/venv" ]; then
 	python3 -m venv /www-data/venv
 	/www-data/venv/bin/pip3 install wheel
 	/www-data/venv/bin/pip3 install uwsgi gunicorn whitenoise django psycopg2-binary
-	/www-data/venv/bin/pip3 install syst3m w3bsite cl1
+	/www-data/venv/bin/pip3 install syst3m w3bsite
 	chown -R $USER:www-data /www-data/venv
 	log "Installing requirements" "done"
 else

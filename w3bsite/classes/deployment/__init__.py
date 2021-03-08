@@ -74,9 +74,9 @@ class Deployment(syst3m.objects.Object):
 		command = command[:-3]
 		output = syst3m.utils.__execute_script__(command)
 		if output in ["", "\n"]:
-			return r3sponse.success(f"Successfully started {self.name}")
+			return Response.success(f"Successfully started {self.name}")
 		else:
-			return r3sponse.error(f"Failed to started {self.name};\n{output}")
+			return Response.error(f"Failed to started {self.name};\n{output}")
 
 		#
 	def stop(self):
@@ -88,9 +88,9 @@ class Deployment(syst3m.objects.Object):
 		command = command[:-3]
 		output = syst3m.utils.__execute_script__(command)
 		if output in ["", "\n"]:
-			return r3sponse.success(f"Successfully stopped {self.name}")
+			return Response.success(f"Successfully stopped {self.name}")
 		else:
-			return r3sponse.error(f"Failed to stopped {self.name};\n{output}")
+			return Response.error(f"Failed to stopped {self.name};\n{output}")
 
 		#
 	def restart(self):
@@ -102,18 +102,18 @@ class Deployment(syst3m.objects.Object):
 		command = command[:-3]
 		output = syst3m.utils.__execute_script__(command)
 		if output in ["", "\n"]:
-			return r3sponse.success(f"Successfully restarted {self.name}")
+			return Response.success(f"Successfully restarted {self.name}")
 		else:
-			return r3sponse.error(f"Failed to restarted {self.name};\n{output}")
+			return Response.error(f"Failed to restarted {self.name};\n{output}")
 
 		#
 	def status(self):
 
 		# execute.
-		response = syst3m.console.execute("sudo systemctl status gunicorn > /tmp/status && cat /tmp/status && rm -fr /tmp/status")
+		response = Code.execute("sudo systemctl status gunicorn > /tmp/status && cat /tmp/status && rm -fr /tmp/status")
 		if not response.success: return response
 		status = response.output
-		return r3sponse.success(f"Successfully parsed the status of {self.name}.", {
+		return Response.success(f"Successfully parsed the status of {self.name}.", {
 			"status":data,
 		})
 
@@ -125,7 +125,7 @@ class Deployment(syst3m.objects.Object):
 		Files.save(f"{self.database}/logs/errors", "")
 		Files.save(f"{self.database}/logs/nginx", "")
 		Files.save(f"{self.database}/logs/nginx.debug", "")
-		return r3sponse.success("Successfully resetted the logs.")
+		return Response.success("Successfully resetted the logs.")
 
 		#
 	def tail(self, nginx=False, debug=False):
@@ -143,7 +143,7 @@ class Deployment(syst3m.objects.Object):
 				data = Files.load(f"{self.database}/logs/errors")
 		
 		# handler.
-		return r3sponse.success(f"Successfully tailed the {self.name} logs.", {
+		return Response.success(f"Successfully tailed the {self.name} logs.", {
 			"logs":data,
 		})
 
@@ -154,7 +154,7 @@ class Deployment(syst3m.objects.Object):
 		
 		# check arguments.
 		if self.remote in ["vps"]:
-			response = r3sponse.parameters.check(
+			response = Response.parameters.check(
 				traceback=self.__traceback__(function="configure"),
 				parameters={
 					"vps_ip":self.vps_ip,
@@ -163,7 +163,7 @@ class Deployment(syst3m.objects.Object):
 			if not response.success: return response
 			username = self.vps_username
 		else:
-			username = syst3m.defaults.vars.user
+			username = Defaults.vars.user
 		
 		# configure before loader.
 		if self.live:
@@ -172,7 +172,7 @@ class Deployment(syst3m.objects.Object):
 			if not Files.exists(f"{self.database}/tls/dhparam.pem"):
 				if loader != None: loader.hold()
 				tmp = "/tmp/dhparam.pem"
-				os.system(f"sudo openssl dhparam -out {tmp} 4096 && sudo chown {syst3m.defaults.vars.user}:{syst3m.defaults.vars.group} {tmp} && mv {tmp} {self.database}/tls/dhparam.pem && sudo chown {syst3m.defaults.vars.user}:{syst3m.defaults.vars.group} {self.database}/tls/dhparam.pem")
+				os.system(f"sudo openssl dhparam -out {tmp} 4096 && sudo chown {Defaults.vars.user}:{Defaults.vars.group} {tmp} && mv {tmp} {self.database}/tls/dhparam.pem && sudo chown {Defaults.vars.user}:{Defaults.vars.group} {self.database}/tls/dhparam.pem")
 				if loader != None: loader.release()
 
 		# loader.
@@ -181,17 +181,17 @@ class Deployment(syst3m.objects.Object):
 		# check remote.
 		if self.remote in ["heroku"]:
 			if log_level >= 0: loader.stop(success=False)
-			return r3sponse.error(f"You can not execute function <Website.deployment.configure> with remote [{self.remote}].")
+			return Response.error(f"You can not execute function <Website.deployment.configure> with remote [{self.remote}].")
 
 		# os.
 		if OS not in ["macos", "linux"]: 
 			if log_level >= 0: loader.stop(success=False)
-			return r3sponse.error(f"Unsupported operating system [{OS}].")
+			return Response.error(f"Unsupported operating system [{OS}].")
 
 		# requirements.
 		if not Files.exists(f"{self.root}/requirements"): os.mkdir(f"{self.root}/requirements")
 		if not Files.exists(f"{self.root}/requirements/requirements.pip"): 
-			Files.save(f"{self.root}/requirements/requirements.pip", "wheel\nuwsgi\ngunicorn\nwhitenoise\ndjango\npsycopg2-binary\nsyst3m\nw3bsite\ncl1")
+			Files.save(f"{self.root}/requirements/requirements.pip", "wheel\nuwsgi\ngunicorn\nwhitenoise\ndjango\npsycopg2-binary\nsyst3m\nw3bsite")
 		if not Files.exists(f"{self.root}/requirements/installer"): 
 			os.system(f"cp {SOURCE_PATH}/example/requirements/installer {self.root}/requirements/installer && chmod +x {self.root}/requirements/installer")
 
@@ -210,7 +210,7 @@ class Deployment(syst3m.objects.Object):
 		# database.
 		if self.live:
 			if not Files.exists(self.database): 
-				os.system(f"sudo mkdir -p {self.database} && sudo chown {syst3m.defaults.vars.user}:{syst3m.defaults.vars.group} {self.database} && sudo chmod 770 {self.database}")
+				os.system(f"sudo mkdir -p {self.database} && sudo chown {Defaults.vars.user}:{Defaults.vars.group} {self.database} && sudo chmod 770 {self.database}")
 			if not Files.exists(f"{self.database}/logs"): os.mkdir(f"{self.database}/logs")
 
 		# deployment.
@@ -221,7 +221,7 @@ class Deployment(syst3m.objects.Object):
 			"***USER***":username, 
 			"***DOMAIN***":self.domain,
 			"***DATABASE***":self.database,
-			"***USER***":syst3m.defaults.vars.user,
+			"***USER***":Defaults.vars.user,
 			"***WEBSITE_BASE***":gfp.base(SOURCE_PATH),
 		}
 		for path in Files.Directory(path=f"{SOURCE_PATH}/classes/deployment/lib/").paths():
@@ -237,7 +237,7 @@ class Deployment(syst3m.objects.Object):
 		
 		# success.
 		if log_level >= 0: loader.stop()
-		return r3sponse.success(f"Successfully configured the deployment of domain {self.domain}.")
+		return Response.success(f"Successfully configured the deployment of domain {self.domain}.")
 
 		#
 	# deploy is for remote:local only. 
@@ -252,21 +252,21 @@ class Deployment(syst3m.objects.Object):
 			response = self.namecheap.check_domain(self.namecheap.post_domain)
 			if response.error != None: 
 				if log_level >= 0: loader.stop(success=False)
-				r3sponse.log(response=response, log_level=log_level)
+				Response.log(response=response, log_level=log_level)
 				return response
 			elif not response["exists"]:
 				if log_level >= 0: loader.stop(success=False)
-				return r3sponse.error(f"Specified domain [{self.namecheap.post_domain}] is not owned by namecheap user [{self.namecheap.username}].", log_level=log_level)
+				return Response.error(f"Specified domain [{self.namecheap.post_domain}] is not owned by namecheap user [{self.namecheap.username}].", log_level=log_level)
 
 		# check remote.
 		if self.remote in ["vps"] and not self.live:
 			if log_level >= 0: loader.stop(success=False)
-			return r3sponse.error(f"You can not execute function <Website.deployment.deploy> with remote [{self.remote}].")
+			return Response.error(f"You can not execute function <Website.deployment.deploy> with remote [{self.remote}].")
 
 		# os.
 		if OS not in ["linux"]: 
 			if log_level >= 0: loader.stop(success=False)
-			return r3sponse.error(f"Unsupported operating system [{OS}].")
+			return Response.error(f"Unsupported operating system [{OS}].")
 		
 		# configure.
 		response = self.configure(reinstall=reinstall, log_level=log_level, loader=loader)
@@ -279,18 +279,18 @@ class Deployment(syst3m.objects.Object):
 		tls_domain = Files.load(f"{self.database}/tls/.domain").replace('\n',"")
 		if tls_domain != self.domain:
 			if log_level >= 0: loader.stop(success=False)
-			return r3sponse.error(f"TLS Certificate mis match. Installed tls certificate [{self.database}/tls] is linked to domain {tls_domain}, not specified domain {self.domain}.", log_level=0)
+			return Response.error(f"TLS Certificate mis match. Installed tls certificate [{self.database}/tls] is linked to domain {tls_domain}, not specified domain {self.domain}.", log_level=0)
 		
 		# checks.
 		if not Files.exists(f"{self.database}/tls/server.key") or not Files.exists(f"{self.database}/tls/server.crt"):
 			if log_level >= 0: loader.stop(success=False)
-			return r3sponse.error("No tls certificate exists.\nExecute the following command to generate a tls certificate:\n$ ./website.py --generate-tls", log_level=log_level)
+			return Response.error("No tls certificate exists.\nExecute the following command to generate a tls certificate:\n$ ./website.py --generate-tls", log_level=log_level)
 		#if not Files.exists(f"{self.database}/tls/signed.server.crt"):
 		#	if log_level >= 0: loader.stop(success=False)
-		#	return r3sponse.error("No activated tls certificate exists. \nExecute the following command to activate the generated tls certificate:\n$ ./website.py --activate-tls", log_level=log_level)
+		#	return Response.error("No activated tls certificate exists. \nExecute the following command to activate the generated tls certificate:\n$ ./website.py --activate-tls", log_level=log_level)
 		#if not Files.exists(f"{self.database}/tls/server.ca-bundle"):
 		#	if log_level >= 0: loader.stop(success=False)
-		#	return r3sponse.error("No bundled tls certificate exists. \nDownload the signed certificate send to your email, extr the zip to a directory and execute \n$ ./website.py --bundle-tls /path/to/extracted/directory/", log_level=log_level)
+		#	return Response.error("No bundled tls certificate exists. \nDownload the signed certificate send to your email, extr the zip to a directory and execute \n$ ./website.py --bundle-tls /path/to/extracted/directory/", log_level=log_level)
 		
 		# arguments.
 		arguments = ""
@@ -303,10 +303,10 @@ class Deployment(syst3m.objects.Object):
 		if "Error:" in output or ("nginx: the configuration file /etc/nginx/nginx.conf syntax is ok" not in output and "nginx: configuration file /etc/nginx/nginx.conf test is successful" not in output): #"Successfully deployed domain " not in output
 			print(output)
 			if log_level >= 0: loader.stop(success=False)
-			return r3sponse.error(f"Failed to deploy website {self.domain}.", log_level=log_level)
+			return Response.error(f"Failed to deploy website {self.domain}.", log_level=log_level)
 		else:
 			if log_level >= 0: loader.stop()
-			return r3sponse.success(f"Successfully deployed domain https://{self.domain}.", log_level=log_level)
+			return Response.success(f"Successfully deployed domain https://{self.domain}.", log_level=log_level)
 
 		#
 	def generate_tls(self, log_level=0):
@@ -320,7 +320,7 @@ class Deployment(syst3m.objects.Object):
 
 		# check duplicate.
 		if Files.exists(f"{self.database}/tls/server.key") or Files.exists(f"{self.database}/tls/server.crt"):
-			return r3sponse.error("The tls certificate already exists.", log_level=log_level)
+			return Response.error("The tls certificate already exists.", log_level=log_level)
 
 		# generate.
 		if log_level >= 0: loader = syst3m.console.Loader("Generating a tls certificate ...")
@@ -351,26 +351,26 @@ class Deployment(syst3m.objects.Object):
 		if not Files.exists(f"{self.database}/tls/server.key") or not Files.exists(f"{self.database}/tls/server.crt"):
 			if log_level >= 0: loader.stop(success=False)
 			os.system(f"rm -fr {base}")
-			return r3sponse.error(f"Failed to generate a tls certificate.", log_level=log_level)
+			return Response.error(f"Failed to generate a tls certificate.", log_level=log_level)
 		else:
 			if log_level >= 0: loader.stop()
 			Files.save(f"{self.database}/tls/.domain", self.domain)
-			return r3sponse.success(f"Successfully generated a tls certificate.", log_level=log_level)
+			return Response.success(f"Successfully generated a tls certificate.", log_level=log_level)
 
 		#
 	def activate_tls(self, log_level=0):
 
 		# check existsance.
 		if not Files.exists(f"{self.database}/tls/server.key") or not Files.exists(f"{self.database}/tls/server.crt"):
-			return r3sponse.error("No generated tls certificate exists.", log_level=log_level)
+			return Response.error("No generated tls certificate exists.", log_level=log_level)
 
 		# check duplicate.
 		if Files.exists(f"{self.database}/tls/signed.server.key"):
-			return r3sponse.error("A signed tls certificate already exists.", log_level=log_level)
+			return Response.error("A signed tls certificate already exists.", log_level=log_level)
 
 		response = self.namecheap.get_tls()
 		if response.error != None: 
-			r3sponse.log(response=response, log_level=log_level)
+			Response.log(response=response, log_level=log_level)
 			return response
 		tls, certificates = response["tls"], response["certificates"]
 		
@@ -384,7 +384,7 @@ class Deployment(syst3m.objects.Object):
 				years=2,
 				# the tls type.
 				type="PositiveSSL",)
-			r3sponse.log(response=response, log_level=log_level)
+			Response.log(response=response, log_level=log_level)
 			if response.error != None: 
 				loader.stop(success=False)
 				return response	
@@ -394,7 +394,7 @@ class Deployment(syst3m.objects.Object):
 			response = self.namecheap.get_tls()
 			if response.error != None: 
 				loader.stop(success=False)
-				r3sponse.log(response=response, log_level=log_level)
+				Response.log(response=response, log_level=log_level)
 				return response
 			loader.stop()
 			tls, certificates = response["tls"], response["certificates"]
@@ -422,7 +422,7 @@ class Deployment(syst3m.objects.Object):
 					years=2,
 					# the tls type.
 					type="PositiveSSL",)
-				r3sponse.log(response=response, log_level=log_level)
+				Response.log(response=response, log_level=log_level)
 				if response.error != None: 
 					loader.stop(success=False)
 					return response	
@@ -435,42 +435,42 @@ class Deployment(syst3m.objects.Object):
 				# the certificate's id.
 				certificate_id=id,)
 			loader.stop(success=response["success"])
-			r3sponse.log(response=response, log_level=log_level)
+			Response.log(response=response, log_level=log_level)
 			if response.error != None: return response
 			
 		# handlers.
-		return r3sponse.success(f"Successfully activated the tls certificate of domain [{self.domain}]. Wait for the CA to send you a .zip file with your signed certificate. Extract the zip & bundle the certificate with: $ ./website.py --bundle-tls /path/to/extracted/directory/certificate/", log_level=log_level)
+		return Response.success(f"Successfully activated the tls certificate of domain [{self.domain}]. Wait for the CA to send you a .zip file with your signed certificate. Extract the zip & bundle the certificate with: $ ./website.py --bundle-tls /path/to/extracted/directory/certificate/", log_level=log_level)
 
 		#
 	def bundle_tls(self, directory, log_level=0):
 		
 		# check dir.
 		if not Files.exists(directory):
-			return r3sponse.error(f"Specified directory [{directory}] does not exist.", log_level=log_level)
+			return Response.error(f"Specified directory [{directory}] does not exist.", log_level=log_level)
 		if ".zip" in directory:
-			return r3sponse.error(f"Specified directory [{directory}] is zip format, extract the zip first.", log_level=log_level)
+			return Response.error(f"Specified directory [{directory}] is zip format, extract the zip first.", log_level=log_level)
 		if not os.path.isdir(directory):
-			return r3sponse.error(f"Specified directory [{directory}] is not a directory.", log_level=log_level)
+			return Response.error(f"Specified directory [{directory}] is not a directory.", log_level=log_level)
 		
 		# move x.crt to server.crt
 		if not Files.exists(f"{directory}/server.crt") and not Files.exists(f'{directory}/{self.domain.replace(".","_")}.crt'):
-			return r3sponse.success(f'You must rename the [{directory}/{self.domain.replace(".","_")}.crt] file manually to [{directory}/server.crt] in order to proceed.', log_level=log_level)
+			return Response.success(f'You must rename the [{directory}/{self.domain.replace(".","_")}.crt] file manually to [{directory}/server.crt] in order to proceed.', log_level=log_level)
 		if not Files.exists(f"{directory}/server.crt") and Files.exists(f'{directory}/{self.domain.replace(".","_")}.crt'):
 			os.system(f'mv {directory}/{self.domain.replace(".","_")}.crt {directory}/server.crt')
 		if not Files.exists(f"{directory}/server.crt"):
-			return r3sponse.success(f'Failed to rename the [{directory}/{self.domain.replace(".","_")}.crt] file to [{directory}/server.crt].', log_level=log_level)
+			return Response.success(f'Failed to rename the [{directory}/{self.domain.replace(".","_")}.crt] file to [{directory}/server.crt].', log_level=log_level)
 
 		# bundle ca.
 		syst3m.utils.__execute_script__(f"""
-			cat {directory}/AAACertificateServices.crt {directory}/SectigoRSADomainValidationSecureServerCA.crt {directory}/syst3m.defaults.vars.userTrustRSAAAACA.crt > {self.database}/tls/server.ca-bundle
+			cat {directory}/AAACertificateServices.crt {directory}/SectigoRSADomainValidationSecureServerCA.crt {directory}/Defaults.vars.userTrustRSAAAACA.crt > {self.database}/tls/server.ca-bundle
 			cat {directory}/server.crt {self.database}/tls/server.ca-bundle > {self.database}/tls/signed.server.crt
 			mv {self.database}/tls/server.crt {self.database}/tls/original.server.crt
 			cp {self.database}/tls/signed.server.crt {self.database}/tls/server.crt
 			""")
 		if Files.exists(f"{self.database}/tls/signed.server.crt"):
-			return r3sponse.success(f"Successfully bundled ssl certificate [{directory}].", log_level=log_level)
+			return Response.success(f"Successfully bundled ssl certificate [{directory}].", log_level=log_level)
 		else:
-			return r3sponse.error(f"Failed to bundle ssl certificate [{directory}].", log_level=log_level)
+			return Response.error(f"Failed to bundle ssl certificate [{directory}].", log_level=log_level)
 	def check_dns(self, log_level=0):
 
 		# loader.
@@ -480,11 +480,11 @@ class Deployment(syst3m.objects.Object):
 		response = self.namecheap.check_domain(self.namecheap.post_domain)
 		if response.error != None: 
 			if log_level >= 0: loader.stop(success=False)
-			r3sponse.log(response=response, log_level=log_level)
+			Response.log(response=response, log_level=log_level)
 			return response
 		elif not response["exists"]:
 			if log_level >= 0: loader.stop(success=False)
-			return r3sponse.error(f"Specified domain [{self.namecheap.post_domain}] is not owned by namecheap user [{self.namecheap.username}].", log_level=log_level)
+			return Response.error(f"Specified domain [{self.namecheap.post_domain}] is not owned by namecheap user [{self.namecheap.username}].", log_level=log_level)
 
 		# add dns records.
 		ip = NETWORK_INFO["public_ip"]
@@ -504,11 +504,11 @@ class Deployment(syst3m.objects.Object):
 			# the dns record value/address,
 			value=ip,)
 		if response.error != None and "] already exists." not in response.error: 
-			r3sponse.log(response=response, log_level=log_level)
+			Response.log(response=response, log_level=log_level)
 			if log_level >= 0: loader.stop(success=False)
 			return response
 		elif response.error == None: 
-			r3sponse.log(response=response, log_level=log_level)
+			Response.log(response=response, log_level=log_level)
 		response = self.namecheap.add_dns(
 			# the domain.
 			domain=self.namecheap.post_domain,
@@ -519,15 +519,15 @@ class Deployment(syst3m.objects.Object):
 			# the dns record value/address,
 			value=ip,)
 		if response.error != None and "] already exists." not in response.error: 
-			r3sponse.log(response=response, log_level=log_level)
+			Response.log(response=response, log_level=log_level)
 			if log_level >= 0: loader.stop(success=False)
 			return response
 		elif response.error == None: 
-			r3sponse.log(response=response, log_level=log_level)
+			Response.log(response=response, log_level=log_level)
 		
 		# handlers.
 		if log_level >= 0: loader.stop()
-		return r3sponse.success(f"Successfully checked the deployment dns settings for domain {self.domain}.", log_level=log_level)
+		return Response.success(f"Successfully checked the deployment dns settings for domain {self.domain}.", log_level=log_level)
 
 		#
 

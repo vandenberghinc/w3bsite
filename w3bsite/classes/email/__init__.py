@@ -39,17 +39,17 @@ class Email(object):
 			smtp.login(self.email, self.password)
 			self.smtp = smtp
 		except AttributeError:
-			return r3sponse.error("Define the noreply email address & password.")
+			return Response.error("Define the noreply email address & password.")
 		except smtplib.SMTPAuthenticationError:
-			return r3sponse.error("Failed to log in, provided an incorrect email and password.")
+			return Response.error("Failed to log in, provided an incorrect email and password.")
 		except OSError as e:
 			if "Network is unreachable" in str(e):
-				return r3sponse.error("Failed to log in, the network is unreachable. Make sure you provided the correct smtp host & port.")
+				return Response.error("Failed to log in, the network is unreachable. Make sure you provided the correct smtp host & port.")
 			else:
-				return r3sponse.error(f"Failed to log in, error: {e}.")
+				return Response.error(f"Failed to log in, error: {e}.")
 
 		# response.
-		return r3sponse.success(f"Successfully logged in to the email [{self.email}].")
+		return Response.success(f"Successfully logged in to the email [{self.email}].")
 	def send(self,
 		# the email's subject.
 		subject="Subject.",
@@ -65,12 +65,12 @@ class Email(object):
 		# checks.
 		if html != None: a=1
 		elif html_path == None: 
-			return r3sponse.error("Define either parameter [html] or [html_path].")
+			return Response.error("Define either parameter [html] or [html_path].")
 		else: html = Files.load(html_path)
 		if len(recipients) == 0: 
-			return r3sponse.error("Define one or multiple recipients")
+			return Response.error("Define one or multiple recipients")
 		elif  recipients in [[''], [" "]]: 
-			return r3sponse.error("Define one or multiple recipients")
+			return Response.error("Define one or multiple recipients")
 
 		# create message.
 		#try:
@@ -99,9 +99,9 @@ class Email(object):
 			self.smtp.sendmail(self.email, recipients, msg.as_string())
 
 			# response.
-			return r3sponse.success(f"Succesfully send the email to {recipients}.")
+			return Response.success(f"Succesfully send the email to {recipients}.")
 		#except:
-		#	return r3sponse.error(f"Failed to send the email to {recipients}.")
+		#	return Response.error(f"Failed to send the email to {recipients}.")
 
 
 #

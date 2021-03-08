@@ -34,8 +34,8 @@ class RateLimit(_defaults_.Defaults):
 	):
 		
 		# check options.
-		if email == None and ip == None: return r3sponse.error("Specify parameter [email] or [ip].")
-		response = r3sponse.parameters.check(
+		if email == None and ip == None: return Response.error("Specify parameter [email] or [ip].")
+		response = Response.parameters.check(
 			traceback=self.__traceback__(function="increment"),
 			parameters={
 				"mode":mode,
@@ -83,7 +83,7 @@ class RateLimit(_defaults_.Defaults):
 		document["rate_limits"] = rate_limits
 		response = self.db.save(reference, document)
 		if not response.success: return response
-		return r3sponse.success("Successfully incremented the rate limit.")
+		return Response.success("Successfully incremented the rate limit.")
 
 		#
 	def verify(self, 
@@ -104,8 +104,8 @@ class RateLimit(_defaults_.Defaults):
 		increment_count=1,
 	):
 		# check options.
-		if email == None and ip == None: return r3sponse.error("Specify parameter [email] or [ip].")
-		response = r3sponse.parameters.check(
+		if email == None and ip == None: return Response.error("Specify parameter [email] or [ip].")
+		response = Response.parameters.check(
 			traceback=self.__traceback__(function="verify"),
 			parameters={
 				"mode":mode,
@@ -162,9 +162,9 @@ class RateLimit(_defaults_.Defaults):
 				document["rate_limits"] = rate_limits
 				response = self.db.save(reference, document)
 				if not response.success: return response
-			return r3sponse.success(f"Successfully verified the {mode} rate limit.")
+			return Response.success(f"Successfully verified the {mode} rate limit.")
 		else:
-			return r3sponse.error(f"You have exhausted your {mode} rate limit.")
+			return Response.error(f"You have exhausted your {mode} rate limit.")
 	def __get_path__(self, email=None, username=None):
 		if self.id_by_username:
 			if username == None and email != None:
