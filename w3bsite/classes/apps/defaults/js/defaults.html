@@ -1,47 +1,13 @@
+<!-- use html for django include, template & static compatibility -->
 {% load static %} 
-<!-- html format to parse django template data -->
+
+<!-- js -->
 <script type="text/javascript">
 
-// set the path in the header.
-function set_header_path(path) {
-	e = document.getElementById("header_path")
-	if (e == null) {
-		console.log("Error: No header path element with id [header_path] exists.")
-		return 
-	}
-	if (path.substr(path.length - 1) != "/") {
-		path = path + "/"
-	}
-	e.innerHTML = "- "+path
-	document.title = ("{{NAME}}/"+path).replace("//","/").replace("//","/").replace("//","/")
-}
-
-// set the background color.
-function set_background_color(color) {
-	var topbar = document.getElementById("topbar")
-	var content = document.getElementById("content")
-	var body = document.getElementById("body")
-	if (body != null) {
-		body.style.background = color;
-		body.style.backgroundColor = color;
-	}
-	if (content != null) {
-		content.style.background = color;
-		content.style.backgroundColor = color;
-	}
-	if (topbar != null) {
-		topbar.style.background = color;
-		topbar.style.backgroundColor = color;
-	}
-}
-
-// adds an element to the array if it does not already exist using a comparer 
-// function
-Array.prototype.push_if_not_included = function(element) { 
-	if (!this.includes(element)) {
-		this.push(element)
-	}
-}
+// _____________________________________________________________________________
+//
+// Requests.
+//
 
 // make request.
 $.ajaxSetup({ 
@@ -91,6 +57,7 @@ function request(
 	if (loader != null) {
 		loader.style.display = "block"
 	}
+	r3sponse.log("CLEANED REQUEST DATA: "+r3sponse.dump(data))
 	$.ajax({
 			url: url,
 			data: data,
@@ -99,13 +66,9 @@ function request(
 			success: function (data, status, xhr) {
 
 				// serialize.
-				if (data.success == "True" || data.success == "true") {data.success = true}
-				if (data.success == "False" || data.success == "false") {data.success = false}
-				if (data.error == "None" || data.error == "none") {data.error = null}
-				if (data.message == "None" || data.message == "none") {data.message = null}
-				try {
-					data = JSON.parse(data)
-				} catch(e) {}
+				data = r3sponse.serialize(data)
+
+				// loader.
 				if (loader != null) {
 					loader.style.display = "none"
 				}
@@ -149,7 +112,7 @@ function request(
 						}, 3500)
 					}
 					if (handler != null) { 
-						console.log(JSON.loads(data).error)
+						console.log("Error: "+data.error)
 						handler({
 							success:false,
 							message:null,
@@ -189,23 +152,48 @@ function request(
 	})
 }
 
-// capitalize the start of a word.
-function capitalize_world(string) {
-	return string.charAt(0).toUpperCase() + string.slice(1)
+// _____________________________________________________________________________
+//
+// Styling.
+//
+
+// switch the visible element.
+function toggle_visibility(visible_id, hidden_id, display="block") {
+	document.getElementById(visible_id).style.display = display
+	document.getElementById(hidden_id).style.display = "none"
 }
 
-// capitalize each word in a scentence.
-function capitalize_scentence(string) {
-	var items = string.split(" ")
-	scentence = ""
-	items.forEach(function(item) {
-		if (scentence == ""){
-			scentence = capitalize_world(item)
-		} else {
-			scentence += " "+capitalize_world(item)
-		}
-	})
-	return scentence
+// set the path in the header.
+function set_header_path(path) {
+	e = document.getElementById("header_path")
+	if (e == null) {
+		console.log("Error: No header path element with id [header_path] exists.")
+		return 
+	}
+	if (path.substr(path.length - 1) != "/") {
+		path = path + "/"
+	}
+	e.innerHTML = "- "+path
+	document.title = ("{{NAME}}/"+path).replace("//","/").replace("//","/").replace("//","/")
+}
+
+// set the background color.
+function set_background_color(color) {
+	var topbar = document.getElementById("topbar")
+	var content = document.getElementById("content")
+	var body = document.getElementById("body")
+	if (body != null) {
+		body.style.background = color;
+		body.style.backgroundColor = color;
+	}
+	if (content != null) {
+		content.style.background = color;
+		content.style.backgroundColor = color;
+	}
+	if (topbar != null) {
+		topbar.style.background = color;
+		topbar.style.backgroundColor = color;
+	}
 }
 
 // toggle full screen.
@@ -453,12 +441,6 @@ function toggle_control_bar(target="references", control_bar={references:documen
 	}
 }
 
-
-// urlencode.
-function urlencode(data) {
-	return Object.keys(data).map(key => encodeURIComponent(key) + '=' + encodeURIComponent(data[key])).join('&')
-}
-
 // toggle dark mode.
 var DARKMODE = localStorage.getItem("DARKMODE")
 if (DARKMODE == null || DARKMODE == "null" || DARKMODE == "None") {
@@ -586,6 +568,11 @@ function toggle_darkmode(mode="toggle") {
 	}
 }
 
+// _____________________________________________________________________________
+//
+// Utils.
+//
+
 // Mobile detection.
 var mobile_platform = {
 	Android: function() {
@@ -629,66 +616,12 @@ function get_url_param(id) {
 	return url.searchParams.get(id);
 }
 
-// get a timestamp dd-mm-yy
-function get_timestamp() {
-	let date_ob = new Date()
-	let date = ("0" + date_ob.getDate()).slice(-2)
-	let month = ("0" + (date_ob.getMonth() + 1)).slice(-2)
-	let year = date_ob.getFullYear()
-	return year + "-" + month + "-" + date
-}
-
-// string python like format function.
-String.prototype.format = function () {
-	var i = 0, args = arguments;
-	return this.replace(/{}/g, function () {
-		return typeof args[i] != 'undefined' ? args[i++] : '';
-	});
-};
-
-// convert a float to int.
-function float2int (value) {
-	if (value == "NaN") {
-		return 'NaN'
-	} else {
-		return Math.round(value * 1) / 1	
-	}
-}
-
 // retrieve the browser platform.
 function get_platform() {
 	if ( ( window.innerWidth <= 800 ) && ( window.innerHeight <= 600 ) ) {
 		return "mobile"
 	} else {
 		return "desktop"
-	}
-}
-
-// get content size.
-function len(item) {
-	if (typeof item === 'string' || item instanceof String) {
-		return item.length;
-	} else if (typeof item === 'object' || item instanceof Object) {
-		return Object.keys(item).length;
-	} else if (typeof item === 'array' || item instanceof Array) {
-		return item.length;
-	}
-}
-
-// int function.
-function int(item) {
-	if (item == "NaN") {
-		return item
-	} else if (typeof item === 'int') {
-		return item
-	} else if (typeof item === 'float') {
-		return Math.round(value * 1) / 1	
-	} else if (typeof item === 'object' || item instanceof Object) {
-		return Object.keys(item).length;
-	} else if (typeof item === 'string' || item instanceof String) {
-		return parseInt(item)
-	} else if (typeof item === 'array' || item instanceof Array) {
-		return item.length;
 	}
 }
 
@@ -704,26 +637,20 @@ function download_source(source='/requests/clients/download_public_key/', output
 
 // copy text to clipboard.
 function copy_to_clipboard(str) {
-		// Create new element
-		var el = document.createElement('textarea');
-		// Set value (string to be copied)
-		el.value = str;
-		// Set non-editable to avoid focus and move outside of view
-		el.setAttribute('readonly', '');
-		el.style = {position: 'absolute', left: '-9999px'};
-		document.body.appendChild(el);
-		// Select text inside element
-		el.select();
-		// Copy text to clipboard
-		document.execCommand('copy');
-		// Remove temporary element
-		document.body.removeChild(el);
-	}
-
-
-// clone a dictionary.
-function clone_dict(clone) {
-	return JSON.parse(JSON.stringify(clone));
+	// Create new element
+	var el = document.createElement('textarea');
+	// Set value (string to be copied)
+	el.value = str;
+	// Set non-editable to avoid focus and move outside of view
+	el.setAttribute('readonly', '');
+	el.style = {position: 'absolute', left: '-9999px'};
+	document.body.appendChild(el);
+	// Select text inside element
+	el.select();
+	// Copy text to clipboard
+	document.execCommand('copy');
+	// Remove temporary element
+	document.body.removeChild(el);
 }
 
 // get cookie.

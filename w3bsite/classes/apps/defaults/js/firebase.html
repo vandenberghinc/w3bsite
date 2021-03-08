@@ -11,225 +11,233 @@
 <script type="text/javascript">
 
 // redirects.
-var sign_in_url = "/authentication/signin/"
+var signin_url = "/accounts/login/"
 
 // Configure firebase 
 // Visit https://console.firebase.google.com/project/<your project id>/overview and click on "Add Firebase to your web app"
-var config = {
- 	apiKey: "{{FIREBASE.API_KEY}}",
-    authDomain: "{{FIREBASE.AUTH_DOMAIN}}",
-    databaseURL: "{{FIREBASE.DATABASE_URL}}",
-    projectId: "{{FIREBASE.PROJECT_ID}}",
-    storageBucket: "{{FIREBASE.STORAGE_BUCKET}}",
-    messagingSenderId: "{{FIREBASE.MESSAGING_SENDER_ID}}",
-    appId: "{{FIREBASE.APP_ID}}",
-    measurementId: "{{FIREBASE.MEASUREMENT_ID}}",
-};
-firebase.initializeApp(config);
-auth = firebase.auth()
-var db = firebase.firestore();
-var perf = firebase.performance();
+__firebase__ = firebase
 
-// sign out the signed in user.
-function sign_out(redirect=true) {
-	var response = __default_response__()
-	auth.signOut()
-	.then(function() {
-		// sign out successful.
-		response.success = true
-		response.message = "Successfully signed out."
-		if (redirect == true) {
-			__reset_local_storage__()
-			location.href = sign_in_url
-		}
-		return response
-	}).catch(function(error) {
-		// sign out failed.
-		response.error = error.message
-		return response
-	})
-}
+// the firebase class.
+class Firebase {
 
-// sign in with email & password.
-function sign_in(email, password, authenticated_handler=null, unauthenticated_handler=null, timeout=1000) {
-	var response = __default_response__()
-	__reset_local_storage__()
+	// init.
+	constructor(height, width) {
 
-	// sign in.
-	var set = false
-	auth.signInWithEmailAndPassword(email, password)
-	.then(function(user) {
-	   // user signed in
-	   localStorage.setItem("EMAIL", user.email)
-		auth.currentUser.getIdToken(/* forceRefresh */ true).then(function(idToken) {
-			localStorage.setItem("ID_TOKEN", idToken)
+		// init firebase.
+		__firebase__.initializeApp({
+		 	apiKey: "{{FIREBASE.API_KEY}}",
+		    authDomain: "{{FIREBASE.AUTH_DOMAIN}}",
+		    databaseURL: "{{FIREBASE.DATABASE_URL}}",
+		    projectId: "{{FIREBASE.PROJECT_ID}}",
+		    storageBucket: "{{FIREBASE.STORAGE_BUCKET}}",
+		    messagingSenderId: "{{FIREBASE.MESSAGING_SENDER_ID}}",
+		    appId: "{{FIREBASE.APP_ID}}",
+		    measurementId: "{{FIREBASE.MEASUREMENT_ID}}",
+		});
+
+		// objects.
+		this.auth = __firebase__.auth()
+		this.db = __firebase__.firestore();
+		this.perf = __firebase__.performance();
+
+		// vars.
+		this.signin_url = signin_url
+		this.id_token = null
+	}
+
+	// sign out the signed in user.
+	signout(redirect=true) {
+		var response = r3sponse.default()
+		this.auth.signOut()
+		.then(function() {
+			// sign out successful.
+			response.success = true
+			response.message = "Successfully signed out."
+			if (redirect == true) {
+				__reset_local_storage__()
+				location.href = this.signin_url
+			}
+			return response
 		}).catch(function(error) {
-			localStorage.setItem("ID_TOKEN", null)
+			// sign out failed.
+			response.error = error.message
+			return response
 		})
-		response.success = true
-		response.message = "Successfully signed in."
-		if (authenticated_handler != null) {
-			authenticated_handler(response)
-		}
-	})
-	.catch(function(error) {
-		// sign in failed.
-		response.error = error.message
-		if (response.error.includes("A network error (such as timeout")) {
-			response.error = "Network error. Try resetting your browser history & cache."
-		}
-		if (unauthenticated_handler != null) {
-			unauthenticated_handler(response)
-		}
-	})
+	}
 
-}
+	// sign in with email & password.
+	signin(email, password, authenticated_handler=null, unauthenticated_handler=null, timeout=1000) {
+		var response = r3sponse.default()
+		__reset_local_storage__()
 
-// check if user is authenticated.
-function check_authenticated(authenticated_handler=null, unauthenticated_handler=null) {
-	var response = __default_response__()
-	firebase.auth().onAuthStateChanged(
-		function(user) {
-			if (user) {
+		// sign in.
+		var set = false
+		this.auth.signInWithEmailAndPassword(email, password)
+		.then(function(user) {
+		   // user signed in
+		   localStorage.setItem("EMAIL", user.email)
+			this.auth.currentUser.getIdToken(/* forceRefresh */ true).then(function(id_token) {
+				this.id_token = id_token
+				localStorage.setItem("ID_TOKEN", id_token)
+			}).catch(function(error) {
+				this.id_token = null
+				localStorage.setItem("ID_TOKEN", null)
+			})
+			response.success = true
+			response.message = "Successfully signed in."
+			if (authenticated_handler != null) {
+				authenticated_handler(response)
+			}
+		})
+		.catch(function(error) {
+			// sign in failed.
+			response.error = error.message
+			if (response.error.includes("A network error (such as timeout")) {
+				response.error = "Network error. Try resetting your browser history & cache."
+			}
+			if (unauthenticated_handler != null) {
+				unauthenticated_handler(response)
+			}
+		})
 
-				// get id token.
-				localStorage.setItem("EMAIL", user.email)
-				auth.currentUser.getIdToken(/* forceRefresh */ true).then(function(idToken) {
-					localStorage.setItem("ID_TOKEN", idToken)
-				}).catch(function(error) {
-					localStorage.setItem("ID_TOKEN", null)
-				})
+	}
 
-				// version 1.
-				// email verified not required.
-				if (authenticated_handler != null) {
-					response.success = true
-					response.message = "User is authenticated."
-					authenticated_handler(response)
-				}
-				/*
-				// version 2.
-				// check email verified.
-				if (user.emailVerified == true || user.emailVerified == "true" || user.emailVerified == "True") {
+	// check if user is authenticated.
+	authenticated(authenticated_handler=null, unauthenticated_handler=null) {
+		var response = r3sponse.default()
+		__firebase__.auth().onAuthStateChanged(
+			function(user) {
+				if (user) {
+
+					// get id token.
+					localStorage.setItem("EMAIL", user.email)
+					this.auth.currentUser.getIdToken(/* forceRefresh */ true).then(function(id_token) {
+						this.id_token = id_token
+						localStorage.setItem("ID_TOKEN", id_token)
+					}).catch(function(error) {
+						this.id_token = null
+						localStorage.setItem("ID_TOKEN", null)
+					})
+
+					// version 1.
+					// email verified not required.
 					if (authenticated_handler != null) {
 						response.success = true
 						response.message = "User is authenticated."
 						authenticated_handler(response)
 					}
+					/*
+					// version 2.
+					// check email verified.
+					if (user.emailVerified == true || user.emailVerified == "true" || user.emailVerified == "True") {
+						if (authenticated_handler != null) {
+							response.success = true
+							response.message = "User is authenticated."
+							authenticated_handler(response)
+						}
+					} else {
+						if (unauthenticated_handler != null) {
+							response.error = "Verify your email address."
+							response.uid = user.uid
+							unauthenticated_handler(response)
+						}
+					}
+					*/
 				} else {
 					if (unauthenticated_handler != null) {
-						response.error = "Verify your email address."
-						response.uid = user.uid
+						response.error = "User is not authenticated."
 						unauthenticated_handler(response)
 					}
 				}
-				*/
-			} else {
+			}, function(error) {
 				if (unauthenticated_handler != null) {
 					response.error = "User is not authenticated."
 					unauthenticated_handler(response)
 				}
 			}
-		}, function(error) {
-			if (unauthenticated_handler != null) {
-				response.error = "User is not authenticated."
-				unauthenticated_handler(response)
-			}
+		)
+	}
+
+
+
+	// the id token.
+	get_id_token(handler=null) {
+		try {
+			__firebase__.auth().onAuthStateChanged(function(user) {
+				if (user) {
+				   	this.auth.currentUser.getIdToken(/* forceRefresh */ true).then(function(id_token) {
+						this.id_token = id_token
+						localStorage.setItem("ID_TOKEN", this.id_token)
+						if (handler != null) {
+							handler(r3sponse.success("Successfully retrieved the id token.", {id_token:id_token}))
+						}
+					}).catch(function(error) {
+						this.id_token = null
+						localStorage.setItem("ID_TOKEN", this.id_token)
+						if (handler != null) { handler(r3sponse.error("Failed to retrieve the id token."))}
+					})
+				} else {
+				  	this.id_token = null
+					localStorage.setItem("ID_TOKEN", this.id_token)
+				    if (handler != null) { handler(r3sponse.error("Failed to retrieve the id token."))}
+				}
+			})
+		} catch(error) {
+			this.id_token = null
+			localStorage.setItem("ID_TOKEN", this.id_token)
+		    if (handler != null) { handler(r3sponse.error("Failed to retrieve the id token."))}
 		}
-	)
-}
-
-
-
-// the id token.
-var ID_TOKEN = localStorage.getItem("ID_TOKEN")
-function get_id_token(success_handler=null, error_handler=null) {
-	try {
-		firebase.auth().onAuthStateChanged(function(user) {
-			if (user) {
-			   	auth.currentUser.getIdToken(/* forceRefresh */ true).then(function(idToken) {
-					ID_TOKEN = idToken
-					localStorage.setItem("ID_TOKEN", ID_TOKEN)
-					if (success_handler != null) {
-						success_handler(ID_TOKEN)
-					}
-				}).catch(function(error) {
-					ID_TOKEN = null
-					localStorage.setItem("ID_TOKEN", ID_TOKEN)
-					if (error_handler != null) { error_handler(ID_TOKEN)}
-				})
-			} else {
-			  	ID_TOKEN = null
-				localStorage.setItem("ID_TOKEN", ID_TOKEN)
-			    if (error_handler != null) { error_handler(ID_TOKEN)}
-			}
-		})
-	} catch(error) {
-		ID_TOKEN = null
-		localStorage.setItem("ID_TOKEN", ID_TOKEN)
-	    if (error_handler != null) { error_handler(ID_TOKEN)}
 	}
-}
 
 
-// get the current user's email.
-var EMAIL = localStorage.getItem("EMAIL")
-function get_email(success_handler=null, error_handler=null) {
-	try {
-		firebase.auth().onAuthStateChanged(function(user) {
-			if (user) {
-				EMAIL = user.email
-				localStorage.setItem("EMAIL", EMAIL)
-			    if (success_handler != null) { success_handler(ID_TOKEN) }
-			} else {
-			  	EMAIL = null
-				localStorage.setItem("EMAIL", EMAIL)
-			    if (error_handler != null) { error_handler(EMAIL) }
-			}
-		})
-	} catch(error) {
-		EMAIL = null
-		localStorage.setItem("EMAIL", EMAIL)
-	    if (error_handler != null) { error_handler(EMAIL) }
+	// get the current user's email.
+	var EMAIL = localStorage.getItem("EMAIL")
+	get_email(success_handler=null, error_handler=null) {
+		try {
+			__firebase__.auth().onAuthStateChanged(function(user) {
+				if (user) {
+					EMAIL = user.email
+					localStorage.setItem("EMAIL", EMAIL)
+				    if (success_handler != null) { success_handler(ID_TOKEN) }
+				} else {
+				  	EMAIL = null
+					localStorage.setItem("EMAIL", EMAIL)
+				    if (error_handler != null) { error_handler(EMAIL) }
+				}
+			})
+		} catch(error) {
+			EMAIL = null
+			localStorage.setItem("EMAIL", EMAIL)
+		    if (error_handler != null) { error_handler(EMAIL) }
+		}
 	}
-}
 
-// get the current user's email verified boolean.
-function get_email_verified(success_handler=null, error_handler=null) {
-	try {
-		firebase.auth().onAuthStateChanged(function(user) {
-			if (user) {
-			    if (success_handler != null) { success_handler(user.emailVerified) }
-			} else {
-			    if (error_handler != null) { error_handler(null) }
-			}
-		})
-	} catch(error) {
-	    if (error_handler != null) { error_handler(null) }
+	// get the current user's email verified boolean.
+	get_email_verified(success_handler=null, error_handler=null) {
+		try {
+			__firebase__.auth().onAuthStateChanged(function(user) {
+				if (user) {
+				    if (success_handler != null) { success_handler(user.emailVerified) }
+				} else {
+				    if (error_handler != null) { error_handler(null) }
+				}
+			})
+		} catch(error) {
+		    if (error_handler != null) { error_handler(null) }
+		}
 	}
-}
 
-// default response.
-function __default_response__() {
-	return {
-		success: false,
-		message: null,
-		error: null,
+	// reset local storage.
+	__reset_local_storage__() {
+		localStorage.setItem("ID_TOKEN", null)
+		localStorage.setItem("EMAIL", null)
+		localStorage.setItem("PRIVATE_KEY", null)
 	}
+
 }
 
-// reset local storage.
-function __reset_local_storage__() {
-	localStorage.setItem("ID_TOKEN", null)
-	localStorage.setItem("EMAIL", null)
-	localStorage.setItem("PRIVATE_KEY", null)
-}
+// initialize class.
+const firebase = new Firebase();
 
-// for some pages only.
-/*
-get_id_token(function(id_token) {
-	alert("id_token:"+id_token)
-})
-*/
 
 </script>	

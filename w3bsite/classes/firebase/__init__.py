@@ -347,7 +347,7 @@ class Users(_defaults_.Defaults):
 	def verify_id_token(self, id_token):
 		"""
 			Javascript:
-				firebase.auth().currentUser.getIdToken(/* forceRefresh */ true).then(function(idToken) {
+				firebase.auth().currentUser.getIdToken(/* forceRefresh */ true).then(function(id_token) {
 				  // Send token to your backend via HTTPS
 				  // ...
 				}).catch(function(error) {
