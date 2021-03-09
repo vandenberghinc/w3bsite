@@ -92,6 +92,33 @@ class Database(Traceback):
 			return Response.success(f"Successfully deleted [{path}].")
 		else: raise exceptions.InvalidUsage(self.__traceback__(function="delete")+f" Unknown mode [{self.mode}].")
 
+	# join.
+	def join(self, path):
+		return gfp.clean(f"{self.path}/{path}")
+
+	# get names.
+	def names(self,
+		# the sub path (leave None to use the root path)
+		path=None,
+	):
+
+		# vars.
+		names = []
+
+		# firestore.
+		if self.mode == "firestore":
+			response = self.firestore.load_collection(path)
+			raise ValueError(f"Still to check the response of load_collection (for names iteration): [{response}].")
+
+		# cache.
+		elif self.mode == "cache":
+			for i in Directory(path=self.join(path)).paths(): names.append(gfp.name(i))
+
+		# handler.
+		return names
+
+		#
+
 	# representation.
 	def __str__(self):
 		return str(self.fp.path)

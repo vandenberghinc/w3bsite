@@ -21,7 +21,7 @@ class Synchronize(threading.Thread):
 		self.silent = silent
 		self.synchronize_interval = synchronize_interval
 		self.sleep_interval = sleep_interval
-		self.monthly_requests, self.monthly_costs = self.get_costs(self.synchronize_interval, len(self.users.iterate()))
+		self.monthly_requests, self.monthly_costs = self.get_costs(self.synchronize_interval, len(self.users.iterate(filter="users")))
 		monthly_requests, costs = self.get_costs(self.synchronize_interval, 10000)
 		print(f"Monthly daemon requests: {int(self.monthly_requests)}")
 		print(f"Monthly daemon costs: € {self.monthly_costs:.2f}")

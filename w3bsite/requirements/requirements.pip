@@ -17,7 +17,7 @@ stripe
 
 # inc packages.
 syst3m>=2.17.1
-dev0s>=2.17.6
+dev0s>=2.17.9
 netw0rk>=1.9.7
-ssht00ls>=3.21.4
+ssht00ls>=3.21.5
 

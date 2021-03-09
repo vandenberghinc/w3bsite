@@ -81,6 +81,11 @@ class Users(_defaults_.Defaults):
 			},
 		}
 
+		# sys vars.
+		self.__timestamps__ = {}
+		self.__api_keys__ = {}
+		self.__subscriptions__ = {}
+
 		#
 	def get(self, 
 		# define one of the following user id parameters.
@@ -539,7 +544,6 @@ class Users(_defaults_.Defaults):
 
 			# check api key.
 			for _api_key_, info in api_keys.items():
-				#print(f"api_key [{api_key}] vs _api_key_ [{_api_key_}].")
 				if _api_key_ == api_key: 
 					return Response.success(f"Successfully verified api key [{api_key}].", {
 						"email":info["email"],
@@ -847,71 +851,113 @@ class Users(_defaults_.Defaults):
 		response = self.save_data(email=email, username=username, data=data)
 		if not response.success: return response
 		return Response.success(f"Successfully saved the password of user {email}.")
-	def iterate(self, 
-		# iterating user objects (True) or email strings (False).
-		users=True,
-		# iterating the database (True) or django (False). 
-		database=False,
-	):
-		if database:
-			if self.db.mode == "firestore":
-				response = self.firestore.load_collection(self.users_subpath)
-				if not response.success: raise ValueError(response.error)
-				_users_ = []
-				_emails_ = response["collection"]
-				if users:
-					for email in _emails_:
-						_users_.append(auth.get_user_by_email(email))
-					return _users_
-				else:
-					return _emails_
-			else:
-				_users_ = []
-				_emails_ = []
-				for path in Directory(Files.join(self.database, self.users_subpath)).paths(dirs_only=True):
-					id = gfp.name(path=path)
-					response = self.load_data(username=id, email=id)
-					if response.success and response.data != None:
-						_users_.append(response.data["account"]["username"])
-						_emails_.append(response.data["account"]["email"])
-				if users:
-					return _users_
-				else:
-					return _emails_
-		else:
-			_users_, _emails_ = auth.list_users().iterate_all(), []
-			if not users:
-				for user in _users_:
-					_emails_.append(user.email)
-				return _emails_
-			else:
-				return _users_
-	def synchronize(self, 
-		# leave emails=None default to synchronize all users.
-		# optionally pass emails=[newuser@email.com] to synchronize new users.
-		ids=None, 
+	def iterate(self,
+		# the filter of what to iterate.
+		filter="user",
+		# from which database to iterate (django / database).
+		database="database",
 	):
 
-		# get all emails.
-		if not isinstance(ids, list):
-			ids = self.iterate(users=False, database=True)
+		# vars.
+		database_options = ["django", "database"]
+		filter_options = ["user", "username", "email", "data"]
+
+		# normalize.
+		filter = filter.lower()
+		database = database.lower()
+		if database in ["db"]: database = "database"
+		if database not in database_options and database[:-1] in database_options: database = database[:-1]
+
+		# checks.
+		if database not in database_options:
+			raise Exceptions.InvalidUsage(f"{self.__traceback__(function='iterate',parameter='database')}: Selected an invalid database option [{database}], valid options: [{Array(database_options).string(joiner=', ')}].")
+		if filter not in filter_options:
+			raise Exceptions.InvalidUsage(f"{self.__traceback__(function='iterate',parameter='filter')}: Selected an invalid filter option [{filter}], valid options: [{Array(filter_options).string(joiner=', ')}].")
+
+		
+
+		# database: django.
+		items = []
+		if database == "django":
+			users = auth.list_users().iterate_all()
+			for user in users:
+				if filter == "user":
+					items.append(user)
+				elif filter == "email":
+					items.append(user.email)
+				elif filter == "username":
+					items.append(user.username)
+				elif filter == "data":
+					response = self.load_data(email=user.email, username=user.username)
+					if not response.success: 
+						Response.log(f"Unable to iterate user: [{user.username}].")
+					else:
+						items.append(response["data"])
+
+		# database: database.
+		elif database == "database":
+
+			# firestore mode.
+			for id in self.db.names(path=self.users_subpath):
+				response = self.load_data(email=id, username=id)
+				if not response.success: 
+					Response.log(f"Unable to iterate user: [{id}].")
+				else:
+					username, email = response["data"]["account"]["username"], response["data"]["account"]["email"]
+					if filter == "user":
+						response = self.django.users.get(email=email, username=username)
+						if not response.success: 
+							Response.log(f"Unable to iterate (django) user: [{username}].")
+						else:
+							items.append(response["user"])
+					elif filter == "email":
+						items.append(email)
+					elif filter == "username":
+						items.append(username)
+					elif filter == "data":
+						items.append(response["data"])
+
+		# handler.
+		return items
+
+		#
+	def synchronize(self, 
+		# leave ids=None default to synchronize all users.
+		# optionally pass emails=[newuser@email.com] to synchronize new users.
+		emails=["*"], 
+		usernames=["*"], 
+	):
+
+		# get all ids.
+		_usernames_ = []
+		if "*" in emails and "*" in usernames:
+			_usernames_ = self.iterate(database="database", filter="username")
+		elif "*" not in emails:
+			for email in emails:
+				response = self.django.users.get(email=email)
+				if not response.success:
+					return response
+				else:
+					_usernames_.append(response.user.username)
+		elif "*" not in usernames:
+			usernames_ = usernames
+		else:
+			_usernames_ = usernames
+			for email in emails:
+				response = self.django.users.get(email=email)
+				if not response.success:
+					return response
+				else:
+					_usernames_.append(response.user.username)
 
 		# iterate.
 		api_keys = {}
-		for id in ids: 
-
-			# get user.
-			if self.id_by_username:
-				username = id
-				email = None
-			else:
-				username = None
-				email = id
+		for username in _usernames_: 
 
 			# get.
-			response = self.get(email=email, username=username)
+			response = self.get(email=None, username=username)
 			if not response.success: 
-				response = self.load_password(email=email, username=username)
+				response = self.load_password(email=None, username=username)
 				if not response.success: return response
 				data, password = response.unpack(["data", "password"])
 				response = self.django.users.create(
@@ -953,7 +999,7 @@ class Users(_defaults_.Defaults):
 			}
 
 		# success.
-		return Response.success(f"Successfully synchronized {len(ids)} user(s).", {
+		return Response.success(f"Successfully synchronized {len(_usernames_)} user(s).", {
 			"api_keys":api_keys,
 		})
 
@@ -979,23 +1025,33 @@ class Users(_defaults_.Defaults):
 			return response
 	def __collect_subscriptions_cache__(self, refresh=False):
 
+		# check cache.
+		mode = "subscriptions"
+		try: self.__timestamps__[mode]
+		except: 
+			self.__timestamps__[mode] = Date()
+			refresh = True
+		if not refresh:
+			date = Date()
+			decreased = date.decrease(date.timestamp, format=date.timestamp_format, hours=24)
+			if self.__timestamps__[mode] <= Date(timestamp=decreased, format=date.timestamp_format):
+				refresh = True
+
 		# get cache.
-		subscriptions, cache_subscriptions = {}, False
-		try:
+		subscriptions = {}
+		if not refresh:
 			subscriptions = dict(self.__subscriptions__)
-		except AttributeError:
-			self.__subscriptions__ = {}
-			cache_subscriptions = True
 
 		# collect cache.
-		if refresh or cache_subscriptions:
+		if refresh:
 			response = self.stripe.subscriptions.get(active_only=True, by_customer_id=False)
 			if not response.success: return response
 			subscriptions = response["subscriptions"]
 
 		# set cache.
-		if refresh or cache_subscriptions:
+		if refresh:
 			self.__subscriptions__ = dict(subscriptions)
+			self.__timestamps__[mode] = Date()
 
 		# handler.
 		return Response.success("Successfully retrieved the stripe subscriptions cache.", {
@@ -1005,23 +1061,33 @@ class Users(_defaults_.Defaults):
 		#
 	def __collect_api_keys_cache__(self, refresh=False):
 		
+		# check cache.
+		mode = "api_keys"
+		try: self.__timestamps__[mode]
+		except: 
+			self.__timestamps__[mode] = Date()
+			refresh = True
+		if not refresh:
+			date = Date()
+			decreased = date.decrease(date.timestamp, format=date.timestamp_format, hours=24)
+			if self.__timestamps__[mode] <= Date(timestamp=decreased, format=date.timestamp_format):
+				refresh = True
+
 		# get cache.
-		api_keys, cache_api_keys = {}, False
-		try:
+		api_keys = {}
+		if not refresh:
 			api_keys = dict(self.__api_keys__)
-		except AttributeError:
-			self.__api_keys__ = {}
-			cache_api_keys = True
 
 		# collect cache.
-		if cache_api_keys or refresh:
+		if refresh:
 			response = self.synchronize()
 			if not response.success: return response
 			api_keys = response["api_keys"]
 
 		# set cache.
-		if cache_api_keys or refresh:
+		if refresh:
 			self.__api_keys__ = dict(api_keys)
+			self.__timestamps__[mode] = Date()
 
 		# handler.
 		return Response.success("Successfully retrieved the api keys cache.", {
