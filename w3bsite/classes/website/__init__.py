@@ -622,7 +622,7 @@ class Website(CLI.CLI,Traceback):
 
 		# version.
 		elif self.arguments.present(['--version']):
-			self.stop(message=f"{ALIAS} version:"+Files.load(f"{SOURCE_PATH}/.version.py").replace("\n",""), json=Defaults.options.json)
+			self.stop(message=f"{ALIAS} version:"+Files.load(f"{SOURCE_PATH}/.version").replace("\n",""), json=Defaults.options.json)
 
 		# developer start.
 		elif self.arguments.present("--start") and self.arguments.present("--developer"):
