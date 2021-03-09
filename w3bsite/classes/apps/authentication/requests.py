@@ -279,3 +279,21 @@ class Requests(_defaults_.Defaults):
 				email_verified=True,)
 			if response.success: response["message"] = f"Succesfully activated the account user [{user.email}]."
 			return self.response(response)
+
+	# is authenticated.
+	class Authenticated(views.Request):
+		def __init__(self, defaults=None,):
+			self.assign(defaults.dict())
+			views.Request.__init__(self, "requests/authentication/", "activate")
+		def view(self, request):
+
+			# check overall rate limit.
+			response = self.rate_limit.verify(ip=utils.get_client_ip(request), mode="daily", limit=1000, reset_minutes=3600*24, increment=True)
+			if not response.success: return self.response(response)
+
+			# handler.
+			return self.response("Successfully checked if the user is authenticated.", {
+				"authenticated":request.user.username != None and request.user.is_authenticated == True,
+				"username":request.user.username,
+				"email":request.user.email,
+			})

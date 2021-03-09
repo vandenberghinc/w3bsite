@@ -92,6 +92,19 @@
 			})
 		}
 
+		// authenticaed.
+		authenticated(args={}, handler=null) {
+			request(this.url+"authenticated/", {
+				response:args["response"],
+				loader:args["loader"],
+			// handler.
+			}, function(response) {
+				if (handler != null) {
+					handler(response)
+				}
+			})
+		}
+
 	}
 
 	// initialize class.

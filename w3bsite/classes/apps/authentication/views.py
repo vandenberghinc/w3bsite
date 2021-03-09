@@ -6,6 +6,9 @@ from w3bsite.classes.config import *
 from w3bsite.classes import utils, views
 from w3bsite.classes import defaults as _defaults_
 
+# app.
+APP = "authentication"
+
 # the x views.
 class Views(_defaults_.Defaults):
 	def __init__(self, 
@@ -29,7 +32,7 @@ class Views(_defaults_.Defaults):
 		def __init__(self, defaults=None):
 			_defaults_.Defaults.__init__(self)
 			self.assign(defaults.dict())
-			views.View.__init__(self, "authentication/", "signin", template_data=self.template_data, html=f"w3bsite/classes/apps/authentication/html/signin.html")
+			views.View.__init__(self, f"{APP}/", "signin", template_data=self.template_data, html=f"w3bsite/classes/apps/authentication/html/signin.html")
 		def view(self, request):
 			if self._maintenance_: return self.maintenance(request)
 			return self.render(request)
@@ -39,7 +42,7 @@ class Views(_defaults_.Defaults):
 		def __init__(self, defaults=None):
 			_defaults_.Defaults.__init__(self)
 			self.assign(defaults.dict())
-			views.View.__init__(self, "authentication/", "signup", template_data=self.template_data, html=f"w3bsite/classes/apps/authentication/html/signup.html")
+			views.View.__init__(self, f"{APP}/", "signup", template_data=self.template_data, html=f"w3bsite/classes/apps/authentication/html/signup.html")
 		def view(self, request):
 			if self._maintenance_: return self.maintenance(request)
 			return self.render(request)
@@ -49,7 +52,7 @@ class Views(_defaults_.Defaults):
 		def __init__(self, defaults=None):
 			_defaults_.Defaults.__init__(self)
 			self.assign(defaults.dict())
-			views.View.__init__(self, "authentication/", "reset", template_data=self.template_data, html=f"w3bsite/classes/apps/authentication/html/reset.html")
+			views.View.__init__(self, f"{APP}/", "reset", template_data=self.template_data, html=f"w3bsite/classes/apps/authentication/html/reset.html")
 		def view(self, request):
 			if self._maintenance_: return self.maintenance(request)
 			return self.render(request)
@@ -59,7 +62,9 @@ class Views(_defaults_.Defaults):
 		def __init__(self, defaults=None):
 			_defaults_.Defaults.__init__(self)
 			self.assign(defaults.dict())
-			views.View.__init__(self, "authentication/", "activate", template_data=self.template_data, html=f"w3bsite/classes/apps/authentication/html/activate.html")
+			views.View.__init__(self, f"{APP}/", "activate", template_data=self.template_data, html=f"w3bsite/classes/apps/authentication/html/activate.html")
 		def view(self, request):
 			if self._maintenance_: return self.maintenance(request)
 			return self.render(request)
+
+	
