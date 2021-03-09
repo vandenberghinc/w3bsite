@@ -147,7 +147,6 @@ class Users(_defaults_.Defaults):
 		data["account"]["password"] = _response_["encrypted"].decode()
 		response = self.save_data(email=email, username=username, data=data)
 		if not response.success: return response
-		print(response.message, data)
 
 		# insert api key cache.
 		try: self.__api_keys__

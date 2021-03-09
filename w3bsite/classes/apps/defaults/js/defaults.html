@@ -57,41 +57,32 @@ function request(
 	if (loader != null) {
 		loader.style.display = "block"
 	}
-	Response.log("CLEANED REQUEST DATA: "+Response.dump(data))
+	var error_msg = `Request (${url}) failed, error: `
+	Response.log(`Request (${url}).`)
+	//console.log(" * data: "+Response.dump(data))
 	$.ajax({
 			url: url,
 			data: data,
 			type: "post",
 			dataType: 'json',
-			success: function (data, status, xhr) {
-
+			success: function (response, status, xhr) {
+				
 				// serialize.
-				data = Response.serialize(data)
+				response = Response.serialize(response)
 
 				// loader.
 				if (loader != null) {
 					loader.style.display = "none"
 				}
 
-				// check error.
-				if (data.error != null) {
-					if (response_element != null) {
-						response_element.style.display = "block"
-						response_element.style.color = '{{COLORS.red}}'
-						response_element.innerHTML = data.error
-						setTimeout(function() {
-							response_element.style.display = 'none'
-						}, 3500)
-					}
-					if (handler != null) { handler(data) }
-
 				// check success response.
-				} else if (data.success == true) {
+				if (response.success == true) {
+					console.log(" * success: "+response.message)
 					if (response_element != null) {
 						response_element.style.display = "block"
 						response_element.style.color = '{{COLORS.green}}'
-						if (data.message != null) { 
-								response_element.innerHTML = data.message
+						if (response.message != null) { 
+								response_element.innerHTML = response.message
 						} else {
 								response_element.innerHTML = "Success."
 						}
@@ -99,53 +90,63 @@ function request(
 							response_element.style.display = 'none'
 						}, 3500)
 					}
-					if (handler != null) { handler(data) }
+					if (handler != null) { handler(response) }
 
-				// should not happen.
-				} else {
+				// check error.
+				} else if (response.error != null) {
+					var err = `Request (${url}) failed [${xhr.status}]. ${response.error}.`
+					console.log(" * error: "+err)
 					if (response_element != null) {
 						response_element.style.display = "block"
 						response_element.style.color = '{{COLORS.red}}'
-						response_element.innerHTML = "Some unexpexted error arised #872364."
+						response_element.innerHTML = response.error
+						setTimeout(function() {
+							response_element.style.display = 'none'
+						}, 3500)
+					}
+					if (handler != null) { handler(response) }
+
+				// should not happen.
+				} else {
+					var err = `Request (${url}) failed [${xhr.status}]. ${xhr.responseText}.`
+					console.log(" * error: "+err)
+					if (response_element != null) {
+						response_element.style.display = "block"
+						response_element.style.color = '{{COLORS.red}}'
+						response_element.innerHTML = "Error: "+err
 						setTimeout(function() {
 							response_element.style.display = 'none'
 						}, 3500)
 					}
 					if (handler != null) { 
-						console.log("Error: "+data.error)
 						handler({
 							success:false,
 							message:null,
-							error:"Encoutered an unknown error (76345)."
+							error:err,
 						})
 					}
 				}
 
 			},
-			error: function(error) {
+			error: function(xhr, status, error) {
+				var err = `Request (${url}) failed [${xhr.status}]. ${error}.`
+				console.log(" * error: "+err)
 				if (loader != null) {
 					loader.style.display = "none"
 				}
 				if (response_element != null) {
+					response_element.style.display = 'block'
 					response_element.style.color = "{{COLORS.red}}"
-					if (error.msg != null) {
-						response_element.innerHTML = "Error: "+error.msg
-					} else if (error.msg != null) {
-						response_element.innerHTML = "Error: "+error.msg
-					//} else if (error.responseText != null) {
-					//  response_element.innerHTML = "Error: "+error.responseText
-					} else {
-						response_element.innerHTML = "Some unexpexted error arised, #3478834"
-					}
+					response_element.innerHTML = "Error: "+err
 					setTimeout(function() {
 						response_element.style.display = 'none'
 					}, 3500)
 				}
 				if (handler != null) { 
 					handler({
-						success:false,
-						message:null,
-						error:"Encoutered error: "+error.responseText
+						"success":false,
+						"message":null,
+						"error":err,
 					})
 				}
 			}
