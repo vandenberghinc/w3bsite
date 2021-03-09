@@ -120,7 +120,7 @@ class Deployment(Object):
 		if not response.success: return response
 		status = response.output
 		return Response.success(f"Successfully parsed the status of {self.name}.", {
-			"status":data,
+			"status":status,
 		})
 
 		#
