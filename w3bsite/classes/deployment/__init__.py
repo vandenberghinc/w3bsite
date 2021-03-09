@@ -299,9 +299,10 @@ class Deployment(Object):
 		
 		# execute & handle.
 		os.system(f"chmod +x {self.root}/deployment/installer")
-		output = dev0s.utils.__execute_script__(f"bash {self.root}/deployment/installer{arguments}").replace('\n\n','\n').replace('\n\n','\n').replace('\n\n','\n').replace('\n\n','\n')
-		if "Error:" in output or ("nginx: the configuration file /etc/nginx/nginx.conf syntax is ok" not in output and "nginx: configuration file /etc/nginx/nginx.conf test is successful" not in output): #"Successfully deployed domain " not in output
-			print(output)
+		response = Code.execute(f"bash {self.root}/deployment/installer{arguments}")
+		if not response.success:
+			#if "Error:" in output or ("nginx: the configuration file /etc/nginx/nginx.conf syntax is ok" not in output and "nginx: configuration file /etc/nginx/nginx.conf test is successful" not in output): #"Successfully deployed domain " not in output
+			print(response.output)
 			if log_level >= 0: loader.stop(success=False)
 			return Response.error(f"Failed to deploy website {self.domain}.", log_level=log_level)
 		else:
