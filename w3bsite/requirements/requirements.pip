@@ -4,25 +4,20 @@ wheel
 asgiref
 certifi
 chardet
-Django
 idna
-requests
 sqlparse
 urllib3
 gunicorn
 whitenoise
 psutil
 uwsgi
-gunicorn
-whitenoise
-django
 #psycopg2-binary # causes errors on macos m1
 xmltodict
 stripe
 
 # inc packages.
-syst3m>=2.17.0
-dev0s>=2.17.2
-netw0rk>=1.9.6
-ssht00ls>=3.21.2
+syst3m>=2.17.1
+dev0s>=2.17.6
+netw0rk>=1.9.7
+ssht00ls>=3.21.4
 

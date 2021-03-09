@@ -125,7 +125,7 @@ class Stripe(_defaults_.Defaults):
 			# check product.
 			if not product in product_names:
 				if self.interactive:
-					if syst3m.console.input(f"There is no stripe product named {product}. Do you want to create this stripe product? ({self.sandbox_txt})", yes_no=True):
+					if Console.input(f"There is no stripe product named {product}. Do you want to create this stripe product? ({self.sandbox_txt})", yes_no=True):
 						# create product.
 						response = self.products.create(
 							id=product,
@@ -150,7 +150,7 @@ class Stripe(_defaults_.Defaults):
 				# check plan.
 				if product not in list(plan_names.keys()) or plan_name not in plan_names[product]:
 					if self.interactive:
-						if syst3m.console.input(f"There is no stripe plan named {plan_name} for product {product}. Do you want to create this stripe plan? ({self.sandbox_txt})", yes_no=True):
+						if Console.input(f"There is no stripe plan named {plan_name} for product {product}. Do you want to create this stripe plan? ({self.sandbox_txt})", yes_no=True):
 							# create product.
 							response = self.plans.create(
 								id=plan_name,

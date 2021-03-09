@@ -279,7 +279,7 @@ class Heroku(object):
 				Response.log(response=response, log_level=log_level)
 				return response
 			elif not response["exists"]:
-				loader = syst3m.console.Loader(f"Adding domain [{domain}].")
+				loader = Console.Loader(f"Adding domain [{domain}].")
 				response = self.add_domain(domain)
 				loader.stop(response=response)
 				if response.error != None: 
@@ -368,7 +368,7 @@ class Heroku(object):
 	def deploy(self, log_level=0):
 
 		# set heroku env.
-		loader = syst3m.console.Loader("Configuring heroku environment ...")
+		loader = Console.Loader("Configuring heroku environment ...")
 		response = self.add_environment_variables(variables=utils.__load_json__(f"{self.root}/__defaults__/env/json"))
 		if not response.success: 
 			loader.stop(success=False)
@@ -376,7 +376,7 @@ class Heroku(object):
 		loader.stop()
 
 		# push to heroku.
-		loader = syst3m.console.Loader("Pushing to heroku ...")
+		loader = Console.Loader("Pushing to heroku ...")
 		response = self.push(log_level=log_level)
 		if response.error != None and "] is already up to date." not in response.error: 
 			loader.stop(success=False)

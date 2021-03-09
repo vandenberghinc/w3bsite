@@ -5,7 +5,7 @@
 import os, sys, ast, json, glob, platform, subprocess, random, requests, urllib, threading, time, string, traceback
 
 # inc imports.
-import netw0rk, syst3m, ssht00ls
+import dev0s, netw0rk, syst3m, ssht00ls
 from ssht00ls import ssht00ls_agent
 from dev0s import *
 

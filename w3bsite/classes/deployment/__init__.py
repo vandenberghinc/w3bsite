@@ -72,7 +72,7 @@ class Deployment(Object):
 		for i in ["gunicorn.socket", "gunicorn", "nginx"]:
 			command += f"sudo systemctl start {i} &&"
 		command = command[:-3]
-		output = syst3m.utils.__execute_script__(command)
+		output = dev0s.utils.__execute_script__(command)
 		if output in ["", "\n"]:
 			return Response.success(f"Successfully started {self.name}")
 		else:
@@ -86,7 +86,7 @@ class Deployment(Object):
 		for i in ["gunicorn.socket", "gunicorn", "nginx"]:
 			command += f"sudo systemctl stop {i} &&"
 		command = command[:-3]
-		output = syst3m.utils.__execute_script__(command)
+		output = dev0s.utils.__execute_script__(command)
 		if output in ["", "\n"]:
 			return Response.success(f"Successfully stopped {self.name}")
 		else:
@@ -100,7 +100,7 @@ class Deployment(Object):
 		for i in ["gunicorn.socket", "gunicorn", "nginx"]:
 			command += f"sudo systemctl restart {i} &&"
 		command = command[:-3]
-		output = syst3m.utils.__execute_script__(command)
+		output = dev0s.utils.__execute_script__(command)
 		if output in ["", "\n"]:
 			return Response.success(f"Successfully restarted {self.name}")
 		else:
@@ -176,7 +176,7 @@ class Deployment(Object):
 				if loader != None: loader.release()
 
 		# loader.
-		if log_level >= 0: loader = syst3m.console.Loader(f"Configuring deployment of website {self.domain} ...")
+		if log_level >= 0: loader = Console.Loader(f"Configuring deployment of website {self.domain} ...")
 
 		# check remote.
 		if self.remote in ["heroku"]:
@@ -197,7 +197,7 @@ class Deployment(Object):
 
 		# favicon.
 		if not Files.exists(f"{self.root}/static/favicon.ico"):
-			output = syst3m.utils.__execute_script__(f"curl https://raw.githubusercontent.com/vandenberghinc/public-storage/master/w3bsite/favicon.ico -o {self.root}/static/favicon.ico")
+			output = dev0s.utils.__execute_script__(f"curl https://raw.githubusercontent.com/vandenberghinc/public-storage/master/w3bsite/favicon.ico -o {self.root}/static/favicon.ico")
 
 		# tls.
 		if self.live:
@@ -245,7 +245,7 @@ class Deployment(Object):
 			
 		# loader.
 		loader = None
-		if log_level >= 0: loader = syst3m.console.Loader(f"Deploying domain {self.domain} ...")
+		if log_level >= 0: loader = Console.Loader(f"Deploying domain {self.domain} ...")
 
 		# check namecheap domain.
 		if not (self.remote in ["vps"] and self.live):
@@ -299,7 +299,7 @@ class Deployment(Object):
 		
 		# execute & handle.
 		os.system(f"chmod +x {self.root}/deployment/installer")
-		output = syst3m.utils.__execute_script__(f"bash {self.root}/deployment/installer{arguments}").replace('\n\n','\n').replace('\n\n','\n').replace('\n\n','\n').replace('\n\n','\n')
+		output = dev0s.utils.__execute_script__(f"bash {self.root}/deployment/installer{arguments}").replace('\n\n','\n').replace('\n\n','\n').replace('\n\n','\n').replace('\n\n','\n')
 		if "Error:" in output or ("nginx: the configuration file /etc/nginx/nginx.conf syntax is ok" not in output and "nginx: configuration file /etc/nginx/nginx.conf test is successful" not in output): #"Successfully deployed domain " not in output
 			print(output)
 			if log_level >= 0: loader.stop(success=False)
@@ -323,8 +323,8 @@ class Deployment(Object):
 			return Response.error("The tls certificate already exists.", log_level=log_level)
 
 		# generate.
-		if log_level >= 0: loader = syst3m.console.Loader("Generating a tls certificate ...")
-		output = syst3m.utils.__execute_script__(f"""
+		if log_level >= 0: loader = Console.Loader("Generating a tls certificate ...")
+		output = dev0s.utils.__execute_script__(f"""
 			cd {base}
 
 			# Generate a passphrase
@@ -378,7 +378,7 @@ class Deployment(Object):
 		if certificates == 0:
 
 			# create tls.
-			loader = syst3m.console.Loader("Purchasing a namecheap tls certificate ...")
+			loader = Console.Loader("Purchasing a namecheap tls certificate ...")
 			response = self.namecheap.create_tls(
 				# the expiration years.
 				years=2,
@@ -416,7 +416,7 @@ class Deployment(Object):
 
 			# create certficiate on no new purchase found.
 			if id == None:
-				loader = syst3m.console.Loader("Purchasing a namecheap tls certificate ...")
+				loader = Console.Loader("Purchasing a namecheap tls certificate ...")
 				response = self.namecheap.create_tls(
 					# the expiration years.
 					years=2,
@@ -430,7 +430,7 @@ class Deployment(Object):
 				id = response["certificate_id"]
 
 			# activate tls for root domain.
-			loader = syst3m.console.Loader("Activating tls certificate ...")
+			loader = Console.Loader("Activating tls certificate ...")
 			response = self.namecheap.activate_tls(
 				# the certificate's id.
 				certificate_id=id,)
@@ -461,7 +461,7 @@ class Deployment(Object):
 			return Response.success(f'Failed to rename the [{directory}/{self.domain.replace(".","_")}.crt] file to [{directory}/server.crt].', log_level=log_level)
 
 		# bundle ca.
-		syst3m.utils.__execute_script__(f"""
+		dev0s.utils.__execute_script__(f"""
 			cat {directory}/AAACertificateServices.crt {directory}/SectigoRSADomainValidationSecureServerCA.crt {directory}/Defaults.vars.userTrustRSAAAACA.crt > {self.database}/tls/server.ca-bundle
 			cat {directory}/server.crt {self.database}/tls/server.ca-bundle > {self.database}/tls/signed.server.crt
 			mv {self.database}/tls/server.crt {self.database}/tls/original.server.crt
@@ -474,7 +474,7 @@ class Deployment(Object):
 	def check_dns(self, log_level=0):
 
 		# loader.
-		if log_level >= 0: loader = syst3m.console.Loader(f"Checking dns settings of domain {self.domain} ...")
+		if log_level >= 0: loader = Console.Loader(f"Checking dns settings of domain {self.domain} ...")
 
 		# check namecheap domain.
 		response = self.namecheap.check_domain(self.namecheap.post_domain)

@@ -57,7 +57,7 @@ class VPS(_defaults_.Defaults):
 		#if self.live: return Response.error("VPS is already live in production.", log_level=log_level)
 
 		# loader.
-		if log_level >= 0: loader = syst3m.console.Loader(f"Configuring vps settings of website {self.domain} ...")
+		if log_level >= 0: loader = Console.Loader(f"Configuring vps settings of website {self.domain} ...")
 
 		# not live.
 		if not self.live:
@@ -106,7 +106,7 @@ class VPS(_defaults_.Defaults):
 		if not response.success: return response
 
 		# loader.
-		if log_level >= 0: loader = syst3m.console.Loader(f"Configuring deployment of website {self.domain} to vps {self.ip} ...")
+		if log_level >= 0: loader = Console.Loader(f"Configuring deployment of website {self.domain} to vps {self.ip} ...")
 
 		# check already live.
 		if self.live: 
@@ -127,7 +127,7 @@ class VPS(_defaults_.Defaults):
 
 		# check connection.
 		if log_level >= 0: loader.mark(new_message=f"Attempting to connect with vps {self.ip}")
-		output = syst3m.utils.__execute_script__(f"printf 'yes\n' | ssh {self.domain} ' echo Hello World ' ").replace('\n\n','\n')
+		output = dev0s.utils.__execute_script__(f"printf 'yes\n' | ssh {self.domain} ' echo Hello World ' ").replace('\n\n','\n')
 		if "Permission denied (publickey)" in output:
 			if log_level >= 0:  loader.stop(success=False)
 			data = Files.load(f'{self.root}/__defaults__/ssh/public_key').replace('\n','')
