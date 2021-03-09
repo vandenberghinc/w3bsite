@@ -472,7 +472,7 @@ class Deployment(Object):
 			return Response.success(f'Failed to rename the [{directory}/{self.domain.replace(".","_")}.crt] file to [{directory}/server.crt].', log_level=log_level)
 
 		# bundle ca.
-		response Code.execute(f"""
+		response = Code.execute(f"""
 			cat {directory}/AAACertificateServices.crt {directory}/SectigoRSADomainValidationSecureServerCA.crt {directory}/Defaults.vars.userTrustRSAAAACA.crt > {self.database}/tls/server.ca-bundle
 			cat {directory}/server.crt {self.database}/tls/server.ca-bundle > {self.database}/tls/signed.server.crt
 			mv {self.database}/tls/server.crt {self.database}/tls/original.server.crt
