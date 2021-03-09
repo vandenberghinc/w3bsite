@@ -203,11 +203,9 @@ class Deployment(Object):
 
 		# favicon.
 		if self.live:
-			if Files.exists(f"/www-data/") and not Files.exists(f"/www-data/static/favicon.ico"):
-				response = Code.execute(f"curl -s https://raw.githubusercontent.com/vandenberghinc/public-storage/master/w3bsite/favicon.ico -o /www-data/static/favicon.ico")
-				if not response.success:
-					if log_level >= 0: loader.stop(success=False) 
-					return response
+			if not Files.exists(f"{self.root}/__defaults__/static/favicon.ico"):
+				response = Code.execute(f"curl -s https://raw.githubusercontent.com/vandenberghinc/public-storage/master/w3bsite/favicon.ico -o {self.root}/__defaults__/static/favicon.ico")
+				if not response.success: return response
 				output = response.output
 
 		# tls.
