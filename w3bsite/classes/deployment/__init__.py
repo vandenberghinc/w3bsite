@@ -72,7 +72,9 @@ class Deployment(Object):
 		for i in ["gunicorn.socket", "gunicorn", "nginx"]:
 			command += f"sudo systemctl start {i} &&"
 		command = command[:-3]
-		output = dev0s.utils.__execute_script__(command)
+		response = Code.execute(command)
+		if not response.success: return response
+		output = response.output
 		if output in ["", "\n"]:
 			return Response.success(f"Successfully started {self.name}")
 		else:
@@ -86,7 +88,9 @@ class Deployment(Object):
 		for i in ["gunicorn.socket", "gunicorn", "nginx"]:
 			command += f"sudo systemctl stop {i} &&"
 		command = command[:-3]
-		output = dev0s.utils.__execute_script__(command)
+		response = Code.execute(command)
+		if not response.success: return response
+		output = response.output
 		if output in ["", "\n"]:
 			return Response.success(f"Successfully stopped {self.name}")
 		else:
@@ -100,7 +104,9 @@ class Deployment(Object):
 		for i in ["gunicorn.socket", "gunicorn", "nginx"]:
 			command += f"sudo systemctl restart {i} &&"
 		command = command[:-3]
-		output = dev0s.utils.__execute_script__(command)
+		response = Code.execute(command)
+		if not response.success: return response
+		output = response.output
 		if output in ["", "\n"]:
 			return Response.success(f"Successfully restarted {self.name}")
 		else:
@@ -197,7 +203,9 @@ class Deployment(Object):
 
 		# favicon.
 		if not Files.exists(f"{self.root}/static/favicon.ico"):
-			output = dev0s.utils.__execute_script__(f"curl https://raw.githubusercontent.com/vandenberghinc/public-storage/master/w3bsite/favicon.ico -o {self.root}/static/favicon.ico")
+			response = Code.execute(f"curl https://raw.githubusercontent.com/vandenberghinc/public-storage/master/w3bsite/favicon.ico -o {self.root}/static/favicon.ico")
+			if not response.success: return response
+			output = response.output
 
 		# tls.
 		if self.live:
@@ -298,7 +306,7 @@ class Deployment(Object):
 		if reinstall: arguments += " --reinstall"
 		
 		# execute & handle.
-		os.system(f"chmod +x {self.root}/deployment/installer")
+		Files.chmod(f"{self.root}/deployment/installer", "+x")
 		response = Code.execute(f"bash {self.root}/deployment/installer{arguments}")
 		if not response.success:
 			#if "Error:" in output or ("nginx: the configuration file /etc/nginx/nginx.conf syntax is ok" not in output and "nginx: configuration file /etc/nginx/nginx.conf test is successful" not in output): #"Successfully deployed domain " not in output
@@ -325,7 +333,7 @@ class Deployment(Object):
 
 		# generate.
 		if log_level >= 0: loader = Console.Loader("Generating a tls certificate ...")
-		output = dev0s.utils.__execute_script__(f"""
+		response = Code.execute(f"""
 			cd {base}
 
 			# Generate a passphrase
@@ -347,6 +355,8 @@ class Deployment(Object):
 			openssl x509 -req -sha256 -days 36500 -in server.csr -signkey server.key -out server.crt
 
 		""")
+		if not response.success: return response
+		output = response.output
 
 		# handler.
 		if not Files.exists(f"{self.database}/tls/server.key") or not Files.exists(f"{self.database}/tls/server.crt"):
@@ -462,12 +472,13 @@ class Deployment(Object):
 			return Response.success(f'Failed to rename the [{directory}/{self.domain.replace(".","_")}.crt] file to [{directory}/server.crt].', log_level=log_level)
 
 		# bundle ca.
-		dev0s.utils.__execute_script__(f"""
+		response Code.execute(f"""
 			cat {directory}/AAACertificateServices.crt {directory}/SectigoRSADomainValidationSecureServerCA.crt {directory}/Defaults.vars.userTrustRSAAAACA.crt > {self.database}/tls/server.ca-bundle
 			cat {directory}/server.crt {self.database}/tls/server.ca-bundle > {self.database}/tls/signed.server.crt
 			mv {self.database}/tls/server.crt {self.database}/tls/original.server.crt
 			cp {self.database}/tls/signed.server.crt {self.database}/tls/server.crt
 			""")
+		if not response.success: return response
 		if Files.exists(f"{self.database}/tls/signed.server.crt"):
 			return Response.success(f"Successfully bundled ssl certificate [{directory}].", log_level=log_level)
 		else:
