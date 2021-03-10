@@ -1051,9 +1051,6 @@ class Website(CLI.CLI,Traceback):
 		_indent_ = __indent__(indent)
 		str = json.dumps(_serialized_, indent=indent).replace('": "', ': ').replace('": ', ': ').replace('",', "").replace(f'\n{_indent_}"', f'\n{_indent_} * ').replace("{\n", "").replace('"\n}', "").replace("\n}", "").replace("{", "")
 		return f"<w3bsite.Website; \n{str}\n>"
-
-	def template(self, dictionary={}, update=False):
-		new = utils.__append_dict__(new=dictionary, overwrite=True,  old=dict(self.template_data))
-		if update:
-			self.template_data.dictionary = new
-		return new
+	def template(self, dictionary={}):
+		return self.template_data + dictionary
+		#
