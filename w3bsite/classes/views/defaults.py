@@ -82,6 +82,7 @@ class Request(Object):
 		self.base = gfp.clean(self.base, remove_first_slash=True)
 		self.type = "request"
 		self.template_data = template_data
+	# default view that does not require [return self.response()] but just [return response].
 	def view(self, request):
 		# default view, user needs to create default def request(self, request)
 		# can be overwritten with default def view(self, request):
@@ -101,10 +102,13 @@ class Request(Object):
 				return JsonResponse(response.dict(), safe=False)
 			except AttributeError:
 				return JsonResponse(response)
-	def maintenance(self, request=None):
-		return Response.error("Domain is under maintenance.")
+	def maintenance(self):
+		return self.error("Domain is under maintenance.")
 	def permission_denied(self, request=None):
 		return self.error("Permission denied.")
+	def _500(self, request=None, error=None):
+		utils.utils.catch_error(error)
+		return self.error("Server error 500.")
 	# do not forget the self.parameters's functions.
 
 # the django view object class.
@@ -177,7 +181,9 @@ class View(Object):
 	#@w3bsite.views.method_decorator(w3bsite.views.login_required)
 	def view(self, request):
 		return self.render(request)
-	def render(self, request, 
+	def render(self, 
+		# the request (obj) (#1)
+		request, 
 		# overwrite default template data. #2
 		template_data=None,
 		# overwrite default html #3.
@@ -188,6 +194,8 @@ class View(Object):
 		if isinstance(template_data, (Dictionary, Response.ResponseObject)): 
 			template_data = template_data.raw()
 		return render(request, html, template_data)
+
+	# error render.
 	def error(self, 
 		# the django request parameter.
 		request, 
@@ -216,6 +224,8 @@ class View(Object):
 		if isinstance(template_data, (Dictionary, Response.ResponseObject)): 
 			template_data = template_data.raw()
 		return render(request, f"w3bsite/classes/apps/defaults/html/error.html", template_data)
+
+	# default renders.
 	def maintenance(self, request, template_data=None):
 		if template_data == None: template_data = self.template_data
 		if isinstance(template_data, (Dictionary, Response.ResponseObject)): 
@@ -226,6 +236,17 @@ class View(Object):
 		if isinstance(template_data, (Dictionary, Response.ResponseObject)): 
 			template_data = template_data.raw()
 		return render(request, f"w3bsite/classes/apps/defaults/html/permission_denied.html", template_data)
+	def _500(self, request, template_data=None, error=None):
+		if template_data == None: template_data = self.template_data
+		if isinstance(template_data, (Dictionary, Response.ResponseObject)): 
+			template_data = template_data.raw()
+		utils.utils.catch_error(error)
+		return render(request, f"w3bsite/classes/apps/defaults/html/500.html", template_data)
+	def _404(self, request, template_data=None):
+		if template_data == None: template_data = self.template_data
+		if isinstance(template_data, (Dictionary, Response.ResponseObject)): 
+			template_data = template_data.raw()
+		return render(request, f"w3bsite/classes/apps/defaults/html/404.html", template_data)
 	# do not forget the self.parameters's functions.
 
 

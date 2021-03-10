@@ -16,14 +16,30 @@ class Home(w3bsite.views.View):
 			landing_page=True,
 		)
 	def view(self, request):
-		return self.render(request)
+		try:
+			
+			# return render.
+			return self.render(request)
+
+		# catch error.
+		except Exception as e: return self._505(request, error=e)
+
+		#
 
 # compact.
 class HelloWorld(w3bsite.views.View):
 	def __init__(self):
 		w3bsite.views.View.__init__(self, "dashboard/" "hello-world")
 	def view(self, request):
-		return self.render(request, website.template_data+{})
+		try:
+
+			# return render.
+			return self.render(request, website.template_data+{})
+
+		# catch error.
+		except Exception as e: return self._505(request, error=e)
+
+		#
 		
 # the active views.
 urlpatterns = w3bsite.views.build_urls([
