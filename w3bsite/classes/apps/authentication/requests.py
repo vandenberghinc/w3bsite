@@ -114,7 +114,6 @@ class Requests(_defaults_.Defaults):
 				code = Integer(0).generate(length=6)
 				title = "Sign In - Verification Code"
 				path = f"{SOURCE_PATH}/classes/apps/authentication/mail/authentication.html"
-				print("template_data 4:".upper(),self.template_data)
 				ip = utils.__get_client_ip__(request)
 				html = str(File(path, load=True).data).format(
 					# domain info.
