@@ -114,35 +114,8 @@ class Requests(_defaults_.Defaults):
 				code = Integer(0).generate(length=6)
 				title = "Sign In - Verification Code"
 				path = f"{SOURCE_PATH}/classes/apps/authentication/mail/authentication.html"
-				ip = utils.__get_client_ip__(request)
-				html = str(File(path, load=True).data).format(
-					# domain info.
-					domain=self.https_domain,
-					# code.
-					code=code,
-					# request info.
-					ip=ip,
-					timestamp=Date().seconds_timestamp,
-					# user info.
-					email=parameters.username,
-					# colors.
-					white=self.template_data["COLORS"]["white"],
-					grey=self.template_data["COLORS"]["grey"],
-					blue=self.template_data["COLORS"]["blue"],
-					purple=self.template_data["COLORS"]["purple"],
-					red=self.template_data["COLORS"]["red"],
-					pink=self.template_data["COLORS"]["pink"],
-					orange=self.template_data["COLORS"]["orange"],
-					green=self.template_data["COLORS"]["green"],
-					darkest=self.template_data["COLORS"]["darkest"],
-					darker=self.template_data["COLORS"]["darker"],
-					dark=self.template_data["COLORS"]["dark"],
-					background=self.template_data["COLORS"]["background"],
-					widgets=self.template_data["COLORS"]["widgets"],
-					widgets_reversed=self.template_data["COLORS"]["widgets_reversed"],
-					text=self.template_data["COLORS"]["text"],
-					text_reversed=self.template_data["COLORS"]["text_reversed"],
-					)
+				ip = utils.get_client_ip(request)
+				html = Files.load(path)
 
 			# make request.
 			return self.response(self.users.authenticate(
@@ -210,34 +183,7 @@ class Requests(_defaults_.Defaults):
 
 			# parse html.
 			ip = utils.__get_client_ip__(request)
-			html = str(File(path, load=True).data).format(
-				# domain info.
-				domain=self.https_domain,
-				# code.
-				code=code,
-				# request info.
-				ip=ip,
-				timestamp=Date().seconds_timestamp,
-				# user info.
-				email=username,
-				# colors.
-				white=self.template_data["COLORS"]["white"],
-				grey=self.template_data["COLORS"]["grey"],
-				blue=self.template_data["COLORS"]["blue"],
-				purple=self.template_data["COLORS"]["purple"],
-				red=self.template_data["COLORS"]["red"],
-				pink=self.template_data["COLORS"]["pink"],
-				orange=self.template_data["COLORS"]["orange"],
-				green=self.template_data["COLORS"]["green"],
-				darkest=self.template_data["COLORS"]["darkest"],
-				darker=self.template_data["COLORS"]["darker"],
-				dark=self.template_data["COLORS"]["dark"],
-				background=self.template_data["COLORS"]["background"],
-				widgets=self.template_data["COLORS"]["widgets"],
-				widgets_reversed=self.template_data["COLORS"]["widgets_reversed"],
-				text=self.template_data["COLORS"]["text"],
-				text_reversed=self.template_data["COLORS"]["text_reversed"],
-				)
+			html = Files.load(path)
 
 			# make request.
 			return self.users.send_code(
