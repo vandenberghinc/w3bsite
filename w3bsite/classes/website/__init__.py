@@ -458,8 +458,7 @@ class Website(CLI.CLI,Traceback):
 			template_data=self.template_data,
 			id_by_username=self.id_by_username,
 			aes=self.aes,
-			logging=self.logging,
-			template_data=self.template_data,)
+			logging=self.logging,)
 		self.utils = utils.Utils(attributes=self.defaults.attributes())
 
 		# objects.
