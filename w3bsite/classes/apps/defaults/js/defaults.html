@@ -77,7 +77,12 @@ function request(
 
 				// check success response.
 				if (response.success == true) {
-					console.log(" * success: "+response.message)
+					var msg = `Request (${url}) success [${xhr.status}]. ${response.message}.`
+					if (msg.last(".") == ".") {
+						msg = msg.remove_last(".")
+					}
+					console.log(msg)
+					//console.log(" * success: "+response.message)
 					if (response_element != null) {
 						response_element.style.display = "block"
 						response_element.style.color = '{{COLORS.green}}'
@@ -94,11 +99,12 @@ function request(
 
 				// check error.
 				} else if (response.error != null) {
-					if (response.error.last(".") == ".") {
-						response.error = response.error.remove_last(".")
-					}
 					var err = `Request (${url}) failed [${xhr.status}]. ${response.error}.`
-					console.log(" * error: "+err)
+					if (err.last(".") == ".") {
+						err = err.remove_last(".")
+					}
+					console.log(err)
+					//console.log(" * error: "+err)
 					if (response_element != null) {
 						response_element.style.display = "block"
 						response_element.style.color = '{{COLORS.red}}'
@@ -112,7 +118,8 @@ function request(
 				// should not happen.
 				} else {
 					var err = `Request (${url}) failed [${xhr.status}]. ${xhr.responseText}.`
-					console.log(" * error: "+err)
+					console.log(err)
+					//console.log(" * error: "+err)
 					if (response_element != null) {
 						response_element.style.display = "block"
 						response_element.style.color = '{{COLORS.red}}'
@@ -133,7 +140,8 @@ function request(
 			},
 			error: function(xhr, status, error) {
 				var err = `Request (${url}) failed [${xhr.status}]. ${error}.`
-				console.log(" * error: "+err)
+				console.log(err)
+				//console.log(" * error: "+err)
 				if (loader != null) {
 					loader.style.display = "none"
 				}
