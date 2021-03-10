@@ -83,10 +83,10 @@ class Users(_defaults_.Defaults):
 
 		# sys vars.
 		self.email = None
-		self.__timestamps__ = {}
-		self.__api_keys__ = {}
-		self.__subscriptions__ = {}
-		self.__verification_codes__ = {}
+		self.__timestamps__ = Dictionary({})
+		self.__api_keys__ = Dictionary({})
+		self.__subscriptions__ = Dictionary({})
+		self.__verification_codes__ = Dictionary(path=self.db.join("data/verification_codes"), default={}, load=True)
 
 		#
 	def get(self, 
@@ -463,6 +463,7 @@ class Users(_defaults_.Defaults):
 		response = self.get(username=username)
 		if response.error != None: return response
 		user = response["user"]
+		self.__verification_codes__.load()
 		try: self.__verification_codes__[mode]
 		except: self.__verification_codes__[mode] = {}
 		self.__verification_codes__[mode][user.email] = {
@@ -470,7 +471,8 @@ class Users(_defaults_.Defaults):
 			"stamp":Date().timestamp,
 			"attempts":3,
 		}
-		
+		self.__verification_codes__.save()
+
 		# send email.
 		if Defaults.options.log_level >= 1:
 			Response.log(f"Sending [{mode}] code to user [{user.username}], email [{user.email}].")
@@ -507,6 +509,7 @@ class Users(_defaults_.Defaults):
 		user = response["user"]
 
 		# get success.
+		self.__verification_codes__.load()
 		fail = False
 		try: self.__verification_codes__[mode]
 		except: self.__verification_codes__[mode] = {}
@@ -518,9 +521,11 @@ class Users(_defaults_.Defaults):
 			return Response.error("Incorrect verification code.")
 		elif not success: 
 			self.__verification_codes__[mode][user.email]["attempts"] -= 1
+			self.__verification_codes__.save()
 			return Response.error("Incorrect verification code.")
 		else:
 			del self.__verification_codes__[mode][user.email]
+			self.__verification_codes__.save()
 			return Response.success("Successfull verification.")
 
 		#
