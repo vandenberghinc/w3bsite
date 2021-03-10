@@ -169,10 +169,10 @@ function request(
 // Styling.
 //
 
-// switch the visible element.
-function toggle_visibility(visible_id, hidden_id, display="block") {
-	document.getElementById(visible_id).style.display = display
-	document.getElementById(hidden_id).style.display = "none"
+// toggle the visibility of 2 views.
+function toggle_views(old_visible_id, new_visisible_id, display="block") {
+	document.getElementById(old_visible_id).style.display = "none"
+	document.getElementById(new_visisible_id).style.display = display
 }
 
 // set the path in the header.
