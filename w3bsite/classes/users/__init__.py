@@ -1119,6 +1119,12 @@ class Users(_defaults_.Defaults):
 
 		#
 	def __get_path__(self, email=None, username=None, create=False):
+		if email == None and "@" in username: 
+			email = username 
+			username = None
+		if username == None and "@" not in email: 
+			username = email
+			email = None
 		if self.id_by_username:
 			if username == None and email != None:
 				response = self.get(email=email)
@@ -1126,6 +1132,7 @@ class Users(_defaults_.Defaults):
 				username = response.user.username
 			id = username
 			if "@" in username:
+
 				raise ValueError(f"Forbidden @ character found in username: [{username}].")
 		else:
 			if email == None and username != None:
