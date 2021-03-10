@@ -232,3 +232,4 @@ fi
 echo ""
 echo "Successfully deployed domain $DOMAIN."
 echo ""
+exit 0
