@@ -31,7 +31,6 @@ class Defaults(Object):
 		id_by_username=True,
 		template_data={},
 		# objects.
-		template_data=None,
 		aes=None,
 		logging=None,
 		# defaults.
