@@ -149,19 +149,9 @@ if __name__ == "__main__":
 - [__Plans__](#plans)
   * [get](#get-1)
   * [create](#create-2)
-- [__Products__](#products)
-  * [get](#get-2)
-  * [create](#create-3)
 - [__RateLimit__](#ratelimit)
   * [increment](#increment)
   * [verify](#verify)
-- [__Request__](#request)
-  * [view](#view)
-  * [success](#success)
-  * [error](#error)
-  * [response](#response)
-  * [maintenance](#maintenance)
-  * [permission_denied](#permission_denied)
 - [__Security__](#security)
   * [generate_tls](#generate_tls-1)
   * [set_secret_env](#set_secret_env)
@@ -174,30 +164,24 @@ if __name__ == "__main__":
   * [get_product_name](#get_product_name)
   * [get_plan_name](#get_plan_name)
 - [__Subscriptions__](#subscriptions)
-  * [create](#create-4)
-  * [get](#get-3)
+  * [create](#create-3)
+  * [get](#get-2)
   * [cancel](#cancel)
 - [__Users__](#users)
-  * [get](#get-4)
-  * [create](#create-5)
+  * [get](#get-3)
+  * [create](#create-4)
   * [update](#update)
   * [delete](#delete-3)
   * [verify_id_token](#verify_id_token)
 - [__VPS__](#vps)
   * [configure](#configure-1)
   * [deploy](#deploy-2)
-- [__View__](#view)
-  * [view](#view-1)
-  * [render](#render)
-  * [error](#error-1)
-  * [maintenance](#maintenance-1)
-  * [permission_denied](#permission_denied-1)
 - [__Website__](#website)
   * [initialize](#initialize)
   * [cli](#cli)
   * [deploy](#deploy-3)
   * [check_dns](#check_dns-3)
-  * [create](#create-6)
+  * [create](#create-5)
   * [serialize](#serialize)
   * [init_from_serialized](#init_from_serialized)
   * [template](#template)
@@ -207,7 +191,7 @@ The website.stripe.customers object class.
 ``` python 
 
 # import the website.stripe.customers object class.
-from w3bsite import website
+from classes.config import website
 
 ```
 
@@ -301,7 +285,7 @@ The website.db object class.
 ``` python 
 
 # import the website.db object class.
-from w3bsite import website
+from classes.config import website
 
 ```
 
@@ -350,7 +334,7 @@ The website.deployment object class.
 ``` python 
 
 # import the website.deployment object class.
-from w3bsite import website
+from classes.config import website
 
 ```
 
@@ -446,7 +430,7 @@ The website.django object class.
 ``` python 
 
 # import the website.django object class.
-from w3bsite import website
+from classes.config import website
 
 ```
 
@@ -493,7 +477,7 @@ The website.users.email object class.
 ``` python 
 
 # import the website.users.email object class.
-from w3bsite import website
+from classes.config import website
 
 ```
 
@@ -528,7 +512,7 @@ The website.firebase.firestore object class.
 ``` python 
 
 # import the website.firebase.firestore object class.
-from w3bsite import website
+from classes.config import website
 
 ```
 
@@ -575,7 +559,7 @@ The website.firebase object class.
 ``` python 
 
 # import the website.firebase object class.
-from w3bsite import website
+from classes.config import website
 
 ```
 ## FirebaseCLI:
@@ -623,7 +607,7 @@ The website.git object class.
 ``` python 
 
 # import the website.git object class.
-from w3bsite import website
+from classes.config import website
 
 ```
 
@@ -656,7 +640,7 @@ The website.heroku object class.
 ``` python 
 
 # import the website.heroku object class.
-from w3bsite import website
+from classes.config import website
 
 ```
 
@@ -777,7 +761,7 @@ The website.logging object class.
 ``` python 
 
 # import the website.logging object class.
-from w3bsite import website
+from classes.config import website
 
 ```
 
@@ -805,7 +789,7 @@ The website.namecheap object class.
 ``` python 
 
 # import the website.namecheap object class.
-from w3bsite import website
+from classes.config import website
 
 ```
 
@@ -950,7 +934,7 @@ The website.stripe.plans object class.
 ``` python 
 
 # import the website.stripe.plans object class.
-from w3bsite import website
+from classes.config import website
 
 ```
 
@@ -987,50 +971,12 @@ response = website.stripe.plans.create(
 
 ```
 
-## Products:
-The website.stripe.products object class.
-``` python 
-
-# import the website.stripe.products object class.
-from w3bsite import website
-
-```
-
-#### Functions:
-
-##### get:
-``` python
-
-# call website.stripe.products.get.
-response = website.stripe.products.get(
-    # the product id (prod_***) (optional).
-    id=None,
-    # get the plans of each products.
-    get_plans=False,
-    # get the subscription of each plan (requires get_plans=True).
-    get_subscriptions=False,
-    # get active subscriptions only (required get_subscriptions=True).
-    active_only=True, )
-
-```
-##### create:
-``` python
-
-# call website.stripe.products.create.
-response = website.stripe.products.create(
-    # the product id.
-    id=None,
-    # the product desciption.
-    description=None, )
-
-```
-
 ## RateLimit:
 The website.ratelimit object class.
 ``` python 
 
 # import the website.ratelimit object class.
-from w3bsite import website
+from classes.config import website
 
 ```
 
@@ -1076,74 +1022,12 @@ response = website.ratelimit.verify(
 
 ```
 
-## Request:
-The request object class.
-``` python 
-
-# initialize the request object class.
-request = Request(
-    # the base path (required; if url path is null) [#1 argument].
-    base=None,
-    # the requests id (required) [#2 argument].
-    id=None,
-    # the url path (optional).
-    url=None,
-    # template data (optional).
-    template_data={}, )
-
-```
-
-#### Functions:
-
-##### view:
-``` python
-
-# call request.view.
-_ = request.view(request)
-
-```
-##### success:
-``` python
-
-# call request.success.
-response = request.success(message, arguments={})
-
-```
-##### error:
-``` python
-
-# call request.error.
-response = request.error(error)
-
-```
-##### response:
-``` python
-
-# call request.response.
-_ = request.response(response)
-
-```
-##### maintenance:
-``` python
-
-# call request.maintenance.
-response = request.maintenance(request=None)
-
-```
-##### permission_denied:
-``` python
-
-# call request.permission_denied.
-_ = request.permission_denied(request=None)
-
-```
-
 ## Security:
 The website.security object class.
 ``` python 
 
 # import the website.security object class.
-from w3bsite import website
+from classes.config import website
 
 ```
 
@@ -1176,7 +1060,7 @@ The website.stripe object class.
 ``` python 
 
 # import the website.stripe object class.
-from w3bsite import website
+from classes.config import website
 
 ```
 
@@ -1230,7 +1114,7 @@ The website.stripe.subscriptions object class.
 ``` python 
 
 # import the website.stripe.subscriptions object class.
-from w3bsite import website
+from classes.config import website
 
 ```
 
@@ -1282,7 +1166,7 @@ The website.firebase.users object class.
 ``` python 
 
 # import the website.firebase.users object class.
-from w3bsite import website
+from classes.config import website
 
 ```
 
@@ -1386,85 +1270,6 @@ response = vps.configure(reinstall=False, log_level=0)
 
 # call vps.deploy.
 response = vps.deploy(code_update=False, reinstall=False, log_level=0)
-
-```
-
-## View:
-The view object class.
-``` python 
-
-# initialize the view object class.
-view = View(
-    # the base path (required; if url path is null) [#1 argument].
-    base=None,
-    # the views id (required) [#2 argument].
-    id=None,
-    # the url path (optional).
-    url=None,
-    # the html path (optional).
-    html=None,
-    # enable if this view is the [/] landing page.
-    landing_page=False,
-    # the template data (required).
-    template_data={},
-    # the object type (do not edit).
-    type="View", )
-
-```
-
-#### Functions:
-
-##### view:
-``` python
-
-# call view.view.
-_ = view.view(request)
-
-```
-##### render:
-``` python
-
-# call view.render.
-_ = view.render(request,
-    # overwrite default template data. #2
-    template_data=None,
-    # overwrite default html #3.
-    html=None, )
-
-```
-##### error:
-``` python
-
-# call view.error.
-_ = view.error(
-    # the django request parameter.
-    request,
-    # the error title.
-    title="Warning!",
-    # the error title.
-    message="Some error occured.",
-    # the error icon (the static directory is root).
-    icon="media/icons/warning.png",
-    # the redirect button text (right button).
-    redirect_button="Ok",
-    # the redirect url.
-    redirect="/dashboard/home/",
-    # overwrite default template data.
-    template_data=None)
-
-```
-##### maintenance:
-``` python
-
-# call view.maintenance.
-_ = view.maintenance(request, template_data=None)
-
-```
-##### permission_denied:
-``` python
-
-# call view.permission_denied.
-_ = view.permission_denied(request, template_data=None)
 
 ```
 
