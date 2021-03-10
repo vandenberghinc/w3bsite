@@ -3,6 +3,7 @@
 
 # imports.
 from w3bsite.classes.config import * 
+from w3bsite.classes.cache import cache
 import xmltodict 
 
 
@@ -22,10 +23,16 @@ class Utils(Object):
 			database = self.database
 		except AttributeError:
 			database = None
-		if database != None:
+		if database == None:
+			database = Environment.get("DATABASE", default=None)
+		if database != None and Files.exists(database):
 			if not Files.exists(f"{database}/logs"): os.mkdir(f"{database}/logs")
 			Response.log_file = gfp.clean(f"{database}/logs/errors")
-		Response.log(message=traceback.format_exc(), save=database != None)
+		trace = traceback.format_exc()
+		Response.log(message=trace, save=False)
+		if database != None and Files.exists(database):
+			Response.log_to_file("____________________________________________", raw=True)
+			Response.log_to_file(trace)
 		return Response.error("Server Error 500.")
 
 		#
