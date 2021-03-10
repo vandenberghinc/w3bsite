@@ -106,39 +106,14 @@ if __name__ == "__main__":
   * [save](#save-1)
   * [delete](#delete-2)
 - [__Firebase__](#firebase)
-- [__FirebaseCLI__](#firebasecli)
-  * [install](#install)
-  * [installed](#installed)
-  * [login](#login-1)
-  * [projects](#projects)
-- [__Git__](#git)
-  * [installed](#installed-1)
-  * [install](#install-1)
-  * [pull](#pull)
-- [__Heroku__](#heroku)
-  * [check](#check-1)
-  * [tail](#tail-1)
-  * [add_environment_variables](#add_environment_variables)
-  * [remove_environment_variables](#remove_environment_variables)
-  * [get_environment_variables](#get_environment_variables)
-  * [push](#push)
-  * [get_deploy_app](#get_deploy_app)
-  * [get_deploy_domain](#get_deploy_domain)
-  * [get_domains](#get_domains)
-  * [check_domain](#check_domain)
-  * [add_domain](#add_domain)
-  * [check_logged_in](#check_logged_in)
-  * [install_tls](#install_tls)
-  * [check_dns](#check_dns-1)
-  * [deploy](#deploy-1)
 - [__Logging__](#logging)
   * [log](#log)
 - [__Namecheap__](#namecheap)
-  * [check_domain](#check_domain-1)
-  * [get_domains](#get_domains-1)
+  * [check_domain](#check_domain)
+  * [get_domains](#get_domains)
   * [get_info](#get_info)
   * [get_dns](#get_dns)
-  * [check_dns](#check_dns-2)
+  * [check_dns](#check_dns-1)
   * [set_dns](#set_dns)
   * [add_dns](#add_dns)
   * [tag_dns](#tag_dns)
@@ -157,7 +132,7 @@ if __name__ == "__main__":
   * [set_secret_env](#set_secret_env)
   * [get_secret_env](#get_secret_env)
 - [__Stripe__](#stripe)
-  * [check](#check-2)
+  * [check](#check-1)
   * [get_product_id](#get_product_id)
   * [get_plan_id](#get_plan_id)
   * [get_product_id_by_plan_id](#get_product_id_by_plan_id)
@@ -175,12 +150,12 @@ if __name__ == "__main__":
   * [verify_id_token](#verify_id_token)
 - [__VPS__](#vps)
   * [configure](#configure-1)
-  * [deploy](#deploy-2)
+  * [deploy](#deploy-1)
 - [__Website__](#website)
   * [initialize](#initialize)
   * [cli](#cli)
-  * [deploy](#deploy-3)
-  * [check_dns](#check_dns-3)
+  * [deploy](#deploy-2)
+  * [check_dns](#check_dns-2)
   * [create](#create-5)
   * [serialize](#serialize)
   * [init_from_serialized](#init_from_serialized)
@@ -562,200 +537,6 @@ The website.firebase object class.
 from classes.config import website
 
 ```
-## FirebaseCLI:
-The firebasecli object class.
-``` python 
-
-# initialize the firebasecli object class.
-firebasecli = FirebaseCLI()
-
-```
-
-#### Functions:
-
-##### install:
-``` python
-
-# call firebasecli.install.
-_ = firebasecli.install()
-
-```
-##### installed:
-``` python
-
-# call firebasecli.installed.
-_ = firebasecli.installed()
-
-```
-##### login:
-``` python
-
-# call firebasecli.login.
-_ = firebasecli.login()
-
-```
-##### projects:
-``` python
-
-# call firebasecli.projects.
-_ = firebasecli.projects()
-
-```
-
-## Git:
-The website.git object class.
-``` python 
-
-# import the website.git object class.
-from classes.config import website
-
-```
-
-#### Functions:
-
-##### installed:
-``` python
-
-# call website.git.installed.
-response = website.git.installed()
-
-```
-##### install:
-``` python
-
-# call website.git.install.
-response = website.git.install()
-
-```
-##### pull:
-``` python
-
-# call website.git.pull.
-response = website.git.pull(title="Updates", message="updates.")
-
-```
-
-## Heroku:
-The website.heroku object class.
-``` python 
-
-# import the website.heroku object class.
-from classes.config import website
-
-```
-
-#### Functions:
-
-##### check:
-``` python
-
-# call website.heroku.check.
-_ = website.heroku.check()
-
-```
-##### tail:
-``` python
-
-# call website.heroku.tail.
-_ = website.heroku.tail()
-
-```
-##### add_environment_variables:
-``` python
-
-# call website.heroku.add_environment_variables.
-response = website.heroku.add_environment_variables(variables={}, silent=True)
-
-```
-##### remove_environment_variables:
-``` python
-
-# call website.heroku.remove_environment_variables.
-_ = website.heroku.remove_environment_variables(variables={})
-
-```
-##### get_environment_variables:
-``` python
-
-# call website.heroku.get_environment_variables.
-_ = website.heroku.get_environment_variables(variables={})
-
-```
-##### push:
-``` python
-
-# call website.heroku.push.
-response = website.heroku.push(log_level=0)
-
-```
-##### get_deploy_app:
-``` python
-
-# call website.heroku.get_deploy_app.
-response = website.heroku.get_deploy_app()
-
-```
-##### get_deploy_domain:
-``` python
-
-# call website.heroku.get_deploy_domain.
-response = website.heroku.get_deploy_domain(
-    # the heroku app name (optional to increase speed).
-    app=None, )
-
-```
-##### get_domains:
-``` python
-
-# call website.heroku.get_domains.
-response = website.heroku.get_domains()
-
-```
-##### check_domain:
-``` python
-
-# call website.heroku.check_domain.
-response = website.heroku.check_domain(domain=None)
-
-```
-##### add_domain:
-``` python
-
-# call website.heroku.add_domain.
-response = website.heroku.add_domain(domain=None)
-
-```
-##### check_logged_in:
-``` python
-
-# call website.heroku.check_logged_in.
-response = website.heroku.check_logged_in()
-
-```
-##### install_tls:
-``` python
-
-# call website.heroku.install_tls.
-response = website.heroku.install_tls(
-    # the heroku app name (optional to increase speed).
-    app=None, )
-
-```
-##### check_dns:
-``` python
-
-# call website.heroku.check_dns.
-response = website.heroku.check_dns(log_level=0)
-
-```
-##### deploy:
-``` python
-
-# call website.heroku.deploy.
-response = website.heroku.deploy(log_level=0)
-
-```
-
 ## Logging:
 The website.logging object class.
 ``` python 
@@ -1237,22 +1018,11 @@ response = website.firebase.users.verify_id_token(id_token)
 ```
 
 ## VPS:
-The vps object class.
+The website.vps object class.
 ``` python 
 
-# initialize the vps object class.
-vps = VPS(
-    # the remote ip address.
-    ip=None,
-    # the remote ssh port.
-    port=22,
-    # the remote username.
-    username=None,
-    # passed objects.
-    namecheap=None,
-    deployment=None,
-    # defaults.
-    defaults=None, )
+# import the website.vps object class.
+from classes.config import website
 
 ```
 
@@ -1261,15 +1031,15 @@ vps = VPS(
 ##### configure:
 ``` python
 
-# call vps.configure.
-response = vps.configure(reinstall=False, log_level=0)
+# call website.vps.configure.
+response = website.vps.configure(reinstall=False, log_level=0)
 
 ```
 ##### deploy:
 ``` python
 
-# call vps.deploy.
-response = vps.deploy(code_update=False, reinstall=False, log_level=0)
+# call website.vps.deploy.
+response = website.vps.deploy(code_update=False, reinstall=False, log_level=0)
 
 ```
 
