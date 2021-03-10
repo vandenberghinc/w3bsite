@@ -153,6 +153,8 @@ class Website(CLI.CLI,Traceback):
 		interactive=False,
 		#	production mode.
 		production=True,
+		# 	debug mode.
+		debug=False,
 		# 	the users sub path.
 		users_subpath="users/",
 		# 	id users by username.
@@ -220,6 +222,7 @@ class Website(CLI.CLI,Traceback):
 		self.prevent_heroku_deployment = prevent_heroku_deployment
 		self.interactive = interactive
 		self.production = production
+		self.debug = debug
 		self.maintenance = maintenance
 		self.firebase_enabled = firebase_enabled
 		self.stripe_enabled = stripe_enabled
@@ -343,7 +346,7 @@ class Website(CLI.CLI,Traceback):
 			"DOMAIN":str(self.domain),
 			"DATABASE":str(self.database),
 			"PRODUCTION":str(self.production),
-			"DEBUG":Environment.get("DEBUG", format=bool, default=False),
+			"DEBUG":self.debug,
 		})
 
 		# template data.
@@ -886,6 +889,7 @@ class Website(CLI.CLI,Traceback):
 			"users_subpath":self.users_subpath,
 			"id_by_username":self.id_by_username,
 			"styling":self.styling,
+			"debug":self.debug,
 		}
 
 		# save all secret variables in secrets.
@@ -993,6 +997,7 @@ class Website(CLI.CLI,Traceback):
 		self.users_subpath = serialized["users_subpath"]
 		self.id_by_username = serialized["id_by_username"]
 		self.styling = serialized["styling"]
+		self.debug = serialized["debug"]
 
 		# load secrets.
 		local_security = security.Security(
