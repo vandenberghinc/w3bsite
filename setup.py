@@ -7,7 +7,7 @@
 from setuptools import setup, find_packages
 setup(
 	name='w3bsite',
-	version='4.27.3',
+	version='4.27.4',
 	description='Some description.',
 	url='http://github.com/vandenberghinc/w3bsite',
 	author='Daan van den Bergh',
@@ -30,6 +30,7 @@ setup(
             'uwsgi',
             'xmltodict',
             'stripe',
+            'encrypti0n',
             'syst3m',
             'dev0s',
             'netw0rk',
