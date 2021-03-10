@@ -86,7 +86,10 @@ class Users(_defaults_.Defaults):
 		self.__timestamps__ = Dictionary({})
 		self.__api_keys__ = Dictionary({})
 		self.__subscriptions__ = Dictionary({})
-		self.__verification_codes__ = Dictionary(path=self.db.join("data/verification_codes"), default={}, load=self.live)
+		if self.live:
+			self.__verification_codes__ = Dictionary(path=self.db.join("data/verification_codes"), default={}, load=self.live)
+		else:
+			self.__verification_codes__ = Dictionary(path=self.db.join("data/verification_codes"))
 
 		#
 	def get(self, 
