@@ -500,14 +500,14 @@ class Users(_defaults_.Defaults):
 		self.__verification_codes__.save()
 
 		# html vars.
-		for from_, to_ in [
-			["$DOMAIN",self.domain],
-			["$USERNAME",user.username],
-			["$EMAIL",user,email],
-			["$CODE",code],
-			["$IP",ip],
-			["$TIMESTAMP",Date().timestamp],
-		]:
+		for from_, to_ in {
+			"$DOMAIN": self.domain,
+			"$USERNAME": user.username,
+			"$EMAIL": user.email,
+			"$CODE": code,
+			"$IP": ip,
+			"$TIMESTAMP": Date().timestamp,
+		}.items():
 			html = html.replace(from_, to_)
 
 		# html colors.
