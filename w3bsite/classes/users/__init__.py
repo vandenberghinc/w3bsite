@@ -511,7 +511,7 @@ class Users(_defaults_.Defaults):
 			html = html.replace(from_, to_)
 
 		# html colors.
-		for key,value in self.template_data["COLORS"]:
+		for key,value in self.template_data["COLORS"].items():
 			html = html.replace("$"+key.upper(), value)
 
 		# send email.
