@@ -512,9 +512,7 @@ class Users(_defaults_.Defaults):
 
 		# html colors.
 		for key,value in self.template_data["COLORS"].items():
-			html = html.replace("$"+key.upper(), str(value))
-		print("HTML:")
-		print(html)
+			html = html.replace(f"(${key.upper()})", f"({value})")
 
 		# send email.
 		if Defaults.options.log_level >= 1:
