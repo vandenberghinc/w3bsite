@@ -109,7 +109,8 @@ class Database(Traceback):
 		# firestore.
 		if self.mode == "firestore":
 			response = self.firestore.load_collection(path)
-			raise ValueError(f"Still to check the response of load_collection (for names iteration): [{response}].")
+			if not response.success: response.crash()
+			names = response["collection"]
 
 		# cache.
 		elif self.mode == "cache":
