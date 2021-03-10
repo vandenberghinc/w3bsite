@@ -902,8 +902,8 @@ class DocumentationView(View):
 		self.website = website
 
 		# check library.
-		if not Files.exists("static/media"): os.mkdir("static/media")
-		if not Files.exists("static/media/docs"): os.system(f"cp -r {SOURCE_PATH}/classes/views/media/docs/ static/media/docs")
+		if not Files.exists("__defaults__/static/media"): os.mkdir("__defaults__/static/media")
+		if not Files.exists("__defaults__/static/media/docs"): os.system(f"cp -r {SOURCE_PATH}/classes/views/media/docs/ __defaults__/static/media/docs")
 
 		# add template data.
 		self.colors = {
