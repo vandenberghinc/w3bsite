@@ -3,7 +3,7 @@
 
 # imports.
 from w3bsite.classes.config import *
-from w3bsite.classes import security, heroku, namecheap, utils, git, users, stripe, logging, rate_limit, aes, deployment, vps, defaults, apps, views
+from w3bsite.classes import security, heroku, namecheap, utils, git, users, stripe, logging, rate_limit, deployment, vps, defaults, apps, views
 from w3bsite.classes import database as _database_
 import django as pypi_django
 
@@ -22,7 +22,7 @@ class Website(CLI.CLI,Traceback):
 		database=None,
 		# 	the library path (optional).
 		library=None,
-		#
+		#a
 		# Deployment.
 		# 	remote depoyment, options: [local, vps, heroku].
 		remote="local",
@@ -56,8 +56,8 @@ class Website(CLI.CLI,Traceback):
 		province=None,
 		#
 		# AES.
-		#	the passphrase of the aes master-key.
-		aes_master_key=None,
+		#	the passphrase of the aes master-key (defaults is no passphrase).
+		aes_passphrase=None,
 		#
 		# Namecheap.
 		#	namecheap enabled.
@@ -204,7 +204,7 @@ class Website(CLI.CLI,Traceback):
 		self.email_smtp_host = email_smtp_host
 		self.email_smtp_port = email_smtp_port
 		self.purchase_tls_certificate = purchase_tls_certificate
-		self.aes_master_key = aes_master_key
+		self.aes_passphrase = aes_passphrase
 		self.stripe_subscriptions = stripe_subscriptions
 		self.stripe_products = stripe_products
 		self.developers = developers
@@ -241,8 +241,6 @@ class Website(CLI.CLI,Traceback):
 			if isinstance(serialized, str):
 				serialized = Files.load(serialized, format="json")
 			self.init_from_serialized(serialized=serialized)
-		if self.aes_master_key == None and "--generate-aes" not in sys.argv:
-			raise ValueError("Generate a passphrase for the aes master key with [ $ ./website.py --generate-aes] and pass it as the 'aes_master_key' parameter.")
 		#if root != dev0s.utils.__execute_script__("pwd").replace("\n",""):
 		#	raise ValueError("The ")
 
@@ -432,8 +430,10 @@ class Website(CLI.CLI,Traceback):
 			name=self.name,
 			root=self.root,
 			database=self.database,)
-		self.aes = aes.AES(
-			passphrase=self.aes_master_key)
+		self.aes = encrypti0n.aes.AES(
+			private_key=f"{self.root}/__defaults__/aes/private_key",
+			private_key=f"{self.root}/__defaults__/aes/public_key",
+			passphrase=self.aes_passphrase)
 		self.defaults = defaults.Defaults(
 			root=self.root,
 			library=self.library,
@@ -572,7 +572,7 @@ class Website(CLI.CLI,Traceback):
 				"    --restart":"Restart the nginx webserver.",
 				"    --status":"Retrieve the status of the nginx webserver.",
 				"Deployment":"*chapter*",
-				"    --generate-aes":"Generate an aes passphrase.",
+				"    --generate-aes-passphrase":"Generate an aes passphrase.",
 				"    --generate-tls":"Generate a tls certificate.",
 				"    --activate-tls":"Activate the generated tls certificate.",
 				"    --bundle-tls /path/to/downloaded/cert/":"Bundle the downloaded signed certificate from the CA.",
@@ -742,7 +742,7 @@ class Website(CLI.CLI,Traceback):
 			Response.log(response=response)
 
 		# generate aes passphrase.
-		elif self.arguments.present("--generate-aes"):
+		elif self.arguments.present("--generate-aes-passphrase"):
 			print(f"Generated AES Passphrase: {utils.__generate__(length=64, capitalize=True, digits=True)}")
 
 		# invalid.
@@ -928,7 +928,7 @@ class Website(CLI.CLI,Traceback):
 				"ADDRESS":self.email_address,
 				"PASSWORD":self.email_password,
 			},
-			"AES_MASTER_KEY":self.aes_master_key,
+			"AES_PASSPHRASE":self.aes_passphrase,
 			"NAMECHEAP_USERNAME":self.namecheap_username,
 			"NAMECHEAP_API_KEY":self.namecheap_api_key,
 			# add these for the settings.py
@@ -1025,7 +1025,7 @@ class Website(CLI.CLI,Traceback):
 		self.stripe_publishable_key = local_security.get_secret_env("STRIPE_PUBLISHABLE_KEY", default=None, required=self.stripe_enabled)
 		self.email_address = local_security.get_secret_env("EMAIL_ADDRESS", default=None, required=self.email_enabled)
 		self.email_password = local_security.get_secret_env("EMAIL_PASSWORD", default=None, required=self.email_enabled)
-		self.aes_master_key = local_security.get_secret_env("AES_MASTER_KEY", default=None, required=not migrations)
+		self.aes_passphrase = local_security.get_secret_env("AES_PASSPHRASE", default=None, required=not migrations)
 		self.namecheap_username = local_security.get_secret_env("NAMECHEAP_USERNAME", default=self.namecheap_enabled)
 		self.namecheap_api_key = local_security.get_secret_env("NAMECHEAP_API_KEY", default=self.namecheap_enabled)
 
