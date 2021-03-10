@@ -473,6 +473,21 @@ class Users(_defaults_.Defaults):
 		}
 		self.__verification_codes__.save()
 
+		# html vars.
+		for from_, to_ in [
+			"$DOMAIN",self.domain,
+			"$USERNAME",user.username,
+			"$EMAIL",user,email,
+			"$CODE",code,
+			"$IP",ip,
+			"$TIMESTAMP",Date().timestamp,
+		]:
+			html = html.replace(from_, to_)
+
+		# html colors.
+		for key,value in self.template_data["COLORS"]:
+			html = html.replace("$"+key.upper(), value)
+
 		# send email.
 		if Defaults.options.log_level >= 1:
 			Response.log(f"Sending [{mode}] code to user [{user.username}], email [{user.email}].")

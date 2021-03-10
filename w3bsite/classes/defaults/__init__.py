@@ -29,6 +29,7 @@ class Defaults(Object):
 		maintenance=False,
 		users_subpath="users/",
 		id_by_username=True,
+		template_data={},
 		# objects.
 		template_data=None,
 		aes=None,
@@ -62,6 +63,7 @@ class Defaults(Object):
 		self._maintenance_ = maintenance
 		self.users_subpath = users_subpath
 		self.id_by_username = id_by_username
+		self.template_data  = template_data
 
 		# objects.
 		self.template_data = template_data
