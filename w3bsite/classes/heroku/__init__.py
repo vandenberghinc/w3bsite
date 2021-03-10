@@ -30,6 +30,12 @@ class Heroku(object):
 		logging=None,
 	):
 
+		# docs.
+		Docs.__init__(self,
+			initialized=True,
+			module="website.heroku", 
+			notes=[], )
+
 		# arguments.
 		self.root = root
 		self.domain = domain

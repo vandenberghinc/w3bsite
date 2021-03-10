@@ -23,6 +23,13 @@ class Django(_defaults_.Defaults):
 		defaults=None,
 	):
 
+
+		# docs.
+		Docs.__init__(self,
+			initialized=True,
+			module="website.django", 
+			notes=[], )
+
 		# defaults.
 		_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.django",)
 		self.assign(defaults.dict())
@@ -178,6 +185,12 @@ class Users(_defaults_.Defaults):
 		# defaults.
 		defaults=None,
 	):
+
+		# docs.
+		Docs.__init__(self,
+			initialized=True,
+			module="website.django.users", 
+			notes=[], )
 
 		# defaults.
 		_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.django.users")

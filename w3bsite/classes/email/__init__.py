@@ -22,6 +22,14 @@ class Email(object):
 		use_tls=True,
 		visible_email=None,
 	):
+
+		# docs.
+		Docs.__init__(self,
+			initialized=True,
+			module="website.users.email", 
+			notes=[], )
+
+		# attributes.
 		self.email = str(email)
 		self.password = str(password)
 		self.smtp_host = str(smtp_host)

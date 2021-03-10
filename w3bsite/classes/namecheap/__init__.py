@@ -25,6 +25,12 @@ class Namecheap(Object):
 		sandbox=False,
 	):	
 
+		# docs.
+		Docs.__init__(self,
+			initialized=True,
+			module="website.namecheap", 
+			notes=[], )
+
 		# defaults.
 		Object.__init__(self, traceback="w3bsite.Website.namecheap",)
 		

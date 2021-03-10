@@ -15,6 +15,12 @@ class Security(_defaults_.Defaults):
 		defaults=None,
 	):	
 		
+		# docs.
+		Docs.__init__(self,
+			initialized=True,
+			module="website.security", 
+			notes=[], )
+
 		# defaults.
 		if defaults != None:
 			_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.security",)

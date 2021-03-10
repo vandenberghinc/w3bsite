@@ -11,6 +11,8 @@ Supported Operating Systems: macos & linux.<br>
 ## Table of content:
   * [Description](#description)
   * [Installation](#installation)
+  * [Troubleshooting](#troubleshooting)
+  * [Setup.](#setup.)
   * [Code Examples](#code-examples)
 
 # Description:
@@ -21,14 +23,14 @@ Install the package.
 
 	pip3 install w3bsite --upgrade
 
-## Troubleshooting:
+# Troubleshooting:
 
 #### Apple Silicon M1:
 
 ##### Failed to install grpcio
 	arch -arch x86_64 /usr/bin/python3 -m pip install firebase-admin
 
-## Setup.
+# Setup.
 
 #### Namecheap.
 1: Go to https://namecheap.com and sign up / sign in.  <br>
@@ -38,8 +40,8 @@ Install the package.
 5: Whitelist your public ip (https://aruljohn.com). <br>
 6: Note / copy the api key which will be required later. <br>
 
-#### /.website.py
-Create a file named "website.py" in your websites root directory.
+#### /website.py
+Create a file named "website.py" in your website's root directory.
 	
 	my-website/
 		website.py
@@ -75,7 +77,6 @@ if __name__ == "__main__":
   * [delete](#delete-1)
   * [join](#join)
   * [names](#names)
-- [__Defaults__](#defaults)
 - [__Deployment__](#deployment)
   * [start](#start)
   * [stop](#stop)
@@ -114,10 +115,6 @@ if __name__ == "__main__":
   * [installed](#installed-1)
   * [install](#install-1)
   * [pull](#pull)
-- [__HelloWorld__](#helloworld)
-  * [view](#view)
-- [__HelloWorldSmall__](#helloworldsmall)
-  * [view](#view-1)
 - [__Heroku__](#heroku)
   * [check](#check-1)
   * [tail](#tail-1)
@@ -134,8 +131,6 @@ if __name__ == "__main__":
   * [install_tls](#install_tls)
   * [check_dns](#check_dns-1)
   * [deploy](#deploy-1)
-- [__Home__](#home)
-  * [view](#view-2)
 - [__Logging__](#logging)
   * [log](#log)
 - [__Namecheap__](#namecheap)
@@ -161,7 +156,7 @@ if __name__ == "__main__":
   * [increment](#increment)
   * [verify](#verify)
 - [__Request__](#request)
-  * [view](#view-3)
+  * [view](#view)
   * [success](#success)
   * [error](#error)
   * [response](#response)
@@ -182,8 +177,6 @@ if __name__ == "__main__":
   * [create](#create-4)
   * [get](#get-3)
   * [cancel](#cancel)
-- [__TemplateData__](#templatedata)
-  * [raw](#raw)
 - [__Users__](#users)
   * [get](#get-4)
   * [create](#create-5)
@@ -194,7 +187,7 @@ if __name__ == "__main__":
   * [configure](#configure-1)
   * [deploy](#deploy-2)
 - [__View__](#view)
-  * [view](#view-4)
+  * [view](#view-1)
   * [render](#render)
   * [error](#error-1)
   * [maintenance](#maintenance-1)
@@ -210,11 +203,11 @@ if __name__ == "__main__":
   * [template](#template)
 
 ## Customers:
-The customers object class.
+The website.stripe.customers object class.
 ``` python 
 
-# initialize the customers object class.
-customers = Customers(defaults=None)
+# import the website.stripe.customers object class.
+from w3bsite import website
 
 ```
 
@@ -223,8 +216,8 @@ customers = Customers(defaults=None)
 ##### check:
 ``` python
 
-# call customers.check.
-response = customers.check(
+# call website.stripe.customers.check.
+response = website.stripe.customers.check(
     # the users email.
     email=None, )
 
@@ -232,8 +225,8 @@ response = customers.check(
 ##### create:
 ``` python
 
-# call customers.create.
-response = customers.create(
+# call website.stripe.customers.create.
+response = website.stripe.customers.create(
     # the users email.
     email=None, )
 
@@ -241,8 +234,8 @@ response = customers.create(
 ##### delete:
 ``` python
 
-# call customers.delete.
-response = customers.delete(
+# call website.stripe.customers.delete.
+response = website.stripe.customers.delete(
     # the stripe customer id.
     id=None, )
 
@@ -250,8 +243,8 @@ response = customers.delete(
 ##### get_id:
 ``` python
 
-# call customers.get_id.
-response = customers.get_id(
+# call website.stripe.customers.get_id.
+response = website.stripe.customers.get_id(
     # the users email.
     email=None, )
 
@@ -259,8 +252,8 @@ response = customers.get_id(
 ##### get:
 ``` python
 
-# call customers.get.
-response = customers.get(
+# call website.stripe.customers.get.
+response = website.stripe.customers.get(
     # the stripe customer id (optional).
     id=None, )
 
@@ -268,8 +261,8 @@ response = customers.get(
 ##### get_cards:
 ``` python
 
-# call customers.get_cards.
-response = customers.get_cards(
+# call website.stripe.customers.get_cards.
+response = website.stripe.customers.get_cards(
     # the stripe customer id.
     id=None, )
 
@@ -277,8 +270,8 @@ response = customers.get_cards(
 ##### create_card:
 ``` python
 
-# call customers.create_card.
-response = customers.create_card(
+# call website.stripe.customers.create_card.
+response = website.stripe.customers.create_card(
     # the stripe customer id.
     id=None,
     # the card holders name.
@@ -296,19 +289,19 @@ response = customers.create_card(
 ##### delete_card:
 ``` python
 
-# call customers.delete_card.
-response = customers.delete_card(
+# call website.stripe.customers.delete_card.
+response = website.stripe.customers.delete_card(
     # the stripe customer id.
     id=None, )
 
 ```
 
 ## Database:
-The database object class.
+The website.db object class.
 ``` python 
 
-# initialize the database object class.
-database = Database(firestore=None, path=None, live=False)
+# import the website.db object class.
+from w3bsite import website
 
 ```
 
@@ -317,108 +310,47 @@ database = Database(firestore=None, path=None, live=False)
 ##### load:
 ``` python
 
-# call database.load.
-response = database.load(path=None)
+# call website.db.load.
+response = website.db.load(path=None)
 
 ```
 ##### save:
 ``` python
 
-# call database.save.
-response = database.save(path=None, data=None, overwrite=False)
+# call website.db.save.
+response = website.db.save(path=None, data=None, overwrite=False)
 
 ```
 ##### delete:
 ``` python
 
-# call database.delete.
-response = database.delete(path=None, data=None)
+# call website.db.delete.
+response = website.db.delete(path=None, data=None)
 
 ```
 ##### join:
 ``` python
 
-# call database.join.
-_ = database.join(path)
+# call website.db.join.
+_ = website.db.join(path)
 
 ```
 ##### names:
 ``` python
 
-# call database.names.
-_ = database.names(
+# call website.db.names.
+_ = website.db.names(
     # the sub path (leave None to use the root path)
     path=None, )
 
 ```
 
-## Defaults:
-The defaults object class.
-``` python 
-
-# initialize the defaults object class.
-defaults = Defaults(
-    # info.
-    root=None,
-    library=None,
-    database=None,
-    name=None,
-    domain=None,
-    https_domain=None,
-    author=None,
-    email=None,
-    country_code=None,
-    province=None,
-    city=None,
-    organization=None,
-    organization_unit=None,
-    developers=None,
-    remote=None,
-    live=True,
-    interactive=False,
-    _2fa=False,
-    maintenance=False,
-    users_subpath="users/",
-    id_by_username=True,
-    template_data={},
-    # objects.
-    aes=None,
-    logging=None,
-    # defaults.
-    traceback="w3bsite.Website.defaults", )
-
-```
 ## Deployment:
-The deployment object class.
+The website.deployment object class.
 ``` python 
 
-# initialize the deployment object class.
-deployment = Deployment(
-    # the root path.
-    root=None,
-    # the library path.
-    library=None,
-    # the website name.
-    name=None,
-    # the domain.
-    domain=None,
-    # the database path.
-    database=None,
-    # the remote.
-    remote=None,
-    # the vps ip (if remote is vps else leave default).
-    vps_ip=None,
-    vps_username=None,
-    # the organization's email.
-    email=None,
-    country_code="NL",
-    province="Amsterdam",
-    city="Amsterdam",
-    organization=None,
-    organization_unit="IT",
-    # the organization info.
-    # objects.
-    namecheap=None, )
+# import the website.deployment object class.
+from w3bsite import website
 
 ```
 
@@ -427,98 +359,94 @@ deployment = Deployment(
 ##### start:
 ``` python
 
-# call deployment.start.
-response = deployment.start()
+# call website.deployment.start.
+response = website.deployment.start()
 
 ```
 ##### stop:
 ``` python
 
-# call deployment.stop.
-response = deployment.stop()
+# call website.deployment.stop.
+response = website.deployment.stop()
 
 ```
 ##### restart:
 ``` python
 
-# call deployment.restart.
-response = deployment.restart()
+# call website.deployment.restart.
+response = website.deployment.restart()
 
 ```
 ##### status:
 ``` python
 
-# call deployment.status.
-response = deployment.status()
+# call website.deployment.status.
+response = website.deployment.status()
 
 ```
 ##### reset_logs:
 ``` python
 
-# call deployment.reset_logs.
-response = deployment.reset_logs()
+# call website.deployment.reset_logs.
+response = website.deployment.reset_logs()
 
 ```
 ##### tail:
 ``` python
 
-# call deployment.tail.
-response = deployment.tail(nginx=False, debug=False)
+# call website.deployment.tail.
+response = website.deployment.tail(nginx=False, debug=False)
 
 ```
 ##### configure:
 ``` python
 
-# call deployment.configure.
-response = deployment.configure(reinstall=False, log_level=0, loader=None)
+# call website.deployment.configure.
+response = website.deployment.configure(reinstall=False, log_level=0, loader=None)
 
 ```
 ##### deploy:
 ``` python
 
-# call deployment.deploy.
-response = deployment.deploy(code_update=False, reinstall=False, log_level=0)
+# call website.deployment.deploy.
+response = website.deployment.deploy(code_update=False, reinstall=False, log_level=0)
 
 ```
 ##### generate_tls:
 ``` python
 
-# call deployment.generate_tls.
-response = deployment.generate_tls(log_level=0)
+# call website.deployment.generate_tls.
+response = website.deployment.generate_tls(log_level=0)
 
 ```
 ##### activate_tls:
 ``` python
 
-# call deployment.activate_tls.
-response = deployment.activate_tls(log_level=0)
+# call website.deployment.activate_tls.
+response = website.deployment.activate_tls(log_level=0)
 
 ```
 ##### bundle_tls:
 ``` python
 
-# call deployment.bundle_tls.
-response = deployment.bundle_tls(directory, log_level=0)
+# call website.deployment.bundle_tls.
+response = website.deployment.bundle_tls(directory, log_level=0)
 
 ```
 ##### check_dns:
 ``` python
 
-# call deployment.check_dns.
-response = deployment.check_dns(log_level=0)
+# call website.deployment.check_dns.
+response = website.deployment.check_dns(log_level=0)
 
 ```
 
 ## Django:
-The django object class.
+The website.django object class.
 ``` python 
 
-# initialize the django object class.
-django = Django(
-    # the security object.
-    security=None,
-    # defaults.
-    defaults=None, )
+# import the website.django object class.
+from w3bsite import website
 
 ```
 
@@ -527,51 +455,45 @@ django = Django(
 ##### start:
 ``` python
 
-# call django.start.
-response = django.start(host="127.0.0.1", port="8000", production=False)
+# call website.django.start.
+response = website.django.start(host="127.0.0.1", port="8000", production=False)
 
 ```
 ##### create:
 ``` python
 
-# call django.create.
-response = django.create()
+# call website.django.create.
+response = website.django.create()
 
 ```
 ##### create_app:
 ``` python
 
-# call django.create_app.
-response = django.create_app(name="home")
+# call website.django.create_app.
+response = website.django.create_app(name="home")
 
 ```
 ##### migrations:
 ``` python
 
-# call django.migrations.
-response = django.migrations(forced=False, log_level=Defaults.options.log_level)
+# call website.django.migrations.
+response = website.django.migrations(forced=False, log_level=Defaults.options.log_level)
 
 ```
 ##### collect_static:
 ``` python
 
-# call django.collect_static.
-response = django.collect_static(log_level=Defaults.options.log_level)
+# call website.django.collect_static.
+response = website.django.collect_static(log_level=Defaults.options.log_level)
 
 ```
 
 ## Email:
-The email object class.
+The website.users.email object class.
 ``` python 
 
-# initialize the email object class.
-email = Email(
-    email=None, # must be first parameter.
-    password=None, # must be second parameter.
-    smtp_host="smtp.gmail.com",
-    smtp_port=587,
-    use_tls=True,
-    visible_email=None, )
+# import the website.users.email object class.
+from w3bsite import website
 
 ```
 
@@ -580,15 +502,15 @@ email = Email(
 ##### login:
 ``` python
 
-# call email.login.
-response = email.login(timeout=3)
+# call website.users.email.login.
+response = website.users.email.login(timeout=3)
 
 ```
 ##### send:
 ``` python
 
-# call email.send.
-response = email.send(
+# call website.users.email.send.
+response = website.users.email.send(
     # the email's subject.
     subject="Subject.",
     # define either html or html_path.
@@ -602,11 +524,11 @@ response = email.send(
 ```
 
 ## FireStore:
-The fire_store object class.
+The website.firebase.firestore object class.
 ``` python 
 
-# initialize the fire_store object class.
-fire_store = FireStore()
+# import the website.firebase.firestore object class.
+from w3bsite import website
 
 ```
 
@@ -615,51 +537,45 @@ fire_store = FireStore()
 ##### list:
 ``` python
 
-# call fire_store.list.
-response = fire_store.list(reference)
+# call website.firebase.firestore.list.
+response = website.firebase.firestore.list(reference)
 
 ```
 ##### load:
 ``` python
 
-# call fire_store.load.
-response = fire_store.load(reference)
+# call website.firebase.firestore.load.
+response = website.firebase.firestore.load(reference)
 
 ```
 ##### load_collection:
 ``` python
 
-# call fire_store.load_collection.
-response = fire_store.load_collection(reference)
+# call website.firebase.firestore.load_collection.
+response = website.firebase.firestore.load_collection(reference)
 
 ```
 ##### save:
 ``` python
 
-# call fire_store.save.
-response = fire_store.save(reference, data)
+# call website.firebase.firestore.save.
+response = website.firebase.firestore.save(reference, data)
 
 ```
 ##### delete:
 ``` python
 
-# call fire_store.delete.
-response = fire_store.delete(reference)
+# call website.firebase.firestore.delete.
+response = website.firebase.firestore.delete(reference)
 
 ```
 
 ## Firebase:
-The firebase object class.
+The website.firebase object class.
 ``` python 
 
-# initialize the firebase object class.
-firebase = Firebase(
-    # the firebase key.
-    key=None,
-    # the firebase js config.
-    firebase_js={},
-    # defaults.
-    defaults=None, )
+# import the website.firebase object class.
+from w3bsite import website
 
 ```
 ## FirebaseCLI:
@@ -703,13 +619,11 @@ _ = firebasecli.projects()
 ```
 
 ## Git:
-The git object class.
+The website.git object class.
 ``` python 
 
-# initialize the git object class.
-git = Git(
-    # defaults.
-    defaults=None, )
+# import the website.git object class.
+from w3bsite import website
 
 ```
 
@@ -718,78 +632,31 @@ git = Git(
 ##### installed:
 ``` python
 
-# call git.installed.
-response = git.installed()
+# call website.git.installed.
+response = website.git.installed()
 
 ```
 ##### install:
 ``` python
 
-# call git.install.
-response = git.install()
+# call website.git.install.
+response = website.git.install()
 
 ```
 ##### pull:
 ``` python
 
-# call git.pull.
-response = git.pull(title="Updates", message="updates.")
-
-```
-
-## HelloWorld:
-The hello_world object class.
-``` python 
-
-# initialize the hello_world object class.
-hello_world = HelloWorld()
-
-```
-
-#### Functions:
-
-##### view:
-``` python
-
-# call hello_world.view.
-_ = hello_world.view(request)
-
-```
-
-## HelloWorldSmall:
-The hello_world_small object class.
-``` python 
-
-# initialize the hello_world_small object class.
-hello_world_small = HelloWorldSmall()
-
-```
-
-#### Functions:
-
-##### view:
-``` python
-
-# call hello_world_small.view.
-_ = hello_world_small.view(request)
+# call website.git.pull.
+response = website.git.pull(title="Updates", message="updates.")
 
 ```
 
 ## Heroku:
-The heroku object class.
+The website.heroku object class.
 ``` python 
 
-# initialize the heroku object class.
-heroku = Heroku(
-    # the root path.
-    root=None,
-    # the domain.
-    doman=None,
-    # the website name.
-    name=None,
-    # passed objects.
-    namecheap=None,
-    logging=None, )
+# import the website.heroku object class.
+from w3bsite import website
 
 ```
 
@@ -798,57 +665,57 @@ heroku = Heroku(
 ##### check:
 ``` python
 
-# call heroku.check.
-_ = heroku.check()
+# call website.heroku.check.
+_ = website.heroku.check()
 
 ```
 ##### tail:
 ``` python
 
-# call heroku.tail.
-_ = heroku.tail()
+# call website.heroku.tail.
+_ = website.heroku.tail()
 
 ```
 ##### add_environment_variables:
 ``` python
 
-# call heroku.add_environment_variables.
-response = heroku.add_environment_variables(variables={}, silent=True)
+# call website.heroku.add_environment_variables.
+response = website.heroku.add_environment_variables(variables={}, silent=True)
 
 ```
 ##### remove_environment_variables:
 ``` python
 
-# call heroku.remove_environment_variables.
-_ = heroku.remove_environment_variables(variables={})
+# call website.heroku.remove_environment_variables.
+_ = website.heroku.remove_environment_variables(variables={})
 
 ```
 ##### get_environment_variables:
 ``` python
 
-# call heroku.get_environment_variables.
-_ = heroku.get_environment_variables(variables={})
+# call website.heroku.get_environment_variables.
+_ = website.heroku.get_environment_variables(variables={})
 
 ```
 ##### push:
 ``` python
 
-# call heroku.push.
-response = heroku.push(log_level=0)
+# call website.heroku.push.
+response = website.heroku.push(log_level=0)
 
 ```
 ##### get_deploy_app:
 ``` python
 
-# call heroku.get_deploy_app.
-response = heroku.get_deploy_app()
+# call website.heroku.get_deploy_app.
+response = website.heroku.get_deploy_app()
 
 ```
 ##### get_deploy_domain:
 ``` python
 
-# call heroku.get_deploy_domain.
-response = heroku.get_deploy_domain(
+# call website.heroku.get_deploy_domain.
+response = website.heroku.get_deploy_domain(
     # the heroku app name (optional to increase speed).
     app=None, )
 
@@ -856,36 +723,36 @@ response = heroku.get_deploy_domain(
 ##### get_domains:
 ``` python
 
-# call heroku.get_domains.
-response = heroku.get_domains()
+# call website.heroku.get_domains.
+response = website.heroku.get_domains()
 
 ```
 ##### check_domain:
 ``` python
 
-# call heroku.check_domain.
-response = heroku.check_domain(domain=None)
+# call website.heroku.check_domain.
+response = website.heroku.check_domain(domain=None)
 
 ```
 ##### add_domain:
 ``` python
 
-# call heroku.add_domain.
-response = heroku.add_domain(domain=None)
+# call website.heroku.add_domain.
+response = website.heroku.add_domain(domain=None)
 
 ```
 ##### check_logged_in:
 ``` python
 
-# call heroku.check_logged_in.
-response = heroku.check_logged_in()
+# call website.heroku.check_logged_in.
+response = website.heroku.check_logged_in()
 
 ```
 ##### install_tls:
 ``` python
 
-# call heroku.install_tls.
-response = heroku.install_tls(
+# call website.heroku.install_tls.
+response = website.heroku.install_tls(
     # the heroku app name (optional to increase speed).
     app=None, )
 
@@ -893,43 +760,24 @@ response = heroku.install_tls(
 ##### check_dns:
 ``` python
 
-# call heroku.check_dns.
-response = heroku.check_dns(log_level=0)
+# call website.heroku.check_dns.
+response = website.heroku.check_dns(log_level=0)
 
 ```
 ##### deploy:
 ``` python
 
-# call heroku.deploy.
-response = heroku.deploy(log_level=0)
-
-```
-
-## Home:
-The home object class.
-``` python 
-
-# initialize the home object class.
-home = Home()
-
-```
-
-#### Functions:
-
-##### view:
-``` python
-
-# call home.view.
-_ = home.view(request)
+# call website.heroku.deploy.
+response = website.heroku.deploy(log_level=0)
 
 ```
 
 ## Logging:
-The logging object class.
+The website.logging object class.
 ``` python 
 
-# initialize the logging object class.
-logging = Logging(name=None, root=None, database=None)
+# import the website.logging object class.
+from w3bsite import website
 
 ```
 
@@ -938,8 +786,8 @@ logging = Logging(name=None, root=None, database=None)
 ##### log:
 ``` python
 
-# call logging.log.
-_ = logging.log(
+# call website.logging.log.
+_ = website.logging.log(
     # option 1.
     #     the message response body.
     message=None,
@@ -953,23 +801,11 @@ _ = logging.log(
 ```
 
 ## Namecheap:
-The namecheap object class.
+The website.namecheap object class.
 ``` python 
 
-# initialize the namecheap object class.
-namecheap = Namecheap(
-    # your namecheap username.
-    username=None,
-    # your namecheap api key.
-    api_key=None,
-    # the root path.
-    root=None,
-    # the domain.
-    domain=None,
-    # the organization's email.
-    email=None,
-    # sandbox boolean (does not seem to work namecheap end).
-    sandbox=False, )
+# import the website.namecheap object class.
+from w3bsite import website
 
 ```
 
@@ -978,36 +814,36 @@ namecheap = Namecheap(
 ##### check_domain:
 ``` python
 
-# call namecheap.check_domain.
-response = namecheap.check_domain(domain=None)
+# call website.namecheap.check_domain.
+response = website.namecheap.check_domain(domain=None)
 
 ```
 ##### get_domains:
 ``` python
 
-# call namecheap.get_domains.
-response = namecheap.get_domains()
+# call website.namecheap.get_domains.
+response = website.namecheap.get_domains()
 
 ```
 ##### get_info:
 ``` python
 
-# call namecheap.get_info.
-response = namecheap.get_info(domain=None)
+# call website.namecheap.get_info.
+response = website.namecheap.get_info(domain=None)
 
 ```
 ##### get_dns:
 ``` python
 
-# call namecheap.get_dns.
-response = namecheap.get_dns(domain=None)
+# call website.namecheap.get_dns.
+response = website.namecheap.get_dns(domain=None)
 
 ```
 ##### check_dns:
 ``` python
 
-# call namecheap.check_dns.
-response = namecheap.check_dns(
+# call website.namecheap.check_dns.
+response = website.namecheap.check_dns(
     # the domain (optional).
     domain=None,
     # the dns record type,
@@ -1023,8 +859,8 @@ response = namecheap.check_dns(
 ##### set_dns:
 ``` python
 
-# call namecheap.set_dns.
-response = namecheap.set_dns(
+# call website.namecheap.set_dns.
+response = website.namecheap.set_dns(
     # the domain (optional).
     domain=None,
     # the dns records (erases all others).
@@ -1045,8 +881,8 @@ response = namecheap.set_dns(
 ##### add_dns:
 ``` python
 
-# call namecheap.add_dns.
-response = namecheap.add_dns(
+# call website.namecheap.add_dns.
+response = website.namecheap.add_dns(
     # the domain (optional).
     domain=None,
     # the dns record type,
@@ -1064,8 +900,8 @@ response = namecheap.add_dns(
 ##### tag_dns:
 ``` python
 
-# call namecheap.tag_dns.
-response = namecheap.tag_dns(
+# call website.namecheap.tag_dns.
+response = website.namecheap.tag_dns(
     # the dns record type,
     type=None,
     # the dns record host,
@@ -1077,22 +913,22 @@ response = namecheap.tag_dns(
 ##### get_sld_and_tld:
 ``` python
 
-# call namecheap.get_sld_and_tld.
-response = namecheap.get_sld_and_tld(domain=None)
+# call website.namecheap.get_sld_and_tld.
+response = website.namecheap.get_sld_and_tld(domain=None)
 
 ```
 ##### get_tls:
 ``` python
 
-# call namecheap.get_tls.
-response = namecheap.get_tls()
+# call website.namecheap.get_tls.
+response = website.namecheap.get_tls()
 
 ```
 ##### create_tls:
 ``` python
 
-# call namecheap.create_tls.
-response = namecheap.create_tls(
+# call website.namecheap.create_tls.
+response = website.namecheap.create_tls(
     # the expiration years.
     years=2,
     # the tls type.
@@ -1102,19 +938,19 @@ response = namecheap.create_tls(
 ##### activate_tls:
 ``` python
 
-# call namecheap.activate_tls.
-response = namecheap.activate_tls(
+# call website.namecheap.activate_tls.
+response = website.namecheap.activate_tls(
     # the certificate's id.
     certificate_id=None, )
 
 ```
 
 ## Plans:
-The plans object class.
+The website.stripe.plans object class.
 ``` python 
 
-# initialize the plans object class.
-plans = Plans(defaults=None, subscriptions=None)
+# import the website.stripe.plans object class.
+from w3bsite import website
 
 ```
 
@@ -1123,8 +959,8 @@ plans = Plans(defaults=None, subscriptions=None)
 ##### get:
 ``` python
 
-# call plans.get.
-response = plans.get(
+# call website.stripe.plans.get.
+response = website.stripe.plans.get(
     # the plan id (plan_***) (optional).
     id=None,
     # get the subscriptions of the plan.
@@ -1136,8 +972,8 @@ response = plans.get(
 ##### create:
 ``` python
 
-# call plans.create.
-response = plans.create(
+# call website.stripe.plans.create.
+response = website.stripe.plans.create(
     # the plan id.
     id=None,
     # the product id.
@@ -1152,11 +988,11 @@ response = plans.create(
 ```
 
 ## Products:
-The products object class.
+The website.stripe.products object class.
 ``` python 
 
-# initialize the products object class.
-products = Products(defaults=None, plans=None)
+# import the website.stripe.products object class.
+from w3bsite import website
 
 ```
 
@@ -1165,8 +1001,8 @@ products = Products(defaults=None, plans=None)
 ##### get:
 ``` python
 
-# call products.get.
-response = products.get(
+# call website.stripe.products.get.
+response = website.stripe.products.get(
     # the product id (prod_***) (optional).
     id=None,
     # get the plans of each products.
@@ -1180,8 +1016,8 @@ response = products.get(
 ##### create:
 ``` python
 
-# call products.create.
-response = products.create(
+# call website.stripe.products.create.
+response = website.stripe.products.create(
     # the product id.
     id=None,
     # the product desciption.
@@ -1190,15 +1026,11 @@ response = products.create(
 ```
 
 ## RateLimit:
-The rate_limit object class.
+The website.ratelimit object class.
 ``` python 
 
-# initialize the rate_limit object class.
-rate_limit = RateLimit(
-    # objects.
-    db=None,
-    # defaults.
-    defaults=None, )
+# import the website.ratelimit object class.
+from w3bsite import website
 
 ```
 
@@ -1207,8 +1039,8 @@ rate_limit = RateLimit(
 ##### increment:
 ``` python
 
-# call rate_limit.increment.
-response = rate_limit.increment(
+# call website.ratelimit.increment.
+response = website.ratelimit.increment(
     # user identification options (select one option):
     #    option 1: user email.
     email=None,
@@ -1224,8 +1056,8 @@ response = rate_limit.increment(
 ##### verify:
 ``` python
 
-# call rate_limit.verify.
-response = rate_limit.verify(
+# call website.ratelimit.verify.
+response = website.ratelimit.verify(
     # user identification options (select one option):
     #    option 1: user email.
     email=None,
@@ -1307,15 +1139,11 @@ _ = request.permission_denied(request=None)
 ```
 
 ## Security:
-The security object class.
+The website.security object class.
 ``` python 
 
-# initialize the security object class.
-security = Security(
-    # optional if defaults not initialized.
-    root=None,
-    # defaults (optional).
-    defaults=None, )
+# import the website.security object class.
+from w3bsite import website
 
 ```
 
@@ -1324,41 +1152,31 @@ security = Security(
 ##### generate_tls:
 ``` python
 
-# call security.generate_tls.
-response = security.generate_tls()
+# call website.security.generate_tls.
+response = website.security.generate_tls()
 
 ```
 ##### set_secret_env:
 ``` python
 
-# call security.set_secret_env.
-response = security.set_secret_env(key, value)
+# call website.security.set_secret_env.
+response = website.security.set_secret_env(key, value)
 
 ```
 ##### get_secret_env:
 ``` python
 
-# call security.get_secret_env.
-_ = security.get_secret_env(key, default=None, required=True)
+# call website.security.get_secret_env.
+_ = website.security.get_secret_env(key, default=None, required=True)
 
 ```
 
 ## Stripe:
-The stripe object class.
+The website.stripe object class.
 ``` python 
 
-# initialize the stripe object class.
-stripe = Stripe(
-    # the stripe secret key.
-    secret_key=None,
-    #     the stripe publishable key.
-    publishable_key=None,
-    # the default subscription plans.
-    subscriptions=None,
-    # the default products.
-    products=None,
-    # defaults.
-    defaults=None, )
+# import the website.stripe object class.
+from w3bsite import website
 
 ```
 
@@ -1367,52 +1185,52 @@ stripe = Stripe(
 ##### check:
 ``` python
 
-# call stripe.check.
-response = stripe.check()
+# call website.stripe.check.
+response = website.stripe.check()
 
 ```
 ##### get_product_id:
 ``` python
 
-# call stripe.get_product_id.
-response = stripe.get_product_id(product=None)
+# call website.stripe.get_product_id.
+response = website.stripe.get_product_id(product=None)
 
 ```
 ##### get_plan_id:
 ``` python
 
-# call stripe.get_plan_id.
-response = stripe.get_plan_id(product=None, plan=None)
+# call website.stripe.get_plan_id.
+response = website.stripe.get_plan_id(product=None, plan=None)
 
 ```
 ##### get_product_id_by_plan_id:
 ``` python
 
-# call stripe.get_product_id_by_plan_id.
-response = stripe.get_product_id_by_plan_id(plan_id)
+# call website.stripe.get_product_id_by_plan_id.
+response = website.stripe.get_product_id_by_plan_id(plan_id)
 
 ```
 ##### get_product_name:
 ``` python
 
-# call stripe.get_product_name.
-response = stripe.get_product_name(id=None)
+# call website.stripe.get_product_name.
+response = website.stripe.get_product_name(id=None)
 
 ```
 ##### get_plan_name:
 ``` python
 
-# call stripe.get_plan_name.
-response = stripe.get_plan_name(id=None)
+# call website.stripe.get_plan_name.
+response = website.stripe.get_plan_name(id=None)
 
 ```
 
 ## Subscriptions:
-The subscriptions object class.
+The website.stripe.subscriptions object class.
 ``` python 
 
-# initialize the subscriptions object class.
-subscriptions = Subscriptions(defaults=None, customers=None)
+# import the website.stripe.subscriptions object class.
+from w3bsite import website
 
 ```
 
@@ -1421,8 +1239,8 @@ subscriptions = Subscriptions(defaults=None, customers=None)
 ##### create:
 ``` python
 
-# call subscriptions.create.
-response = subscriptions.create(
+# call website.stripe.subscriptions.create.
+response = website.stripe.subscriptions.create(
     # the email of the user that will be charged.
     email=None,
     customer_id=None, # instead of email for effienciency.
@@ -1433,8 +1251,8 @@ response = subscriptions.create(
 ##### get:
 ``` python
 
-# call subscriptions.get.
-response = subscriptions.get(
+# call website.stripe.subscriptions.get.
+response = website.stripe.subscriptions.get(
     # a specfic user email (optional).
     email=None,
     # active subscription plans only.
@@ -1446,8 +1264,8 @@ response = subscriptions.get(
 ##### cancel:
 ``` python
 
-# call subscriptions.cancel.
-response = subscriptions.cancel(
+# call website.stripe.subscriptions.cancel.
+response = website.stripe.subscriptions.cancel(
     # option 1:
     #     the stripe subscription id.
     subscription_id=None,
@@ -1459,31 +1277,12 @@ response = subscriptions.cancel(
 
 ```
 
-## TemplateData:
-The template_data object class.
-``` python 
-
-# initialize the template_data object class.
-template_data = TemplateData(data={})
-
-```
-
-#### Functions:
-
-##### raw:
-``` python
-
-# call template_data.raw.
-_ = template_data.raw()
-
-```
-
 ## Users:
-The users object class.
+The website.firebase.users object class.
 ``` python 
 
-# initialize the users object class.
-users = Users(defaults=None, firestore=None)
+# import the website.firebase.users object class.
+from w3bsite import website
 
 ```
 
@@ -1492,8 +1291,8 @@ users = Users(defaults=None, firestore=None)
 ##### get:
 ``` python
 
-# call users.get.
-response = users.get(
+# call website.firebase.users.get.
+response = website.firebase.users.get(
     # define one of the following parameters.
     uid=None,
     email=None,
@@ -1503,8 +1302,8 @@ response = users.get(
 ##### create:
 ``` python
 
-# call users.create.
-response = users.create(
+# call website.firebase.users.create.
+response = website.firebase.users.create(
     # required:
     email=None,
     password=None,
@@ -1519,8 +1318,8 @@ response = users.create(
 ##### update:
 ``` python
 
-# call users.update.
-response = users.update(
+# call website.firebase.users.update.
+response = website.firebase.users.update(
     # required:
     email=None,
     # optionals:
@@ -1535,8 +1334,8 @@ response = users.update(
 ##### delete:
 ``` python
 
-# call users.delete.
-response = users.delete(
+# call website.firebase.users.delete.
+response = website.firebase.users.delete(
     # option 1:
     # the user's uid (much faster).
     uid=None,
@@ -1548,8 +1347,8 @@ response = users.delete(
 ##### verify_id_token:
 ``` python
 
-# call users.verify_id_token.
-response = users.verify_id_token(id_token)
+# call website.firebase.users.verify_id_token.
+response = website.firebase.users.verify_id_token(id_token)
 
 ```
 

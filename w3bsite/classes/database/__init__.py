@@ -9,8 +9,14 @@ from w3bsite.classes import exceptions
 class Database(Traceback):
 	def __init__(self, firestore=None, path=None, live=False):
 		
+		# docs.
+		Docs.__init__(self,
+			initialized=True,
+			module="website.db", 
+			notes=[], )
+
 		# traceback.
-		Traceback.__init__(self, traceback="w3bsite.Website.database")
+		Traceback.__init__(self, traceback="w3bsite.Website.db")
 
 		# checks.
 		if firestore == None and path == None: raise exceptions.InvalidUsage(self.__traceback__()+" Both parameters firestore & path are None.")

@@ -30,6 +30,12 @@ class Stripe(_defaults_.Defaults):
 		defaults=None,
 	):
 
+		# docs.
+		Docs.__init__(self,
+			initialized=True,
+			module="website.stripe", 
+			notes=[], )
+
 		# defaults.
 		_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.stripe")
 		self.assign(defaults.dict())
@@ -265,6 +271,12 @@ class Stripe(_defaults_.Defaults):
 	class Customers(Object):
 		def __init__(self, defaults=None):
 			
+			# docs.
+			Docs.__init__(self,
+				initialized=True,
+				module="website.stripe.customers", 
+				notes=[], )
+
 			# defaults.
 			Object.__init__(self, traceback="w3bsite.Website.stripe.customers")
 			self.assign(defaults.dict())
@@ -583,6 +595,13 @@ class Stripe(_defaults_.Defaults):
 	# the subscriptions object.
 	class Subscriptions(Object):
 		def __init__(self, defaults=None, customers=None):
+			
+			# docs.
+			Docs.__init__(self,
+				initialized=True,
+				module="website.stripe.subscriptions", 
+				notes=[], )
+
 			# defaults.
 			Object.__init__(self, traceback="w3bsite.Website.stripe.subscriptions")
 			self.assign(defaults.dict())
@@ -751,6 +770,12 @@ class Stripe(_defaults_.Defaults):
 	class Plans(Object):
 		def __init__(self, defaults=None, subscriptions=None):
 			
+			# docs.
+			Docs.__init__(self,
+				initialized=True,
+				module="website.stripe.plans", 
+				notes=[], )
+
 			# defaults.
 			Object.__init__(self, traceback="w3bsite.Website.stripe.plans")
 			self.assign(defaults.dict())
@@ -872,6 +897,12 @@ class Stripe(_defaults_.Defaults):
 	class Products(Object):
 		def __init__(self, defaults=None, plans=None):
 			
+			# docs.
+			Docs.__init__(self,
+				initialized=True,
+				module="website.stripe.products", 
+				notes=[], )
+
 			# defaults.
 			Object.__init__(self, traceback="w3bsite.Website.stripe.products")
 			self.assign(defaults.dict())

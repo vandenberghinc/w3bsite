@@ -7,6 +7,14 @@ from w3bsite.classes.config import *
 # the users class.
 class Logging(object):
 	def __init__(self, name=None, root=None, database=None):
+
+		# docs.
+		Docs.__init__(self,
+			initialized=True,
+			module="website.logging", 
+			notes=[], )
+
+		# attributes.
 		self.name = name
 		self.root = root
 		self.database = database

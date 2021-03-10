@@ -37,6 +37,12 @@ class Deployment(Object):
 		namecheap=None,
 	):	
 
+		# docs.
+		Docs.__init__(self,
+			initialized=True,
+			module="website.deployment", 
+			notes=[], )
+
 		# defaults.
 		Object.__init__(self, traceback="w3bsite.Website.deployment",)
 
