@@ -31,7 +31,7 @@ class Utils(Object):
 		trace = traceback.format_exc()
 		Response.log(message=trace, save=False)
 		if database != None and Files.exists(database):
-			Response.log_to_file("____________________________________________", raw=True)
+			Response.log_to_file("----------------------------------------------------------", raw=True)
 			Response.log_to_file(trace)
 		info = {
 			"id":String().generate(length=64, digits=True, capitalize=True),
