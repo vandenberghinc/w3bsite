@@ -22,7 +22,7 @@ class Home(w3bsite.views.View):
 			return self.render(request)
 
 		# catch error.
-		except Exception as e: return self._505(request, error=e)
+		except Exception as e: return self._500(request, error=e)
 
 		#
 
@@ -37,7 +37,7 @@ class HelloWorld(w3bsite.views.View):
 			return self.render(request, website.template_data+{})
 
 		# catch error.
-		except Exception as e: return self._505(request, error=e)
+		except Exception as e: return self._500(request, error=e)
 
 		#
 		

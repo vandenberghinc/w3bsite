@@ -22,7 +22,7 @@ class HelloWorld(w3bsite.views.Request):
 			return self.success("Success ...", {"hello":"world"})
 
 		# catch error.
-		except Exception as e: return self._505(error=e)
+		except Exception as e: return self._500(error=e)
 		
 		#
 
@@ -37,7 +37,7 @@ class HelloWorldSmall(w3bsite.views.Request):
 			return self.success("Success ...", {"hello":"world"})
 
 		# catch error.
-		except Exception as e: return self._505(error=e)
+		except Exception as e: return self._500(error=e)
 		
 		#
 
