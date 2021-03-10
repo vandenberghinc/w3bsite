@@ -17,16 +17,17 @@ class Database(Traceback):
 
 		# attributes.
 		self.mode = "firestore"
+		self.live = live
 		self.firestore = firestore
 		self.path = gfp.clean(path)
 		self.file_path = self.fp = FilePath(self.path)
-		if self.live and not self.fp.exists():
-			Response.log(f"&ORANGE&Root permission&END& required to create database [{self.path}].")
-			os.system(f"sudo mkdir {self.path}")
-			Files.chmod(path=self.path, permission=700, sudo=True)
-			Files.chown(path=self.path, owner=Defaults.vars.user, group=Defaults.vars.group, sudo=True)
 		if firestore == None:
 			self.mode = "cache"
+			if self.live and not self.fp.exists():
+				Response.log(f"&ORANGE&Root permission&END& required to create database [{self.path}].")
+				os.system(f"sudo mkdir {self.path}")
+				Files.chmod(path=self.path, permission=700, sudo=True)
+				Files.chown(path=self.path, owner=Defaults.vars.user, group=Defaults.vars.group, sudo=True)
 
 		#
 
