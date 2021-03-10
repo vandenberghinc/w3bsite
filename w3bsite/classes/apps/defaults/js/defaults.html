@@ -94,6 +94,9 @@ function request(
 
 				// check error.
 				} else if (response.error != null) {
+					if (response.error.last(".") == ".") {
+						response.error = response.error.remove_last(".")
+					}
 					var err = `Request (${url}) failed [${xhr.status}]. ${response.error}.`
 					console.log(" * error: "+err)
 					if (response_element != null) {
