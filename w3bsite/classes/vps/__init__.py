@@ -172,6 +172,18 @@ class VPS(_defaults_.Defaults):
 		#	log_level=-1,)
 		#if not response.success: return response
 
+		# install new requirements
+		path = gfp.clean(f"{tmp}/requirements/requirements.pip")
+		if log_level >= 0: loader.mark(new_message=f"Installing requirements {path} on vps {self.ip}")
+		response = ssht00ls.ssh.command(
+			alias=self.domain,
+			command=f'''python3 -m pip install -r {path}\nif [[ -d "/www-data/venv/" ]] ; then\n    /www-data/venv/bin/python3 -m pip install -r {path}\nfi''',
+			log_level=-1,)
+		if not response.success: 
+			if log_level >= 0: loader.stop(success=False)
+			return Response.error(f"Failed to deploy website {self.domain} on vps {self.ip}, error (#2): {response.error}.", log_level=log_level)
+
+
 		# execute installer script.
 		if not code_update:
 			if log_level >= 0: loader.mark(new_message=f"Executing installer script of website {self.domain} on vps {self.ip}")
