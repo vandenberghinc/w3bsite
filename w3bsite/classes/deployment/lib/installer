@@ -191,6 +191,7 @@ log "Deploying nginx"
 sudo usermod -a -G www-data $USER
 sudo rm -fr /etc/nginx/sites-available/django
 sudo cp $SOURCE/deployment/django.nginx /etc/nginx/sites-available/django
+sudo chown $USER:www-data /etc/nginx/sites-available/django
 sudo ln -sf /etc/nginx/sites-available/django /etc/nginx/sites-enabled
 sudo ufw delete allow 8000
 sudo ufw allow 'Nginx Full'

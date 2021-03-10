@@ -19,9 +19,9 @@ DATABASE = Directory(Environment.get("DATABASE", default=str(SOURCE)))
 PRODUCTION = Environment.get("PRODUCTION", default=True, format=bool)
 DOMAIN = Environment.get("DOMAIN", default=None)
 SECRET_KEY = Environment.get("DJANGO_SECRET_KEY", default=String().generate(length=128, capitalize=True, digits=True, special=True))
-WEBSITE_BASE = Environment.get("WEBSITE_BASE", default=None)
-if WEBSITE_BASE == None:
-    raise ValueError("Improperly configured run, env variable [WEBSITE_BASE] is None.")
+#WEBSITE_BASE = Environment.get("WEBSITE_BASE", default=None)
+#if WEBSITE_BASE == None:
+#    raise ValueError("Improperly configured run, env variable [WEBSITE_BASE] is None.")
     
 # Match production,
 if PRODUCTION:
@@ -86,7 +86,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             SOURCE.join("apps"),
-            WEBSITE_BASE,
+            str(Defaults.vars.site_packages),
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -150,7 +150,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-STATIC_ROOT = '/www-data/static/'
+STATIC_ROOT = f"/www-data/static/"
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     SOURCE.join('__defaults__/static'),
