@@ -501,12 +501,12 @@ class Users(_defaults_.Defaults):
 
 		# html vars.
 		for from_, to_ in [
-			"$DOMAIN",self.domain,
-			"$USERNAME",user.username,
-			"$EMAIL",user,email,
-			"$CODE",code,
-			"$IP",ip,
-			"$TIMESTAMP",Date().timestamp,
+			["$DOMAIN",self.domain],
+			["$USERNAME",user.username],
+			["$EMAIL",user,email],
+			["$CODE",code],
+			["$IP",ip],
+			["$TIMESTAMP",Date().timestamp],
 		]:
 			html = html.replace(from_, to_)
 
