@@ -1119,10 +1119,10 @@ class Users(_defaults_.Defaults):
 
 		#
 	def __get_path__(self, email=None, username=None, create=False):
-		if email == None and "@" in username: 
+		if email in [None, username] and "@" in username: 
 			email = username 
 			username = None
-		if username == None and "@" not in email: 
+		if username in [None, email] and "@" not in email: 
 			username = email
 			email = None
 		if self.id_by_username:
