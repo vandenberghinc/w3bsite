@@ -432,7 +432,7 @@ class Website(CLI.CLI,Traceback):
 			database=self.database,)
 		self.aes = encrypti0n.aes.AES(
 			private_key=f"{self.root}/__defaults__/aes/private_key",
-			private_key=f"{self.root}/__defaults__/aes/public_key",
+			public_key=f"{self.root}/__defaults__/aes/public_key",
 			passphrase=self.aes_passphrase)
 		self.defaults = defaults.Defaults(
 			root=self.root,
