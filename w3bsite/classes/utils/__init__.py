@@ -30,11 +30,13 @@ class Utils(Object):
 			Response.log_file = gfp.clean(f"{database}/logs/errors")
 		trace = traceback.format_exc()
 		Response.log(message=trace, save=False)
+		id = String().generate(length=32, digits=True, capitalize=True)
 		if database != None and Files.exists(database):
-			Response.log_to_file("----------------------------------------------------------", raw=True)
+			Response.log_to_file("----------------------------------------------------------\nException ("+str(id)+").\n ", raw=True)
 			Response.log_to_file(trace)
+			Response.log_to_file(" ")
 		info = {
-			"id":String().generate(length=64, digits=True, capitalize=True),
+			"id":id,
 			"traceback":trace,
 		}
 		return info

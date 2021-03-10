@@ -24,10 +24,11 @@
 			<p class="text">
 				Encoutered an internal server error, contact your server administrator.
 			</p>
-			<p class="code" style="font-size: 8px;">
-				Error ID: {{ERROR_ID}}
-			</p>
 			{% if TRACEBACK != "None" %}
+				<div class="divider"></div>
+				<h2 class="subtitle" style="font-size: 14px; text-align: center;">
+					Exception: {{ERROR_ID}}
+				</h2>
 				<textarea class="code_textarea" style="font-size: 10px; min-height: 250px;">{{TRACEBACK}}</textarea>
 			{% endif %}
 			<button class="button" onclick="" >
