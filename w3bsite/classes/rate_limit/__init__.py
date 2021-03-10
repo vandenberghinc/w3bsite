@@ -154,6 +154,7 @@ class RateLimit(_defaults_.Defaults):
 		timestamp = rate_limits[mode]["timestamp"]
 		increased = date.increase(timestamp, format=date.timestamp_format, minutes=reset_minutes)
 		comparison = date.compare(comparison=date.timestamp, current=increased, format=date.timestamp_format)
+		Response.log(f"comparison [{date.timestamp}] current [{increased}] result: [{comparison}].")
 		if comparison in ["future", "present"]:
 			rate_limits[mode]["rate"] = 0
 			rate_limits[mode]["timestamp"] = date.timestamp
