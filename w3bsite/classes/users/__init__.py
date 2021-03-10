@@ -961,7 +961,7 @@ class Users(_defaults_.Defaults):
 				elif filter == "data":
 					response = self.load_data(email=user.email, username=user.username)
 					if not response.success: 
-						Response.log(f"Unable to iterate user: [{user.username}].")
+						Response.log(f"Unable to iterate user: [{user.username}]  (#346346) (error: {response.error}).")
 					else:
 						items.append(response["data"])
 
@@ -970,9 +970,12 @@ class Users(_defaults_.Defaults):
 
 			# firestore mode.
 			for id in self.db.names(path=self.users_subpath):
-				response = self.load_data(email=id, username=id)
+				username, email = self.__correct_username_email__(id, id)
+				if username != None: id = username
+				elif email != None: id = email
+				response = self.load_data(email=email, username=username)
 				if not response.success: 
-					Response.log(f"Unable to iterate user: [{id}].")
+					Response.log(f"Unable to iterate user: [{id}] (#837028) (error: {response.error}).")
 				else:
 					username, email = response["data"]["account"]["username"], response["data"]["account"]["email"]
 					if filter == "user":
@@ -1025,22 +1028,8 @@ class Users(_defaults_.Defaults):
 		api_keys = {}
 		for username in _usernames_: 
 
-			# get.
-			response = self.get(email=None, username=username)
-			if not response.success: 
-				response = self.load_password(email=None, username=username)
-				if not response.success: return response
-				data, password = response.unpack(["data", "password"])
-				response = self.django.users.create(
-					email=data["account"]["email"], 
-					password=password, 
-					username=data["account"]["username"], 
-					name=data["account"]["name"])
-				if not response.success: return response
-			user = response["user"]
-
 			# load data.
-			response = self.load_data(email=user.email, username=user.username)
+			response = self.load_data(username=username)
 			if not response.success: return response
 			data, edits = response["data"], 0
 
@@ -1051,11 +1040,32 @@ class Users(_defaults_.Defaults):
 			if Dictionary(old) != Dictionary(data):
 				edits += 1
 
+			# safe early edits for other funcs.
+			if edits > 0:
+				edits = 0
+				response = self.save_data(username=username, data=data)
+				if not response.success: return response
+
+			# get.
+			response = self.get(email=None, username=username)
+			if not response.success: 
+				response = self.load_password(email=None, username=username)
+				if not response.success: return response
+				password = response["password"]
+				response = self.django.users.create(
+					email=data["account"]["email"], 
+					password=password, 
+					username=data["account"]["username"], 
+					name=data["account"]["name"])
+				if not response.success: return response
+			user = response["user"]
+
+
 			# check user data.
 			try:
 				if data["keys"]["api_key"] in [None, ""]: raise KeyError("")
 			except KeyError: 
-				data["keys"]["api_key"] = String().generate(length=48, capitalize=True, digits=True)
+				data["keys"]["api_key"] = String().generate(length=48, capitalize=True, digits=True, special=False).replace("+","")
 				edits += 1
 
 			# edits.
@@ -1069,6 +1079,7 @@ class Users(_defaults_.Defaults):
 				"email":user.email,
 			}
 
+		print("API_KEYS:",api_keys)
 		# success.
 		return Response.success(f"Successfully synchronized {len(_usernames_)} user(s).", {
 			"api_keys":api_keys,

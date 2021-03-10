@@ -40,6 +40,7 @@ class Database(Traceback):
 	# functions.
 	def load(self, path=None):
 		if path == None: return Response.error(self.__traceback__(function="load")+" Define parameter: [path].")
+		path = gfp.clean(path)
 		if self.mode == "firestore":
 			return self.firestore.load(path)
 		elif self.mode == "cache":
@@ -54,6 +55,7 @@ class Database(Traceback):
 	def save(self, path=None, data=None, overwrite=False):
 		if path == None: return Response.error(self.__traceback__(function="save")+" Define parameter: [path].")
 		if data == None: return Response.error(self.__traceback__(function="save")+" Define parameter: [data].")
+		path = gfp.clean(path)
 		if self.mode == "firestore":
 			return self.firestore.save(path, data)
 		elif self.mode == "cache":
@@ -88,6 +90,7 @@ class Database(Traceback):
 		else: raise exceptions.InvalidUsage(self.__traceback__(function="save")+f" Unknown mode [{self.mode}].")
 	def delete(self, path=None, data=None):
 		if path == None: return Response.error(self.__traceback__(function="delete")+" Define parameter: [path].")
+		path = gfp.clean(path)
 		if self.mode == "firestore":
 			return self.firestore.delete(path)
 		elif self.mode == "cache":
@@ -101,6 +104,7 @@ class Database(Traceback):
 
 	# join.
 	def join(self, path):
+		path = gfp.clean(path)
 		return gfp.clean(f"{self.path}/{path}")
 
 	# get names.
@@ -108,6 +112,10 @@ class Database(Traceback):
 		# the sub path (leave None to use the root path)
 		path=None,
 	):
+
+		# checks.
+		if path == None: return Response.error(self.__traceback__(function="names")+" Define parameter: [path].")
+		path = gfp.clean(path)
 
 		# vars.
 		names = []
