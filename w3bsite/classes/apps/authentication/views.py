@@ -31,8 +31,8 @@ class Views(_defaults_.Defaults):
 	class SignIn(views.View):
 		def __init__(self, defaults=None):
 			_defaults_.Defaults.__init__(self)
+			views.View.__init__(self, f"{APP}/", "signin", html=f"w3bsite/classes/apps/authentication/html/signin.html")
 			self.assign(defaults.dict())
-			views.View.__init__(self, f"{APP}/", "signin", template_data=self.template_data, html=f"w3bsite/classes/apps/authentication/html/signin.html")
 		def view(self, request):
 			if self._maintenance_: return self.maintenance(request)
 			return self.render(request)
@@ -41,8 +41,8 @@ class Views(_defaults_.Defaults):
 	class SignUp(views.View):
 		def __init__(self, defaults=None):
 			_defaults_.Defaults.__init__(self)
+			views.View.__init__(self, f"{APP}/", "signup", html=f"w3bsite/classes/apps/authentication/html/signup.html")
 			self.assign(defaults.dict())
-			views.View.__init__(self, f"{APP}/", "signup", template_data=self.template_data, html=f"w3bsite/classes/apps/authentication/html/signup.html")
 		def view(self, request):
 			if self._maintenance_: return self.maintenance(request)
 			return self.render(request)
@@ -51,8 +51,8 @@ class Views(_defaults_.Defaults):
 	class Reset(views.View):
 		def __init__(self, defaults=None):
 			_defaults_.Defaults.__init__(self)
+			views.View.__init__(self, f"{APP}/", "reset", html=f"w3bsite/classes/apps/authentication/html/reset.html")
 			self.assign(defaults.dict())
-			views.View.__init__(self, f"{APP}/", "reset", template_data=self.template_data, html=f"w3bsite/classes/apps/authentication/html/reset.html")
 		def view(self, request):
 			if self._maintenance_: return self.maintenance(request)
 			return self.render(request)
@@ -61,8 +61,8 @@ class Views(_defaults_.Defaults):
 	class Activate(views.View):
 		def __init__(self, defaults=None):
 			_defaults_.Defaults.__init__(self)
+			views.View.__init__(self, f"{APP}/", "activate", html=f"w3bsite/classes/apps/authentication/html/activate.html")
 			self.assign(defaults.dict())
-			views.View.__init__(self, f"{APP}/", "activate", template_data=self.template_data, html=f"w3bsite/classes/apps/authentication/html/activate.html")
 		def view(self, request):
 			if self._maintenance_: return self.maintenance(request)
 			return self.render(request)

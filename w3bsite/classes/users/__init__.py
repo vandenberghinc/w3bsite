@@ -16,7 +16,7 @@ try:
 	from firebase_admin import credentials, auth, firestore, _auth_utils
 except ModuleNotFoundError: a=1
 from w3bsite.classes import defaults as _defaults_
-from w3bsite.classes import email
+from w3bsite.classes import email, utils
 
 # the users class.
 class Users(_defaults_.Defaults):
@@ -82,9 +82,11 @@ class Users(_defaults_.Defaults):
 		}
 
 		# sys vars.
+		self.email = None
 		self.__timestamps__ = {}
 		self.__api_keys__ = {}
 		self.__subscriptions__ = {}
+		self.__verification_codes__ = {}
 
 		#
 	def get(self, 
@@ -279,6 +281,8 @@ class Users(_defaults_.Defaults):
 		# the 2fa enabled boolean.
 		# leave None to use the self._2fa settings and specify to overwrite.
 		_2fa=None,
+		# the html for the verification code email (str).
+		html="",
 		# the request object.
 		request=None,
 	):
@@ -302,14 +306,14 @@ class Users(_defaults_.Defaults):
 			if _2fa_code == None: 
 
 				# send code.
-				l_response = self.send_verification_code(username, ip=ip, mode="authentication")
-				if not l_response.success: return l_response
+				response = self.send_code(username=username, ip=utils.get_client_ip(request), mode="authentication", html=html)
+				if not response.success: return response
 
 				# handler for sign in.
 				return Response.error(f"Authentication verification code required.")
 
 			# verify code.
-			response = self.verify_verification_code(username, code=_2fa_code, mode="authentication")
+			response = self.verify_code(username, code=_2fa_code, mode="authentication")
 			if not response.success: return response
 
 		# no 2fa.
@@ -404,10 +408,7 @@ class Users(_defaults_.Defaults):
 	):
 
 		# check email.
-		try:
-			if self.email == None:
-				raise AttributeError("")
-		except AttributeError:
+		if self.email.__class__.__name__ not in ["Email"]:
 			response = self.__initialize_email__()
 			if response.error != None: return response
 				
@@ -437,8 +438,8 @@ class Users(_defaults_.Defaults):
 
 		#
 	def send_code(self, 
-		# define email to retrieve user.
-		email=None, 
+		# define username to retrieve user.
+		username=None, 
 		# the clients ip.
 		ip="unknown",
 		# the mode id.
@@ -452,22 +453,19 @@ class Users(_defaults_.Defaults):
 	):
 
 		# check email.
-		try:
-			if self.email == None:
-				raise AttributeError("")
-		except AttributeError:
+		if self.email.__class__.__name__ not in ["Email"]:
 			response = self.__initialize_email__()
 			if response.error != None: return response
 				
 		# save code.
 		if code == None:
 			code = Integer(0).generate(length=6)
-		response = self.get(email=email)
+		response = self.get(username=username)
 		if response.error != None: return response
 		user = response["user"]
-		try: self.verification_codes[mode]
-		except: self.verification_codes[mode] = {}
-		self.verification_codes[mode][user.email] = {
+		try: self.__verification_codes__[mode]
+		except: self.__verification_codes__[mode] = {}
+		self.__verification_codes__[mode][user.email] = {
 			"code":code,
 			"stamp":Date().timestamp,
 			"attempts":3,
@@ -495,7 +493,7 @@ class Users(_defaults_.Defaults):
 		#
 	def verify_code(self, 
 		# define email to retrieve user.
-		email=None, 
+		username=None, 
 		# the user entered code.
 		code=000000, 
 		# the message mode.
@@ -504,25 +502,25 @@ class Users(_defaults_.Defaults):
 
 
 		# get user.
-		response = self.get(email=email)
+		response = self.get(username=username)
 		if response.error != None: return response
 		user = response["user"]
 
 		# get success.
 		fail = False
-		try: self.verification_codes[mode]
-		except: self.verification_codes[mode] = {}
-		try: success = self.verification_codes[mode][user.email]["attempts"] > 0 and str(self.verification_codes[mode][user.email]["code"]) == str(code)
+		try: self.__verification_codes__[mode]
+		except: self.__verification_codes__[mode] = {}
+		try: success = self.__verification_codes__[mode][user.email]["attempts"] > 0 and str(self.__verification_codes__[mode][user.email]["code"]) == str(code)
 		except KeyError: fail = True
 
 		# handle.
 		if fail: 
 			return Response.error("Incorrect verification code.")
 		elif not success: 
-			self.verification_codes[mode][user.email]["attempts"] -= 1
+			self.__verification_codes__[mode][user.email]["attempts"] -= 1
 			return Response.error("Incorrect verification code.")
 		else:
-			del self.verification_codes[mode][user.email]
+			del self.__verification_codes__[mode][user.email]
 			return Response.success("Successfull verification.")
 
 		#

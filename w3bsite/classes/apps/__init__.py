@@ -11,6 +11,7 @@ from w3bsite.classes.apps import payments, authentication
 class Apps(_defaults_.Defaults):
 	def __init__(self, 
 		# passed Website.x objects.
+		template_data=None,
 		rate_limit=None,
 		users=None,
 		stripe=None,
@@ -18,6 +19,7 @@ class Apps(_defaults_.Defaults):
 	):
 		# defaults.
 		_defaults_.Defaults.__init__(self)
+		defaults.template_data = template_data
 		defaults.rate_limit = rate_limit
 		defaults.users = users
 		self.assign(defaults.dict())

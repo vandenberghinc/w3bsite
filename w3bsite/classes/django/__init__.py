@@ -335,28 +335,34 @@ class Users(_defaults_.Defaults):
 		email=None,
 	):
 
+		# checks.
+		if username != None and "@" in username:
+			raise Exceptions.InvalidUsage("An username can not contain a [@] character. You most likely passed an email for the username parameter.")
+		if email != None and "@" not in email:
+			raise Exceptions.InvalidUsage(f"Invalid email [{email}].")
+
 		# by username.
 		identifier = None
 		if username not in [None,"None"]:
-			identifier = username
+			identifier = f"(username: {username})"
 
 			# create.
 			try:
 				django_user = DjangoUser.objects.get(username=username)
 
 			# error.
-			except Exception as e:  return Response.error(f"Failed to retrieve django user {username}, error: {e}.")
+			except Exception as e:  return Response.error(f"Failed to retrieve django user {identifier}, error: {e}.")
 
 		# by email.
 		elif email not in [None,"None"]:
-			identifier = email
+			identifier = f"(email: {email})"
 
 			# create.
 			try:
 				django_user = DjangoUser.objects.get(email=email)
 
 			# error.
-			except Exception as e:  return Response.error(f"Failed to retrieve django user {email}, error: {e}.")
+			except Exception as e:  return Response.error(f"Failed to retrieve django user {identifier}, error: {e}.")
 
 		# invalid.
 		else: return Response.error(f"Define one of the following parameters: [username, email].")

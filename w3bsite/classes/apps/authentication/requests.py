@@ -29,8 +29,8 @@ class Requests(_defaults_.Defaults):
 	# sign up.
 	class SignUp(views.Request):
 		def __init__(self, defaults=None, send_code=None):
-			self.assign(defaults.dict())
 			views.Request.__init__(self, "requests/authentication/", "signup")
+			self.assign(defaults.dict())
 			self.send_code = send_code
 		def view(self, request):
 
@@ -71,7 +71,7 @@ class Requests(_defaults_.Defaults):
 
 
 			# send activation code.
-			_response_ = self.send_code.send_code(email=parameters["email"], mode="activation", request=request)
+			_response_ = self.send_code.send_code(username=parameters["username"], mode="activation", request=request)
 			if not _response_.success: return self.response(_response_)
 
 			# return create response.
@@ -82,8 +82,8 @@ class Requests(_defaults_.Defaults):
 	# sign in.
 	class SignIn(views.Request):
 		def __init__(self, defaults=None,):
-			self.assign(defaults.dict())
 			views.Request.__init__(self, "requests/authentication/", "signin")
+			self.assign(defaults.dict())
 		def view(self, request):
 
 			# permission denied.
@@ -105,19 +105,60 @@ class Requests(_defaults_.Defaults):
 			optional_parameters, _ = self.parameters.get(request, {
 				"code":None,
 			})
+
+			# html
+			html = ""
+			if self._2fa:
+
+				# set mode.
+				code = Integer(0).generate(length=6)
+				title = "Sign In - Verification Code"
+				path = f"{SOURCE_PATH}/classes/apps/authentication/mail/authentication.html"
+				print("template_data 4:".upper(),self.template_data)
+				ip = utils.__get_client_ip__(request)
+				html = str(File(path, load=True).data).format(
+					# domain info.
+					domain=self.https_domain,
+					# code.
+					code=code,
+					# request info.
+					ip=ip,
+					timestamp=Date().seconds_timestamp,
+					# user info.
+					email=parameters.username,
+					# colors.
+					white=self.template_data["COLORS"]["white"],
+					grey=self.template_data["COLORS"]["grey"],
+					blue=self.template_data["COLORS"]["blue"],
+					purple=self.template_data["COLORS"]["purple"],
+					red=self.template_data["COLORS"]["red"],
+					pink=self.template_data["COLORS"]["pink"],
+					orange=self.template_data["COLORS"]["orange"],
+					green=self.template_data["COLORS"]["green"],
+					darkest=self.template_data["COLORS"]["darkest"],
+					darker=self.template_data["COLORS"]["darker"],
+					dark=self.template_data["COLORS"]["dark"],
+					background=self.template_data["COLORS"]["background"],
+					widgets=self.template_data["COLORS"]["widgets"],
+					widgets_reversed=self.template_data["COLORS"]["widgets_reversed"],
+					text=self.template_data["COLORS"]["text"],
+					text_reversed=self.template_data["COLORS"]["text_reversed"],
+					)
+
 			# make request.
 			return self.response(self.users.authenticate(
 				username=parameters["username"],
 				password=parameters["password"],
 				_2fa_code=optional_parameters["code"],
 				_2fa=self._2fa,
+				html=html,
 				request=request,))
 
 	# send reset password email.
 	class SendCode(views.Request):
 		def __init__(self, defaults=None,):
-			self.assign(defaults.dict())
 			views.Request.__init__(self, "requests/authentication/", "send_code", )
+			self.assign(defaults.dict())
 		def view(self, request):
 
 			# check overall rate limit.
@@ -130,20 +171,20 @@ class Requests(_defaults_.Defaults):
 
 			# retrieve params.
 			parameters, response = self.parameters.get(request, [
-				"email",
+				"username",
 				"mode",])
 			if not response.success: return self.response(response)
-			if parameters["email"] in ["undefined", "null", "None", "none", ""]:
+			if parameters["username"] in ["undefined", "null", "None", "none", ""]:
 				return self.error("Refresh the web page.")
 
 			# make request.
 			return self.response(self.send_code(
-				email=parameters["email"],
+				username=parameters["username"],
 				mode=parameters['mode'],
 				request=request,))
 
 			#
-		def send_code(self, email=None, mode=None, request=None):
+		def send_code(self, username=None, mode=None, request=None):
 
 			# check library.
 			#if not Files.exists("templates/mail"): os.mkdir("templates/mail")
@@ -170,7 +211,7 @@ class Requests(_defaults_.Defaults):
 
 			# parse html.
 			ip = utils.__get_client_ip__(request)
-			html = File(path, load=True).data.format(
+			html = str(File(path, load=True).data).format(
 				# domain info.
 				domain=self.https_domain,
 				# code.
@@ -179,7 +220,7 @@ class Requests(_defaults_.Defaults):
 				ip=ip,
 				timestamp=Date().seconds_timestamp,
 				# user info.
-				email=email,
+				email=username,
 				# colors.
 				white=self.template_data["COLORS"]["white"],
 				grey=self.template_data["COLORS"]["grey"],
@@ -201,7 +242,7 @@ class Requests(_defaults_.Defaults):
 
 			# make request.
 			return self.users.send_code(
-				email=email,
+				username=username,
 				mode=mode,
 				ip=ip,
 				code=code,
@@ -211,8 +252,8 @@ class Requests(_defaults_.Defaults):
 	# reset password.
 	class ResetPassword(views.Request):
 		def __init__(self, defaults=None,):
-			self.assign(defaults.dict())
 			views.Request.__init__(self, "requests/authentication/", "reset_password",)
+			self.assign(defaults.dict())
 		def view(self, request):
 
 			# check overall rate limit.
@@ -250,8 +291,8 @@ class Requests(_defaults_.Defaults):
 	# activate account.
 	class Activate(views.Request):
 		def __init__(self, defaults=None,):
-			self.assign(defaults.dict())
 			views.Request.__init__(self, "requests/authentication/", "activate")
+			self.assign(defaults.dict())
 		def view(self, request):
 
 			# check overall rate limit.
@@ -283,8 +324,8 @@ class Requests(_defaults_.Defaults):
 	# is authenticated.
 	class Authenticated(views.Request):
 		def __init__(self, defaults=None,):
-			self.assign(defaults.dict())
 			views.Request.__init__(self, "requests/authentication/", "activate")
+			self.assign(defaults.dict())
 		def view(self, request):
 
 			# check overall rate limit.

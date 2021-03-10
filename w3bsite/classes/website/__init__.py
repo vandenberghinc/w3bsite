@@ -404,7 +404,9 @@ class Website(CLI.CLI,Traceback):
 			"RIGHTBARBAR_WIDTH":280, # px
 			"TOPBAR_HEIGHT":50 #px
 			})
+		print("template_data 1:".upper(),self.template_data)
 		self.template_data = Dictionary(utils.__append_dict__(new=self.template_data, overwrite=True,  old=styling))
+		print("template_data 2:".upper(),self.template_data)
 
 		# add safe template data.
 		self.template_data = Dictionary(utils.__append_dict__(new=self.template_data, overwrite=True,  old={
@@ -426,6 +428,7 @@ class Website(CLI.CLI,Traceback):
 			"RIGHTBARBAR_WIDTH":280, # px
 			"TOPBAR_HEIGHT":50 #px
 		}))
+		print("template_data 3:".upper(),self.template_data)
 
 		# defaults objects.
 		self.logging = logging.Logging(
@@ -552,6 +555,7 @@ class Website(CLI.CLI,Traceback):
 		elif self.remote != None:
 			raise ValueError(f"Selected an invalid remote [{self.remote}], options: [local, vps, heroku]")
 		self.apps = apps.Apps(
+			template_data=self.template_data,
 			rate_limit=self.rate_limit,
 			users=self.users,
 			stripe=self.stripe,
