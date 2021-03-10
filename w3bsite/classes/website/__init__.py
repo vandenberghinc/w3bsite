@@ -473,11 +473,12 @@ class Website(CLI.CLI,Traceback):
 			self.firestore = self.firebase.firestore
 			self.db = _database_.Database(
 				firestore=self.firebase.firestore,
-				path=self.database,)
+				path=self.database,
+				live=self.live,)
 		else:
 			self.firebase = None
 			self.firestore = None
-			self.db = _database_.Database(path=self.database)
+			self.db = _database_.Database(path=self.database, live=self.live)
 		if self.stripe_enabled:
 			self.stripe = stripe.Stripe(
 				secret_key=self.stripe_secret_key,

@@ -7,7 +7,7 @@ from w3bsite.classes import exceptions
 
 # the database class.
 class Database(Traceback):
-	def __init__(self, firestore=None, path=None):
+	def __init__(self, firestore=None, path=None, live=False):
 		
 		# traceback.
 		Traceback.__init__(self, traceback="w3bsite.Website.database")
@@ -20,7 +20,7 @@ class Database(Traceback):
 		self.firestore = firestore
 		self.path = gfp.clean(path)
 		self.file_path = self.fp = FilePath(self.path)
-		if not self.fp.exists():
+		if self.live and not self.fp.exists():
 			Response.log(f"&ORANGE&Root permission&END& required to create database [{self.path}].")
 			os.system(f"sudo mkdir {self.path}")
 			Files.chmod(path=self.path, permission=700, sudo=True)
