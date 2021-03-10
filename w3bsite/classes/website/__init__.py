@@ -557,6 +557,7 @@ class Website(CLI.CLI,Traceback):
 			rate_limit=self.rate_limit,
 			users=self.users,
 			stripe=self.stripe,
+			utils=self.utils,
 			defaults=self.defaults,)
 
 		# defaults.

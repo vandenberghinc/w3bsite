@@ -33,51 +33,58 @@ class Requests(_defaults_.Defaults):
 			self.assign(defaults.dict())
 			self.send_code = send_code
 		def view(self, request):
+			try:
 
-			# permission denied.
-			#return self.permission_denied()
+				# permission denied.
+				#return self.permission_denied()
 
-			# check overall rate limit.
-			response = self.rate_limit.verify(ip=utils.get_client_ip(request), mode="daily", limit=1000, reset_minutes=3600*24, increment=True)
-			if not response.success: return self.response(response)
+				# check overall rate limit.
+				response = self.rate_limit.verify(ip=utils.get_client_ip(request), mode="daily", limit=1000, reset_minutes=3600*24, increment=True)
+				if not response.success: return self.response(response)
 
-			# check signup rate limit.
-			response = self.rate_limit.verify(ip=utils.get_client_ip(request), mode="signup", limit=3, reset_minutes=3600*24, increment=False)
-			if not response.success: return self.response(response)
+				# check signup rate limit.
+				response = self.rate_limit.verify(ip=utils.get_client_ip(request), mode="signup", limit=3, reset_minutes=3600*24, increment=False)
+				if not response.success: return self.response(response)
 
-			# retrieve params.
-			parameters, response = self.parameters.get(request, [
-				"username",
-				"email",
-				"password",
-				"verify_password",])
-			if not response.success: return self.response(response)
-			optional_parameters, _ = self.parameters.get(request, {
-				"name":None,
-			})
+				# retrieve params.
+				parameters, response = self.parameters.get(request, [
+					"username",
+					"email",
+					"password",
+					"verify_password",])
+				if not response.success: return self.response(response)
+				optional_parameters, _ = self.parameters.get(request, {
+					"name":None,
+				})
 
-			# make request.
-			response = self.users.create(
-				email=parameters["email"],
-				username=parameters["username"],
-				password=parameters["password"],
-				verify_password=parameters["verify_password"],
-				name=optional_parameters["name"],)
-			if not response.success: return self.response(response)
+				# make request.
+				response = self.users.create(
+					email=parameters["email"],
+					username=parameters["username"],
+					password=parameters["password"],
+					verify_password=parameters["verify_password"],
+					name=optional_parameters["name"],)
+				if not response.success: return self.response(response)
 
-			# increment.
-			_response_ = self.rate_limit.increment(ip=utils.get_client_ip(request), mode="signup")
-			if not _response_.success: return _response_
+				# increment.
+				_response_ = self.rate_limit.increment(ip=utils.get_client_ip(request), mode="signup")
+				if not _response_.success: return _response_
 
 
-			# send activation code.
-			_response_ = self.send_code.send_code(username=parameters["username"], mode="activation", request=request)
-			if not _response_.success: return self.response(_response_)
+				# send activation code.
+				_response_ = self.send_code.send_code(username=parameters["username"], mode="activation", request=request)
+				if not _response_.success: return self.response(_response_)
 
-			# return create response.
-			if response.success:
-				del response["user"]
-			return self.response(response)
+				# return create response.
+				if response.success:
+					del response["user"]
+				return self.response(response)
+
+
+			# catch error.
+			except Exception as e: return self.response(self.utils.catch_error(e))
+			
+			#
 
 	# sign in.
 	class SignIn(views.Request):
@@ -85,41 +92,46 @@ class Requests(_defaults_.Defaults):
 			views.Request.__init__(self, "requests/authentication/", "signin")
 			self.assign(defaults.dict())
 		def view(self, request):
+			try:
 
-			# permission denied.
-			#return self.permission_denied()
+				# permission denied.
+				#return self.permission_denied()
 
-			# check overall rate limit.
-			response = self.rate_limit.verify(ip=utils.get_client_ip(request), mode="daily", limit=1000, reset_minutes=3600*24, increment=True)
-			if not response.success: return self.response(response)
+				# check overall rate limit.
+				response = self.rate_limit.verify(ip=utils.get_client_ip(request), mode="daily", limit=1000, reset_minutes=3600*24, increment=True)
+				if not response.success: return self.response(response)
 
-			# check signup rate limit.
-			#response = self.rate_limit.verify(ip=utils.get_client_ip(request), mode="signin", limit=5, reset_minutes=10, increment=True)
-			#if not response.success: return self.response(response)
+				# check signup rate limit.
+				#response = self.rate_limit.verify(ip=utils.get_client_ip(request), mode="signin", limit=5, reset_minutes=10, increment=True)
+				#if not response.success: return self.response(response)
 
-			# retrieve params.
-			parameters, response = self.parameters.get(request, [
-				"username",
-				"password",])
-			if not response.success: return self.response(response)
-			optional_parameters, _ = self.parameters.get(request, {
-				"code":None,
-			})
+				# retrieve params.
+				parameters, response = self.parameters.get(request, [
+					"username",
+					"password",])
+				if not response.success: return self.response(response)
+				optional_parameters, _ = self.parameters.get(request, {
+					"code":None,
+				})
 
-			# html
-			html = ""
-			if self._2fa:
-				title = "Sign In - Verification Code"
-				html = Files.load(f"{SOURCE_PATH}/classes/apps/authentication/mail/authentication.html")
+				# html
+				html = ""
+				if self._2fa:
+					title = "Sign In - Verification Code"
+					html = Files.load(f"{SOURCE_PATH}/classes/apps/authentication/mail/authentication.html")
 
-			# make request.
-			return self.response(self.users.authenticate(
-				username=parameters["username"],
-				password=parameters["password"],
-				_2fa_code=optional_parameters["code"],
-				_2fa=self._2fa,
-				html=html,
-				request=request,))
+				# make request.
+				return self.response(self.users.authenticate(
+					username=parameters["username"],
+					password=parameters["password"],
+					_2fa_code=optional_parameters["code"],
+					_2fa=self._2fa,
+					html=html,
+					request=request,))
+			# catch error.
+			except Exception as e: return self.response(self.utils.catch_error(e))
+			
+			#
 
 	# send reset password email.
 	class SendCode(views.Request):
@@ -127,28 +139,33 @@ class Requests(_defaults_.Defaults):
 			views.Request.__init__(self, "requests/authentication/", "send_code", )
 			self.assign(defaults.dict())
 		def view(self, request):
+			try:
 
-			# check overall rate limit.
-			response = self.rate_limit.verify(ip=utils.get_client_ip(request), mode="daily", limit=1000, reset_minutes=3600*24, increment=True)
-			if not response.success: return self.response(response)
+				# check overall rate limit.
+				response = self.rate_limit.verify(ip=utils.get_client_ip(request), mode="daily", limit=1000, reset_minutes=3600*24, increment=True)
+				if not response.success: return self.response(response)
 
-			# check 2fa rate limit.
-			response = self.rate_limit.verify(ip=utils.get_client_ip(request), mode="2fa", limit=15, reset_minutes=3600, increment=True)
-			if not response.success: return self.response(response)
+				# check 2fa rate limit.
+				response = self.rate_limit.verify(ip=utils.get_client_ip(request), mode="2fa", limit=15, reset_minutes=3600, increment=True)
+				if not response.success: return self.response(response)
 
-			# retrieve params.
-			parameters, response = self.parameters.get(request, [
-				"username",
-				"mode",])
-			if not response.success: return self.response(response)
-			if parameters["username"] in ["undefined", "null", "None", "none", ""]:
-				return self.error("Refresh the web page.")
+				# retrieve params.
+				parameters, response = self.parameters.get(request, [
+					"username",
+					"mode",])
+				if not response.success: return self.response(response)
+				if parameters["username"] in ["undefined", "null", "None", "none", ""]:
+					return self.error("Refresh the web page.")
 
-			# make request.
-			return self.response(self.send_code(
-				username=parameters["username"],
-				mode=parameters['mode'],
-				request=request,))
+				# make request.
+				return self.response(self.send_code(
+					username=parameters["username"],
+					mode=parameters['mode'],
+					request=request,))
+			# catch error.
+			except Exception as e: return self.response(self.utils.catch_error(e))
+			
+			#
 
 			#
 		def send_code(self, username=None, mode=None, request=None):
@@ -195,38 +212,43 @@ class Requests(_defaults_.Defaults):
 			views.Request.__init__(self, "requests/authentication/", "reset_password",)
 			self.assign(defaults.dict())
 		def view(self, request):
+			try:
 
-			# check overall rate limit.
-			response = self.rate_limit.verify(ip=utils.get_client_ip(request), mode="daily", limit=1000, reset_minutes=3600*24, increment=True)
-			if not response.success: return self.response(response)
+				# check overall rate limit.
+				response = self.rate_limit.verify(ip=utils.get_client_ip(request), mode="daily", limit=1000, reset_minutes=3600*24, increment=True)
+				if not response.success: return self.response(response)
 
-			# retrieve params.
-			parameters, response = self.parameters.get(request, [
-				"code",
-				"email",
-				"password",
-				"verify_password",])
-			if not response.success: return self.response(response)
-			if parameters["email"] in ["undefined", "null", "None", "none", ""]:
-				return self.error("Refresh the web page.")
+				# retrieve params.
+				parameters, response = self.parameters.get(request, [
+					"code",
+					"email",
+					"password",
+					"verify_password",])
+				if not response.success: return self.response(response)
+				if parameters["email"] in ["undefined", "null", "None", "none", ""]:
+					return self.error("Refresh the web page.")
 
-			# make request.
-			response = self.users.verify_code(
-				email=parameters["email"],
-				code=parameters["code"],
-				mode="reset_password",)
-			if not response.success: return self.response(response)
+				# make request.
+				response = self.users.verify_code(
+					email=parameters["email"],
+					code=parameters["code"],
+					mode="reset_password",)
+				if not response.success: return self.response(response)
 
-			# make request.
-			response = self.users.update(
-				email=parameters["email"], # for id.
-				password=parameters["password"],
-				verify_password=parameters["verify_password"],)
-			if response.success: 
-				response["message"] = f"Succesfully resetted the password of user [{user.email}]."
-				_response_ = self.users.save_password(email=user.email, username=user.username, password=parameters["password"])
-				if not _response_.success: return self.response(_response_)
-			return self.response(response)
+				# make request.
+				response = self.users.update(
+					email=parameters["email"], # for id.
+					password=parameters["password"],
+					verify_password=parameters["verify_password"],)
+				if response.success: 
+					response["message"] = f"Succesfully resetted the password of user [{user.email}]."
+					_response_ = self.users.save_password(email=user.email, username=user.username, password=parameters["password"])
+					if not _response_.success: return self.response(_response_)
+				return self.response(response)
+			# catch error.
+			except Exception as e: return self.response(self.utils.catch_error(e))
+			
+			#
 
 	# activate account.
 	class Activate(views.Request):
@@ -234,32 +256,38 @@ class Requests(_defaults_.Defaults):
 			views.Request.__init__(self, "requests/authentication/", "activate")
 			self.assign(defaults.dict())
 		def view(self, request):
+			try:
 
-			# check overall rate limit.
-			response = self.rate_limit.verify(ip=utils.get_client_ip(request), mode="daily", limit=1000, reset_minutes=3600*24, increment=True)
-			if not response.success: return self.response(response)
+				# check overall rate limit.
+				response = self.rate_limit.verify(ip=utils.get_client_ip(request), mode="daily", limit=1000, reset_minutes=3600*24, increment=True)
+				if not response.success: return self.response(response)
 
-			# retrieve params.
-			parameters, response = self.parameters.get(request, [
-				"code",
-				"email",])
-			if not response.success: return self.response(response)
-			if parameters["email"] in ["undefined", "null", "None", "none", ""]:
-				return self.error("Refresh the web page.")
+				# retrieve params.
+				parameters, response = self.parameters.get(request, [
+					"code",
+					"email",])
+				if not response.success: return self.response(response)
+				if parameters["email"] in ["undefined", "null", "None", "none", ""]:
+					return self.error("Refresh the web page.")
 
-			# make request.
-			response = self.users.verify_code(
-				email=parameters["email"],
-				code=parameters["code"],
-				mode="activation",)
-			if not response.success: return self.response(response)
+				# make request.
+				response = self.users.verify_code(
+					email=parameters["email"],
+					code=parameters["code"],
+					mode="activation",)
+				if not response.success: return self.response(response)
 
-			# make request.
-			response = self.users.update(
-				email=parameters["email"],
-				email_verified=True,)
-			if response.success: response["message"] = f"Succesfully activated the account user [{user.email}]."
-			return self.response(response)
+				# make request.
+				response = self.users.update(
+					email=parameters["email"],
+					email_verified=True,)
+				if response.success: response["message"] = f"Succesfully activated the account user [{user.email}]."
+				return self.response(response)
+
+			# catch error.
+			except Exception as e: return self.response(self.utils.catch_error(e))
+			
+			#
 
 	# is authenticated.
 	class Authenticated(views.Request):
@@ -267,14 +295,26 @@ class Requests(_defaults_.Defaults):
 			views.Request.__init__(self, "requests/authentication/", "activate")
 			self.assign(defaults.dict())
 		def view(self, request):
+			try:
 
-			# check overall rate limit.
-			response = self.rate_limit.verify(ip=utils.get_client_ip(request), mode="daily", limit=1000, reset_minutes=3600*24, increment=True)
-			if not response.success: return self.response(response)
+				# check overall rate limit.
+				response = self.rate_limit.verify(ip=utils.get_client_ip(request), mode="daily", limit=1000, reset_minutes=3600*24, increment=True)
+				if not response.success: return self.response(response)
 
-			# handler.
-			return self.response("Successfully checked if the user is authenticated.", {
-				"authenticated":request.user.username != None and request.user.is_authenticated == True,
-				"username":request.user.username,
-				"email":request.user.email,
-			})
+				# handler.
+				return self.response("Successfully checked if the user is authenticated.", {
+					"authenticated":request.user.username != None and request.user.is_authenticated == True,
+					"username":request.user.username,
+					"email":request.user.email,
+				})
+
+			# catch error.
+			except Exception as e: return self.response(self.utils.catch_error(e))
+			
+			#
+
+		#
+
+	#
+
+#

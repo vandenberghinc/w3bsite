@@ -15,6 +15,7 @@ class Apps(_defaults_.Defaults):
 		rate_limit=None,
 		users=None,
 		stripe=None,
+		utils=None,
 		defaults=None,
 	):
 		# defaults.
@@ -22,6 +23,7 @@ class Apps(_defaults_.Defaults):
 		defaults.template_data = template_data
 		defaults.rate_limit = rate_limit
 		defaults.users = users
+		defaults.utils = utils
 		self.assign(defaults.dict())
 
 		# apps.
