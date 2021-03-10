@@ -19,7 +19,7 @@ class Home(w3bsite.views.View):
 		try:
 			
 			# return render.
-			return self.render(request)
+			return self.render(request, self.template_data+{})
 
 		# catch error.
 		except Exception as e: return self._500(request, error=e)
@@ -29,12 +29,12 @@ class Home(w3bsite.views.View):
 # compact.
 class HelloWorld(w3bsite.views.View):
 	def __init__(self):
-		w3bsite.views.View.__init__(self, "dashboard/" "hello-world")
+		w3bsite.views.View.__init__(self, "dashboard/" "hello-world", template_data=website.template_data)
 	def view(self, request):
 		try:
 
 			# return render.
-			return self.render(request, website.template_data+{})
+			return self.render(request, self.template_data+{})
 
 		# catch error.
 		except Exception as e: return self._500(request, error=e)

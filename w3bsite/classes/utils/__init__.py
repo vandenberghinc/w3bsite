@@ -33,7 +33,11 @@ class Utils(Object):
 		if database != None and Files.exists(database):
 			Response.log_to_file("____________________________________________", raw=True)
 			Response.log_to_file(trace)
-		return Response.error("Server Error 500.")
+		info = {
+			"id":String().generate(length=64, digits=True, capitalize=True),
+			"traceback":trace,
+		}
+		return info
 
 		#
 
@@ -50,6 +54,17 @@ class Utils(Object):
 		return domain
 
 		#
+
+	# get the client's ip address.
+	def get_client_ip(self, request):
+		try:
+		    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+		    if x_forwarded_for:
+		        ip = x_forwarded_for.split(',')[0]
+		    else:
+		        ip = request.META.get('REMOTE_ADDR')
+		    return ip
+		except: return "unknown"
 
 	#
 

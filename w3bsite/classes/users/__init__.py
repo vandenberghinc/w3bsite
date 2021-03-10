@@ -508,7 +508,7 @@ class Users(_defaults_.Defaults):
 			"$IP": ip,
 			"$TIMESTAMP": Date().timestamp,
 		}.items():
-			html = html.replace(from_, to_)
+			html = html.replace(f"({from_})", f"({to_})")
 
 		# html colors.
 		for key,value in self.template_data["COLORS"].items():

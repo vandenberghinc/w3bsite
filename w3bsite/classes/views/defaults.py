@@ -88,7 +88,7 @@ class Request(Object):
 		# can be overwritten with default def view(self, request):
 		try: 
 			response = self.request(request)
-		except Exception as e: return self.response(utils.utils.catch_error(e))
+		except Exception as e: return self._500(request, error=e)
 		return self.response(response)
 	def success(self, message, arguments={}):
 		return Response.success(message, arguments, django=True)
@@ -107,8 +107,10 @@ class Request(Object):
 	def permission_denied(self, request=None):
 		return self.error("Permission denied.")
 	def _500(self, request=None, error=None):
-		utils.utils.catch_error(error)
-		return self.error("Server error 500.")
+		info = utils.utils.catch_error(error)
+		return self.error("Server error [500].")
+	def _404(self, request=None, error=None):
+		return self.error("Page not found [404].")
 	# do not forget the self.parameters's functions.
 
 # the django view object class.
@@ -240,13 +242,27 @@ class View(Object):
 		if template_data == None: template_data = self.template_data
 		if isinstance(template_data, (Dictionary, Response.ResponseObject)): 
 			template_data = template_data.raw()
-		utils.utils.catch_error(error)
-		return render(request, f"w3bsite/classes/apps/defaults/html/500.html", template_data)
+		info = utils.utils.catch_error(error)
+		traceback, debug = None, False
+		if not Environment.get("PRODUCTION", format=bool, default=True) or Environment.get("DEBUG", format=bool, default=False):
+			debug = True
+			traceback = info["traceback"]
+		return render(request, f"w3bsite/classes/apps/defaults/html/500.html", self.template({
+			"ERROR_ID":info["id"],
+			"DEBUG":debug,
+			"TRACEBACK":traceback,
+		}))
 	def _404(self, request, template_data=None):
 		if template_data == None: template_data = self.template_data
-		if isinstance(template_data, (Dictionary, Response.ResponseObject)): 
-			template_data = template_data.raw()
-		return render(request, f"w3bsite/classes/apps/defaults/html/404.html", template_data)
+		return render(request, f"w3bsite/classes/apps/defaults/html/404.html", self.template(template_data))
+	# append template data.
+	def template(self, dictionary={}):
+		if dictionary == None: 
+			if isinstance(self.template, (Dictionary, ResponseObject)): return self.template.raw()
+			else: return self.template
+		dictionary = Dictionary(self.template_data) + Dictionary(dictionary)
+		if isinstance(dictionary, (Dictionary, ResponseObject)): dictionary = dictionary.raw()
+		return dictionary
 	# do not forget the self.parameters's functions.
 
 

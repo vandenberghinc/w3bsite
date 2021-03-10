@@ -82,7 +82,7 @@ class Requests(_defaults_.Defaults):
 
 
 			# catch error.
-			except Exception as e: return self.response(self.utils.catch_error(e))
+			except Exception as e: return self._500(request, error=e)
 			
 			#
 
@@ -129,7 +129,7 @@ class Requests(_defaults_.Defaults):
 					html=html,
 					request=request,))
 			# catch error.
-			except Exception as e: return self.response(self.utils.catch_error(e))
+			except Exception as e: return self._500(request, error=e)
 			
 			#
 
@@ -163,7 +163,7 @@ class Requests(_defaults_.Defaults):
 					mode=parameters['mode'],
 					request=request,))
 			# catch error.
-			except Exception as e: return self.response(self.utils.catch_error(e))
+			except Exception as e: return self._500(request, error=e)
 			
 			#
 
@@ -246,7 +246,7 @@ class Requests(_defaults_.Defaults):
 					if not _response_.success: return self.response(_response_)
 				return self.response(response)
 			# catch error.
-			except Exception as e: return self.response(self.utils.catch_error(e))
+			except Exception as e: return self._500(request, error=e)
 			
 			#
 
@@ -285,7 +285,7 @@ class Requests(_defaults_.Defaults):
 				return self.response(response)
 
 			# catch error.
-			except Exception as e: return self.response(self.utils.catch_error(e))
+			except Exception as e: return self._500(request, error=e)
 			
 			#
 
@@ -309,7 +309,7 @@ class Requests(_defaults_.Defaults):
 				})
 
 			# catch error.
-			except Exception as e: return self.response(self.utils.catch_error(e))
+			except Exception as e: return self._500(request, error=e)
 			
 			#
 

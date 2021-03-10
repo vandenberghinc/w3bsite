@@ -3,7 +3,7 @@
 
 # imports.
 from w3bsite.classes.config import *
-from w3bsite.classes import utils
+from w3bsite.classes.utils import utils
 from w3bsite.classes import defaults as _defaults_
 if not Environment.get("MIGRATIONS", format=bool, default=False):
 	try:
@@ -303,7 +303,7 @@ class Users(_defaults_.Defaults):
 			if user is not None: a=1
 			else:
 				response["error"] = f"Invalid verification."
-				Response.log(f"Invalid verification attempt for user [{username}] ip address [{ip}].")
+				Response.log(f"Invalid verification attempt for user [{username}].")
 				return response
 
 			# success.

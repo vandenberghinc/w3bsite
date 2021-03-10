@@ -343,6 +343,7 @@ class Website(CLI.CLI,Traceback):
 			"DOMAIN":str(self.domain),
 			"DATABASE":str(self.database),
 			"PRODUCTION":str(self.production),
+			"DEBUG":Environment.get("DEBUG", format=bool, default=False),
 		})
 
 		# template data.
@@ -1052,5 +1053,7 @@ class Website(CLI.CLI,Traceback):
 		str = json.dumps(_serialized_, indent=indent).replace('": "', ': ').replace('": ', ': ').replace('",', "").replace(f'\n{_indent_}"', f'\n{_indent_} * ').replace("{\n", "").replace('"\n}', "").replace("\n}", "").replace("{", "")
 		return f"<w3bsite.Website; \n{str}\n>"
 	def template(self, dictionary={}):
-		return self.template_data + dictionary
+		dictionary = Dictionary(self.template_data) + Dictionary(dictionary)
+		if isinstance(dictionary, Dictionary): dictionary = dictionary.dictionary
+		return dictionary
 		#
