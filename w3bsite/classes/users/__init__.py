@@ -98,11 +98,14 @@ class Users(_defaults_.Defaults):
 			self.__verification_codes__ = Dictionary(path=self.db.join("data/verification_codes"))
 
 		#
+
+	# functions.
 	def get(self, 
 		# define one of the following user id parameters.
 		username=None,
 		email=None,
-	):
+	):	
+		username, email = self.__correct_username_email__(username, email)
 		return self.django.users.get(username=username, email=email)
 	def create(self,
 		# required:
@@ -250,6 +253,9 @@ class Users(_defaults_.Defaults):
 		username=None,
 	):
 		
+		# checks.
+		username, email = self.__correct_username_email__(username, email)
+
 		# check parameters.
 		if [username,email] == [None,None]:
 			return Response.error(self.__traceback__(function="load_data")+" Define one of the following parameters [email, username].")
@@ -273,6 +279,7 @@ class Users(_defaults_.Defaults):
 		# the filter (django).
 		filter="django",
 	):
+		username, email = self.__correct_username_email__(username, email)
 		if filter == "django":
 			if email != None:
 				return DjangoUser.objects.filter(email=email).exists()
@@ -385,6 +392,7 @@ class Users(_defaults_.Defaults):
 		# the create boolean (do not use).
 		create=False,
 	):	
+		username, email = self.__correct_username_email__(username, email)
 		if [username,email] == [None,None]:
 			return Response.error(self.__traceback__(function="load_data")+" Define one of the following parameters [email, username].")
 		response = self.db.load(path=self.__get_path__(email=email, username=username, create=create))
@@ -402,6 +410,7 @@ class Users(_defaults_.Defaults):
 		# the overwrite boolean.
 		overwrite=False,
 	):
+		username, email = self.__correct_username_email__(username, email)
 		if [username,email] == [None,None]:
 			return Response.error(self.__traceback__(function="load_data")+" Define one of the following parameters [email, username].")
 		response = self.db.save(path=self.__get_path__(email=email, username=username, create=True), data=data, overwrite=overwrite)
@@ -410,6 +419,7 @@ class Users(_defaults_.Defaults):
 	def send_email(self, 
 		# define email to retrieve user.
 		email=None, 
+		username=None,
 		# the email title.
 		title="Account Activation",
 		# the html (str).
@@ -420,9 +430,12 @@ class Users(_defaults_.Defaults):
 		if self.email.__class__.__name__ not in ["Email"]:
 			response = self.__initialize_email__()
 			if response.error != None: return response
+
+		# check username email.
+		username, email = self.__correct_username_email__(username, email)
 				
 		# get user.
-		response = self.get(email=email)  
+		response = self.get(email=email, username=username)  
 		if response.error != None: return response
 		user = response["user"]
 		
@@ -447,8 +460,9 @@ class Users(_defaults_.Defaults):
 
 		#
 	def send_code(self, 
-		# define username to retrieve user.
+		# define username / email to retrieve user.
 		username=None, 
+		email=None,
 		# the clients ip.
 		ip="unknown",
 		# the mode id.
@@ -465,11 +479,14 @@ class Users(_defaults_.Defaults):
 		if self.email.__class__.__name__ not in ["Email"]:
 			response = self.__initialize_email__()
 			if response.error != None: return response
-				
+		
+		# check username email.
+		username, email = self.__correct_username_email__(username, email)
+
 		# save code.
 		if code == None:
 			code = Integer(0).generate(length=6)
-		response = self.get(username=username)
+		response = self.get(username=username, email=email)
 		if response.error != None: return response
 		user = response["user"]
 		self.__verification_codes__.load()
@@ -520,6 +537,7 @@ class Users(_defaults_.Defaults):
 	def verify_code(self, 
 		# define email to retrieve user.
 		username=None, 
+		email=None,
 		# the user entered code.
 		code=000000, 
 		# the message mode.
@@ -527,8 +545,11 @@ class Users(_defaults_.Defaults):
 	):
 
 
+		# check username email.
+		username, email = self.__correct_username_email__(username, email)
+
 		# get user.
-		response = self.get(username=username)
+		response = self.get(username=username, email=email)
 		if response.error != None: return response
 		user = response["user"]
 
@@ -587,6 +608,7 @@ class Users(_defaults_.Defaults):
 	def verify_subscription(self,
 		# select one of the following user id options:
 		email=None,
+		username=None,
 		api_key=None,
 		# the subscription product.
 		product=None,
@@ -594,8 +616,14 @@ class Users(_defaults_.Defaults):
 		plans=[],
 	):
 
+		# check username email.
+		username, email = self.__correct_username_email__(username, email)
+
 		# set user id.
 		if email != None:
+			id = email
+		elif username != None:
+			email = self.__username_to_email__(username)
 			id = email
 		elif api_key != None:
 			response = self.verify_api_key(api_key=api_key)
@@ -663,6 +691,7 @@ class Users(_defaults_.Defaults):
 	def create_subscription(self,
 		# select one of the following user id options:
 		email=None,
+		username=None,
 		api_key=None,
 		# the subscription product.
 		product=None,
@@ -680,8 +709,11 @@ class Users(_defaults_.Defaults):
 		card_cvc=None,
 	):
 
+		# check username email.
+		username, email = self.__correct_username_email__(username, email)
+
 		# checkparameters.
-		if email == None and api_key == None: return Response.error("Define one of the following parameters: [email, api_key].")
+		if username == None and email == None and api_key == None: return Response.error("Define one of the following parameters: [email, api_key].")
 		response = Response.parameters.check(
 			traceback=self.__traceback__(function="create_subscription"),
 			parameters={
@@ -707,6 +739,9 @@ class Users(_defaults_.Defaults):
 
 		# set user id.
 		if email != None:
+			id = email
+		elif username != None:
+			email = self.__username_to_email__(username)
 			id = email
 		elif api_key != None:
 			response = self.verify_api_key(api_key=api_key)
@@ -790,6 +825,7 @@ class Users(_defaults_.Defaults):
 		api_keys = response["api_keys"]
 
 		# get api key.
+		api_key = None
 		for _api_key_, info in api_keys.items():
 			if (email != None and email == info["email"]) or (username != None and username == info["username"]): 
 				api_key = _api_key_
@@ -819,6 +855,8 @@ class Users(_defaults_.Defaults):
 		# handlers.
 		return Response.success(f"Successfully set the {permission_id} permission of user [{email}] to [{permission}].")
 		#
+
+	# user passwords.
 	def check_password(self, 
 		# password (#1).
 		password=None, 
@@ -848,6 +886,7 @@ class Users(_defaults_.Defaults):
 			return Response.error("The password must contain digits.")
 		return Response.success("Succesfully checked the password.")
 	def load_password(self, email=None, username=None):
+		username, email = self.__correct_username_email__(username, email)
 		if [username,email] == [None,None]:
 			return Response.error(self.__traceback__(function="load_data")+" Define one of the following parameters [email, username].")
 		response = self.load_data(email=email, username=username)
@@ -861,6 +900,7 @@ class Users(_defaults_.Defaults):
 			"data":data,
 		})
 	def save_password(self, email=None, username=None, password=None):
+		username, email = self.__correct_username_email__(username, email)
 		if [username,email] == [None,None]:
 			return Response.error(self.__traceback__(function="load_data")+" Define one of the following parameters [email, username].")
 		response = Response.parameters.check(
@@ -880,6 +920,8 @@ class Users(_defaults_.Defaults):
 		response = self.save_data(email=email, username=username, data=data)
 		if not response.success: return response
 		return Response.success(f"Successfully saved the password of user {email}.")
+
+	# iterations.
 	def iterate(self,
 		# the filter of what to iterate.
 		filter="user",
@@ -1033,6 +1075,11 @@ class Users(_defaults_.Defaults):
 		})
 
 		#
+
+		#
+
+
+
 	# system functions.
 	def __initialize_email__(self):
 		# the email object.
@@ -1125,12 +1172,7 @@ class Users(_defaults_.Defaults):
 
 		#
 	def __get_path__(self, email=None, username=None, create=False):
-		if email in [None, username] and "@" in username: 
-			email = username 
-			username = None
-		if username in [None, email] and "@" not in email: 
-			username = email
-			email = None
+		username, email = self.__correct_username_email__(username, email)
 		if self.id_by_username:
 			if username == None and email != None:
 				response = self.get(email=email)
@@ -1164,3 +1206,15 @@ class Users(_defaults_.Defaults):
 			return self.get(email=email).username
 		except Exception as e:
 			raise ValueError(f"Unable retrieve the username of email [{email}], error: {e}.")
+	def __correct_username_email__(self, username, email):
+		if email in [None, username] and (username != None and "@" in username): 
+			email = username 
+			username = None
+		if username in [None, email] and "@" (email != None and not in email): 
+			username = email
+			email = None
+		return username, email
+	#
+
+#
+
