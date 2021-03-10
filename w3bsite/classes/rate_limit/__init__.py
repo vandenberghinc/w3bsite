@@ -152,10 +152,9 @@ class RateLimit(_defaults_.Defaults):
 		try: rate_limits[mode]["rate"]
 		except KeyError: rate_limits[mode]["rate"] = 0
 		timestamp = rate_limits[mode]["timestamp"]
-		increased = date.increase(timestamp, format=date.timestamp_format, minutes=reset_minutes)
-		comparison = date.compare(comparison=date.timestamp, current=increased, format=date.timestamp_format)
-		Response.log(f"comparison [{date.timestamp}] current [{increased}] result: [{comparison}].")
-		if comparison in ["future", "present"]:
+		increased = Date(timestamp=date.increase(timestamp, format=date.timestamp_format, minutes=reset_minutes), format=date.timestamp_format)
+		Response.log(f"comparison [{date}] current [{increased}] result: [{date >= increased}].")
+		if date >= increased:
 			rate_limits[mode]["rate"] = 0
 			rate_limits[mode]["timestamp"] = date.timestamp
 			document["rate_limits"] = rate_limits
