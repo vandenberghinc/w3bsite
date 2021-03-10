@@ -109,13 +109,8 @@ class Requests(_defaults_.Defaults):
 			# html
 			html = ""
 			if self._2fa:
-
-				# set mode.
-				code = Integer(0).generate(length=6)
 				title = "Sign In - Verification Code"
-				path = f"{SOURCE_PATH}/classes/apps/authentication/mail/authentication.html"
-				ip = utils.get_client_ip(request)
-				html = Files.load(path)
+				html = Files.load(f"{SOURCE_PATH}/classes/apps/authentication/mail/authentication.html")
 
 			# make request.
 			return self.response(self.users.authenticate(
