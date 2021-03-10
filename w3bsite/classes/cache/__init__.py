@@ -1,4 +1,4 @@
-# user wide cache to share variables accross tty sessions since default env variables is instable.
+# user wide cache to share variables across tty sessions since default env variables is instable.
 import syst3m
 from dev0s import *
 if not Files.exists(f"{Defaults.vars.home}/.w3bsite/"): 

@@ -13,7 +13,7 @@ def __handle_stripe_exception__(exception):
 	if "Request req_" in f"{exception}": return Response.error(f"{exception}".split(": ")[1])
 	else: return Response.error(f"{exception}")
 
-# the stripe object class.
+# the stripe object class_.
 class Stripe(_defaults_.Defaults):
 	# privacy policy generator.
 	# https://getterms.io/
@@ -972,3 +972,6 @@ class Stripe(_defaults_.Defaults):
 				})
 			except KeyError:
 				return Response.error(f"Failed to create product {id}, stripe response: {response}.")
+
+
+	#
