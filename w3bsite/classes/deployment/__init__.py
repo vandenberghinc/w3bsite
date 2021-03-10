@@ -220,7 +220,7 @@ class Deployment(Object):
 		if self.live:
 			if not Files.exists(self.database): 
 				os.system(f"sudo mkdir -p {self.database} && sudo chown {Defaults.vars.user}:{Defaults.vars.group} {self.database} && sudo chmod 770 {self.database}")
-			if not Files.exists(f"{self.database}/logs"): os.mkdir(f"{self.database}/logs")
+			if not Files.exists(f"{self.database}/logs"): Files.create(f"{self.database}/logs", directory=True)
 
 		# deployment.
 		if not Files.exists(f"{self.root}/deployment"): os.mkdir(f"{self.root}/deployment")

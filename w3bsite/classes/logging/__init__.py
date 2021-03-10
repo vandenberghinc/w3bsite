@@ -11,8 +11,8 @@ class Logging(object):
 		self.root = root
 		self.database = database
 		self.log_file = f"{self.root}/logs/logs"
-		if not Files.exists(f"{self.database}/logs"):
-			os.mkdir(f"{self.database}/logs")
+		#if not Files.exists(f"{self.database}/logs"):
+		#	Files.create(f"{self.database}/logs", directory=True)
 
 	# log to logfile.
 	def log(self,
