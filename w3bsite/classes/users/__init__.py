@@ -1078,8 +1078,7 @@ class Users(_defaults_.Defaults):
 				"username":user.username,
 				"email":user.email,
 			}
-
-		print("API_KEYS:",api_keys)
+			
 		# success.
 		return Response.success(f"Successfully synchronized {len(_usernames_)} user(s).", {
 			"api_keys":api_keys,
