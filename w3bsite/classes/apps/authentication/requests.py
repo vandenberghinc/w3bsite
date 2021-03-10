@@ -133,6 +133,22 @@ class Requests(_defaults_.Defaults):
 			
 			#
 
+	# sign out.
+	class SignOut(views.Request):
+		def __init__(self, defaults=None,):
+			views.Request.__init__(self, "requests/authentication/", "signout")
+			self.assign(defaults.dict())
+		def view(self, request):
+			try:
+
+				# make request.
+				return self.response(self.users.signout(
+					request=request,))
+			# catch error.
+			except Exception as e: return self._500(request, error=e)
+			
+			#
+
 	# send reset password email.
 	class SendCode(views.Request):
 		def __init__(self, defaults=None,):

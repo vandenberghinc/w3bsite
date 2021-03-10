@@ -44,6 +44,19 @@
 			})
 		}
 
+		// sign out.
+		signout(args={}, handler=null) {
+			request(this.url+"signup/", {
+				response:args["response"],
+				loader:args["loader"],
+			// handler.
+			}, function(response) {
+				if (handler != null) {
+					handler(response)
+				}
+			})
+		}
+
 		// send_code.
 		send_code(args={}, handler=null) {
 			request(this.url+"send_code/", {

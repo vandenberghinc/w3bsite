@@ -7,6 +7,7 @@ if not Environment.get("MIGRATIONS", format=bool, default=False):
 	from django.contrib.auth.models import User as DjangoUser
 	from django.contrib.auth import authenticate, login
 	from django.contrib.auth import login as _login_
+	from django.contrib.auth import logout as _logout_
 try:
 	from w3bsite.classes.firebase import *
 	from firebase_admin import credentials, auth, firestore, _auth_utils
@@ -335,6 +336,17 @@ class Users(_defaults_.Defaults):
 		# success.
 		return self.django.users.authenticate(username=username, password=password, request=request)
 
+		#
+	def signout(self,
+		# the request object (obj) (#1).
+		request=None,
+	):
+		if request.user in [None] or request.user.username in [None, ""]:
+			return Response.error("There is no user signed in.")
+		try:
+			_logout_(request)
+		except Exception as e:  return Response.error(f"Failed to sign out user [{request.user.username}], error: {e}.")
+		return Response.success("Successfully signed out.")
 		#
 	def authenticated(self, 
 		# the request (#1).
