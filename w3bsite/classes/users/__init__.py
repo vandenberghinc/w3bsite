@@ -1210,7 +1210,7 @@ class Users(_defaults_.Defaults):
 		if email in [None, username] and (username != None and "@" in username): 
 			email = username 
 			username = None
-		if username in [None, email] and "@" (email != None and not in email): 
+		if username in [None, email] and (email != None and "@" not in email): 
 			username = email
 			email = None
 		return username, email
