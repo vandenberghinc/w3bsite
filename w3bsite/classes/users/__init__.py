@@ -508,11 +508,11 @@ class Users(_defaults_.Defaults):
 			"$IP": ip,
 			"$TIMESTAMP": Date().timestamp,
 		}.items():
-			html = html.replace(f"({from_})", f"({to_})")
+			html = html.replace(f"({from_})", to_)
 
 		# html colors.
 		for key,value in self.template_data["COLORS"].items():
-			html = html.replace(f"(${key.upper()})", f"({value})")
+			html = html.replace(f"(${key.upper()})", str(value))
 
 		# send email.
 		if Defaults.options.log_level >= 1:
