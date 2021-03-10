@@ -559,6 +559,7 @@ class Users(_defaults_.Defaults):
 		try: self.__verification_codes__[mode]
 		except: self.__verification_codes__[mode] = {}
 		try: 
+			date = Date()
 			decreased = date.decrease(date.timestamp, format=date.timestamp_format, minutes=5)
 			outdated = self.__verification_codes__[mode][user.email]["stamp"] <= Date(timestamp=decreased, format=date.timestamp_format)
 			success = not outdated and self.__verification_codes__[mode][user.email]["attempts"] > 0 and str(self.__verification_codes__[mode][user.email]["code"]) == str(code)
