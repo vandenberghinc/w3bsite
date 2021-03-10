@@ -3,7 +3,7 @@
 
 # imports.
 from w3bsite.classes.config import *
-from w3bsite.classes import security, heroku, namecheap, utils, git, users, stripe, logging, rate_limit, deployment, vps, defaults, apps, views
+from w3bsite.classes import security, heroku, namecheap, utils, git, stripe, logging, rate_limit, deployment, vps, defaults, apps, views
 from w3bsite.classes import database as _database_
 import django as pypi_django
 
@@ -499,7 +499,7 @@ class Website(CLI.CLI,Traceback):
 		from __defaults__.django import settings
 		try:pypi_django.setup()
 		except: a=1
-		from w3bsite.classes import django
+		from w3bsite.classes import django, users
 		self.django = django.Django(
 			security=self.security,
 			defaults=self.defaults,)
