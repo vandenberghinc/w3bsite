@@ -7,7 +7,7 @@
 from setuptools import setup, find_packages
 setup(
 	name='w3bsite',
-	version='4.32.7',
+	version='4.32.8',
 	description='Some description.',
 	url='http://github.com/vandenberghinc/w3bsite',
 	author='Daan van den Bergh',
@@ -21,7 +21,6 @@ setup(
             'asgiref',
             'certifi',
             'chardet',
-            'idna',
             'sqlparse',
             'urllib3',
             'gunicorn',
