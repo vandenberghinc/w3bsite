@@ -7,7 +7,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseNotAllowed, JsonResponse
 
 # inc imports.
-from dev0s import *
+from dev0s.shortcuts import *
 
 # fyunctions.
 def __get_file_path_base__(path, back=1):
@@ -56,8 +56,8 @@ TEMPLATE_DATA = {
 
 # logs.
 if PRODUCTION:
-	Response.log_file = f"{SOURCE_PATH}/{VERSION}/logs/logs.txt"
-	r3stapi.Response.log_file = f"{SOURCE_PATH}/{VERSION}/logs/logs.txt"
+	dev0s.response.log_file = f"{SOURCE_PATH}/{VERSION}/logs/logs.txt"
+	r3stapi.dev0s.response.log_file = f"{SOURCE_PATH}/{VERSION}/logs/logs.txt"
 else:
-	Response.log_file = f"logs/logs.txt"
-	r3stapi.Response.log_file = f"logs/logs.txt"
+	dev0s.response.log_file = f"logs/logs.txt"
+	r3stapi.dev0s.response.log_file = f"logs/logs.txt"

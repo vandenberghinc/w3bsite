@@ -24,17 +24,17 @@ class Utils(Object):
 		except AttributeError:
 			database = None
 		if database == None:
-			database = Environment.get("DATABASE", default=None)
+			database = dev0s.env.get("DATABASE", default=None)
 		if database != None and Files.exists(database):
 			if not Files.exists(f"{database}/logs"): os.mkdir(f"{database}/logs")
-			Response.log_file = gfp.clean(f"{database}/logs/errors")
+			dev0s.response.log_file = gfp.clean(f"{database}/logs/errors")
 		trace = traceback.format_exc()
-		Response.log(message=trace, save=False)
+		dev0s.response.log(message=trace, save=False)
 		id = String().generate(length=32, digits=True, capitalize=True)
 		if database != None and Files.exists(database):
-			Response.log_to_file("----------------------------------------------------------\nException ("+str(id)+").\n ", raw=True)
-			Response.log_to_file(trace)
-			Response.log_to_file(" ")
+			dev0s.response.log_to_file("----------------------------------------------------------\nException ("+str(id)+").\n ", raw=True)
+			dev0s.response.log_to_file(trace)
+			dev0s.response.log_to_file(" ")
 		info = {
 			"id":id,
 			"traceback":trace,
@@ -104,25 +104,25 @@ def __check_package_files__(tuple_list):
 			# api request.
 			url = f"https://api.vandenberghinc.com/packages/download/?package={package}&path={path}"
 			try: response = requests.get(url)
-			except Exception as e: return Response.error(f"Failed to install package file {package}:{path} from source {url}, error: {e}")	
+			except Exception as e: return dev0s.response.error(f"Failed to install package file {package}:{path} from source {url}, error: {e}")	
 
 			# handle response.
 			try: response = response_object.json()
 			except:
-				return Response.error(f"Failed to install package file {package}:{path} from source {url}, error: {e}")
+				return dev0s.response.error(f"Failed to install package file {package}:{path} from source {url}, error: {e}")
 			if not response.success:
-				return Response.error(f"Failed to install package file {package}:{path} from source {url}, error: {e}")
+				return dev0s.response.error(f"Failed to install package file {package}:{path} from source {url}, error: {e}")
 
 			# write out.
 			try:
 				open(path, 'wb').write(response_object.content)
 			except:
-				return Response.error(f"Failed to write out downloaded path [{path}].", log_level=0)	
+				return dev0s.response.error(f"Failed to write out downloaded path [{path}].", log_level=0)	
 			if not zip.file_path.exists():
-				return Response.error(f"Failed to write out downloaded path [{path}].", log_level=0)
+				return dev0s.response.error(f"Failed to write out downloaded path [{path}].", log_level=0)
 
 	# success.
-	return Response.success(f"Successfully checked {len(tuple_list)} libary file(s).")
+	return dev0s.response.success(f"Successfully checked {len(tuple_list)} libary file(s).")
 			
 # append an old dict with a new one, optoinally overwrite the new keys.
 def __append_dict__(old={}, new={}, overwrite=False):
@@ -422,7 +422,7 @@ def __save_bytes__(path, bytes):
 
 # init a default response.
 def __default_response__():
-	return Response.ResponseObject({
+	return dev0s.response.ResponseObject({
 		"success":False,
 		"error":None,
 		"message":None,

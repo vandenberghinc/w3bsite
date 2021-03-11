@@ -7,13 +7,13 @@ from w3bsite.classes import utils, views
 from w3bsite.classes import defaults as _defaults_
 
 # the authentication requests.
-class Requests(_defaults_.Defaults):
+class Requests(_defaults_.dev0s.defaults.):
 	def __init__(self, 
 		# passed Website.x objects.
 		defaults=None,
 	):
 		# defaults.
-		_defaults_.Defaults.__init__(self)
+		_defaults_.dev0s.defaults.__init__(self)
 		self.assign(defaults.dict())
 
 		# urlpatterns.
@@ -207,7 +207,7 @@ class Requests(_defaults_.Defaults):
 				title = "Account Activation - Verification Code"
 				path = f"{SOURCE_PATH}/classes/apps/authentication/mail/activation.html"
 			else:
-				return Response.error("Selected an invalid mode.")
+				return dev0s.response.error("Selected an invalid mode.")
 
 			# parse html.
 			ip = utils.__get_client_ip__(request)

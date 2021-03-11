@@ -8,7 +8,7 @@ from w3bsite.classes import database as _database_
 import django as pypi_django
 
 # the main website class.
-class Website(CLI.CLI,Traceback):
+class Website(dev0s.cli.CLI,Traceback):
 	def __init__(self,
 		#
 		# General.
@@ -161,7 +161,7 @@ class Website(CLI.CLI,Traceback):
 		id_by_username=True,
 		#
 		# the logs.
-		log_level=Defaults.options.log_level,
+		log_level=dev0s.defaults.options.log_level,
 		# styling options.
 		styling={},
 		#
@@ -255,7 +255,7 @@ class Website(CLI.CLI,Traceback):
 	def initialize(self):
 
 		# overall arguments.
-		response = Response.parameters.check(
+		response = dev0s.response.parameters.check(
 			traceback=self.__traceback__(),
 			parameters={
 				"root":self.root,
@@ -267,11 +267,11 @@ class Website(CLI.CLI,Traceback):
 				"developers":self.developers,
 				"_2fa":self._2fa,
 			})
-		if not response.success: raise ValueError(response.error)
+		if not response.success: return response
 
 		# namecheap arguments.
 		if self.namecheap_enabled:
-			response = Response.parameters.check(
+			response = dev0s.response.parameters.check(
 				traceback=self.__traceback__(),
 				parameters={
 					"author":self.author,
@@ -283,21 +283,21 @@ class Website(CLI.CLI,Traceback):
 					"namecheap_username":self.namecheap_username,
 					"namecheap_api_key":self.namecheap_api_key,
 				})
-			if not response.success: raise ValueError(response.error)
+			if not response.success: return response
 
 		# firebase arguments.
 		if self.firebase_enabled:
-			response = Response.parameters.check(
+			response = dev0s.response.parameters.check(
 				traceback=self.__traceback__(),
 				parameters={
 					"firebase_admin":self.firebase_admin,
 					"firebase_js":self.firebase_js,
 				})
-			if not response.success: raise ValueError(response.error)
+			if not response.success: return response
 
 		# stripe arguments.
 		if self.stripe_enabled:
-			response = Response.parameters.check(
+			response = dev0s.response.parameters.check(
 				traceback=self.__traceback__(),
 				parameters={
 					"stripe_secret_key":self.stripe_secret_key,
@@ -305,11 +305,11 @@ class Website(CLI.CLI,Traceback):
 					"stripe_subscriptions":self.stripe_subscriptions,
 					"stripe_products":self.stripe_products,
 				})
-			if not response.success: raise ValueError(response.error)
+			if not response.success: return response
 
 		# email arguments.
 		if self.email_enabled:
-			response = Response.parameters.check(
+			response = dev0s.response.parameters.check(
 				traceback=self.__traceback__(),
 				parameters={
 					"email_address":self.email_address,
@@ -317,18 +317,29 @@ class Website(CLI.CLI,Traceback):
 					"email_smtp_host":self.email_smtp_host,
 					"email_smtp_port":self.email_smtp_port,
 				})
-			if not response.success: raise ValueError(response.error)
+			if not response.success: return response
 
 		# remote: vps arguments.
 		if self.remote in ["vps"]:
-			response = Response.parameters.check(
+			response = dev0s.response.parameters.check(
 				traceback=self.__traceback__(),
 				parameters={
 					"vps_ip":self.vps_ip,
 					"vps_port":self.vps_port,
 					"vps_username":self.vps_username,
 				})
-			if not response.success: raise ValueError(response.error)
+			if not response.success: return response
+
+		# create database.
+		if not Files.exists(self.database):
+			dev0s.response.log(f"&ORANGE&Root permission&END& required to create database [{self.database}].")
+			Files.create(f"{self.database}", sudo=True, directory=True)
+			Files.chmod(path=self.database, permission=700, sudo=True)
+			Files.chown(path=self.database, owner=dev0s.defaults.vars.user, group=dev0s.defaults.vars.group, sudo=True)
+		for dir in [
+			Files.join(self.database, "keys"),
+		]:
+			if not Files.exists(dir): Files.create(dir, directory=True)
 
 		# set variables.
 		self.live = utils.equalize_path(self.root, striplast=True) == utils.equalize_path(self.library, striplast=True)
@@ -338,9 +349,9 @@ class Website(CLI.CLI,Traceback):
 		# environment for settings.py.
 		os.chdir(gfp.clean(self.root))
 		if not os.path.exists("__defaults__/env"): os.mkdir("__defaults__/env")
-		SECRET_KEY = Environment.get("DJANGO_SECRET_KEY", default=None)
+		SECRET_KEY = dev0s.env.get("DJANGO_SECRET_KEY", default=None)
 		if SECRET_KEY == None:  SECRET_KEY = String().generate(length=128, capitalize=True, digits=True, special=True)
-		Environment.export(export="__defaults__/env/json", env={
+		dev0s.env.export(export="__defaults__/env/json", env={
 			"DJANGO_SECRET_KEY":SECRET_KEY,
 			"WEBSITE_BASE":gfp.base(SOURCE_PATH),
 			"DOMAIN":str(self.domain),
@@ -434,11 +445,15 @@ class Website(CLI.CLI,Traceback):
 			name=self.name,
 			root=self.root,
 			database=self.database,)
-		self.aes = encrypti0n.aes.AsymmetricAES(
-			private_key=f"{self.root}/__defaults__/aes/private_key",
-			public_key=f"{self.root}/__defaults__/aes/public_key",
+		self.aes = dev0s.encryption.AsymmetricAES(
+			private_key=f"{self.database}/keys/master/private_key",
+			public_key=f"{self.database}/keys/master/public_key",
 			passphrase=self.aes_passphrase)
-		self.defaults = defaults.Defaults(
+		if  not Files.exists(self.aes.rsa.public_key):
+			response = self.aes.generate_keys()
+			if not response.success:
+				return response
+		self.defaults = defaults.dev0s.defaults.(
 			root=self.root,
 			library=self.library,
 			database=self.database,
@@ -468,7 +483,7 @@ class Website(CLI.CLI,Traceback):
 		# objects.
 		self.security = security.Security(
 			defaults=self.defaults,)
-		if self.firebase_enabled and Defaults.vars.os not in ["macos"]:
+		if self.firebase_enabled and dev0s.defaults.vars.os not in ["macos"]:
 			from w3bsite.classes import firebase
 			self.firebase = firebase.Firebase(
 				key=self.firebase_admin,
@@ -555,7 +570,7 @@ class Website(CLI.CLI,Traceback):
 				namecheap=self.namecheap,
 				logging=self.logging,)
 		elif self.remote != None:
-			raise ValueError(f"Selected an invalid remote [{self.remote}], options: [local, vps, heroku]")
+			raise dev0s.response.error(f"Selected an invalid remote [{self.remote}], options: [local, vps, heroku]")
 		self.apps = apps.Apps(
 			template_data=self.template_data,
 			rate_limit=self.rate_limit,
@@ -565,7 +580,7 @@ class Website(CLI.CLI,Traceback):
 			defaults=self.defaults,)
 
 		# defaults.
-		CLI.CLI.__init__(self,
+		dev0s.cli.CLI.__init__(self,
 			modes={
 				"Development":"*chapter*",
 				"    --create":"Create the website.",
@@ -595,18 +610,18 @@ class Website(CLI.CLI,Traceback):
 		)
 
 		# logs.
-		if Defaults.options.log_level >= 1:
+		if dev0s.defaults.options.log_level >= 1:
 			print(f"Website: {self.name}")
 			print(f" * domain: {self.domain}")
 			print(f" * root: {self.root}")
 			print(f" * library: {self.library}")
 			print(f" * database: {self.database}")
-			print(f" * pwd: {Defaults.pwd()}")
+			print(f" * pwd: {dev0s.defaults.pwd()}")
 			print(f" * remote: {self.remote}")
 			print(f" * live: {self.live}")
 
 		# handler.
-		return Response.success(f"Successfully initialized website [{self.name}].")
+		return dev0s.response.success(f"Successfully initialized website [{self.name}].")
 
 		#
 	def cli(self):
@@ -618,10 +633,10 @@ class Website(CLI.CLI,Traceback):
 		if self.remote in ["vps"] and not self.vps.live:
 			if not ssht00ls_agent.generated:
 				response = ssht00ls_agent.generate()
-				if not response.success: self.stop(response=response, json=Defaults.options.json)
+				if not response.success: self.stop(response=response, json=dev0s.defaults.options.json)
 			elif not ssht00ls_agent.activated:
 				response = ssht00ls_agent.activate()
-				if not response.success: self.stop(response=response, json=Defaults.options.json)
+				if not response.success: self.stop(response=response, json=dev0s.defaults.options.json)
 
 		# help.
 		if self.arguments.present("-h"):
@@ -629,19 +644,19 @@ class Website(CLI.CLI,Traceback):
 
 		# version.
 		elif self.arguments.present(['--version']):
-			self.stop(message=f"{ALIAS} version:"+Files.load(f"{SOURCE_PATH}/.version").replace("\n",""), json=Defaults.options.json)
+			self.stop(message=f"{ALIAS} version:"+Files.load(f"{SOURCE_PATH}/.version").replace("\n",""), json=dev0s.defaults.options.json)
 
 		# developer start.
 		elif self.arguments.present("--start") and self.arguments.present("--developer"):
 			response = self.django.start()
-			Response.log(response=response)
+			dev0s.response.log(response=response)
 
 		# start.
 		elif self.arguments.present('--start'):
 			if not self.live: 
-				Response.log(error="The executing library is not live.")
+				dev0s.response.log(error="The executing library is not live.")
 				sys.exit(1)
-			Defaults.operating_system(supported=["linux"])
+			dev0s.defaults.operating_system(supported=["linux"])
 			command = ""
 			for i in ["gunicorn.socket", "gunicorn", "nginx"]:
 				command += f"sudo systemctl start {i} &&"
@@ -655,9 +670,9 @@ class Website(CLI.CLI,Traceback):
 		# stop.
 		elif self.arguments.present('--stop'):
 			if not self.live: 
-				Response.log(error="The executing library is not live.")
+				dev0s.response.log(error="The executing library is not live.")
 				sys.exit(1)
-			Defaults.operating_system(supported=["linux"])
+			dev0s.defaults.operating_system(supported=["linux"])
 			command = ""
 			for i in ["gunicorn.socket", "gunicorn", "nginx"]:
 				command += f"sudo systemctl stop {i} &&"
@@ -671,9 +686,9 @@ class Website(CLI.CLI,Traceback):
 		# restart.
 		elif self.arguments.present('--restart'):
 			if not self.live: 
-				Response.log(error="The executing library is not live.")
+				dev0s.response.log(error="The executing library is not live.")
 				sys.exit(1)
-			Defaults.operating_system(supported=["linux"])
+			dev0s.defaults.operating_system(supported=["linux"])
 			command = ""
 			for i in ["gunicorn.socket", "gunicorn", "nginx"]:
 				command += f"sudo systemctl restart {i} &&"
@@ -687,23 +702,23 @@ class Website(CLI.CLI,Traceback):
 		# status.
 		elif self.arguments.present('--status'):
 			if not self.live: 
-				Response.log(error="The executing library is not live.")
+				dev0s.response.log(error="The executing library is not live.")
 				sys.exit(1)
-			Defaults.operating_system(supported=["linux"])
+			dev0s.defaults.operating_system(supported=["linux"])
 			os.system("sudo systemctl status gunicorn")
 
 		# reset logs.
 		elif self.arguments.present('--reset-logs'):
 			if not self.live: 
-				Response.log(error="The executing library is not live.")
+				dev0s.response.log(error="The executing library is not live.")
 				sys.exit(1)
 			os.system(f"echo '' > {self.database}/logs/logs.txt")
-			Response.log("Successfully resetted the logs.", log_level=0, save=True)
+			dev0s.response.log("Successfully resetted the logs.", log_level=0, save=True)
 
 		# tail.
 		elif self.arguments.present('--tail'):
 			if not self.live: 
-				Response.log(error="The executing library is not live.")
+				dev0s.response.log(error="The executing library is not live.")
 				sys.exit(1)
 			if self.arguments.present(["--nginx", "-n"]):
 				if self.arguments.present(["--debug", "-d"]):
@@ -719,32 +734,32 @@ class Website(CLI.CLI,Traceback):
 				code_update=self.arguments.present("--code-update"),
 				reinstall=self.arguments.present("--reinstall"),
 			)
-			Response.log(response=response)
+			dev0s.response.log(response=response)
 
 		# generate tls.
 		elif self.arguments.present("--generate-tls"):
 			response = self.deployment.generate_tls()
-			Response.log(response=response)
+			dev0s.response.log(response=response)
 
 		# activate tls.
 		elif self.arguments.present("--activate-tls"):
 			response = self.deployment.activate_tls()
-			Response.log(response=response)
+			dev0s.response.log(response=response)
 
 		# bundle tls.
 		elif self.arguments.present("--bundle-tls"):
 			response = self.deployment.bundle_tls(directory=self.arguments.get("--bundle-tls"))
-			Response.log(response=response)
+			dev0s.response.log(response=response)
 		
 		# create.
 		elif self.arguments.present("--create"):
 			response = self.create()
-			Response.log(response=response)
+			dev0s.response.log(response=response)
 
 		# create app.
 		elif self.arguments.present("--create-app"):
 			response = self.django.create_app(name=self.arguments.get("--create-app"))
-			Response.log(response=response)
+			dev0s.response.log(response=response)
 
 		# generate aes passphrase.
 		elif self.arguments.present("--generate-aes-passphrase"):
@@ -757,14 +772,14 @@ class Website(CLI.CLI,Traceback):
 	def deploy(self, code_update=False, reinstall=False, log_level=0):
 
 		# check git.
-		loader = Console.Loader("Checking git repository ...")
+		loader = dev0s.console.Loader("Checking git repository ...")
 		response = self.git.installed()
 		if not response.success: 
 			loader.stop(success=False)
 			return response
 		elif not response["installed"]:
 			loader.stop()
-			loader = Console.Loader("Installing git repository ...")
+			loader = dev0s.console.Loader("Installing git repository ...")
 			response = self.git.install()
 			if not response.success: 
 				loader.stop(success=False)
@@ -798,9 +813,9 @@ class Website(CLI.CLI,Traceback):
 		if not code_update:
 			response = self.check_dns(log_level=log_level)
 			if response.error != None: return response
-			return Response.success(f"Successfully deployed website https://{self.domain}.")
+			return dev0s.response.success(f"Successfully deployed website https://{self.domain}.")
 		else:
-			return Response.success(f"Successfully deployed the code updates of website https://{self.domain}.")
+			return dev0s.response.success(f"Successfully deployed the code updates of website https://{self.domain}.")
 
 		#
 	def check_dns(self, log_level=0):
@@ -817,30 +832,30 @@ class Website(CLI.CLI,Traceback):
 				if not response.success: return response
 
 		# handlers.
-		return Response.success(f"Successfully checked the dns settings of website [{self.name}].", log_level=log_level)
+		return dev0s.response.success(f"Successfully checked the dns settings of website [{self.name}].", log_level=log_level)
 
 		#
 	def create(self):
 
 		# create root.
 		if not Files.exists(self.root):
-			#return Response.error(f"Website [{self.root}] already exists.")
+			#return dev0s.response.error(f"Website [{self.root}] already exists.")
 			os.mkdir(self.root)
 
 		# create django.
-		loader = Console.Loader("Creating website ...")
+		loader = dev0s.console.Loader("Creating website ...")
 		response = self.django.create()
 		loader.stop(success=response["success"])
 		if response.error != None: return response
 
 		# generate tls.
-		loader = Console.Loader("Generating tls ...")
+		loader = dev0s.console.Loader("Generating tls ...")
 		response = self.security.generate_tls()
 		loader.stop(success=response["success"])
 		if response.error != None: return response
 
 		# handlers.
-		return Response.success(f"Successfully created website [{self.name}].")
+		return dev0s.response.success(f"Successfully created website [{self.name}].")
 
 		#
 	def serialize(self, save=False):
@@ -1004,7 +1019,7 @@ class Website(CLI.CLI,Traceback):
 			# the root path.
 			root=self.root,)
 		required = False
-		migrations = Environment.get("MIGRATIONS", format=bool, default=False)
+		migrations = dev0s.env.get("MIGRATIONS", format=bool, default=False)
 		if self.firebase_enabled and not migrations: required = True
 		self.firebase_admin = {
 			"type":local_security.get_secret_env("FIREBASE_ADMIN_"+"type".upper(), default=None, required=required),

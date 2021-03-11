@@ -6,7 +6,7 @@ from django.urls import path, include
 from classes.config import *
 
 # limit migrations
-if  Environment.get("MIGRATIONS", format=bool, default=False): urlpatterns = []
+if  dev0s.env.get("MIGRATIONS", format=bool, default=False): urlpatterns = []
 else:
 	
 
@@ -47,7 +47,7 @@ else:
 
 	# ______________________________________________________________________________________
 	#
-	# Defaults
+	# dev0s.defaults.
 	#
 	urlpatterns = [
 		# uncomment the following line to se the default django admin interface.

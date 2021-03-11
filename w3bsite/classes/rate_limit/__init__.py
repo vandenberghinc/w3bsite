@@ -4,7 +4,7 @@ from w3bsite.classes.config import *
 from w3bsite.classes import defaults as _defaults_
 
 # the rate limit object class.
-class RateLimit(_defaults_.Defaults):
+class RateLimit(_defaults_.dev0s.defaults.):
 	def __init__(self, 
 		# objects.
 		db=None,
@@ -19,7 +19,7 @@ class RateLimit(_defaults_.Defaults):
 			notes=[], )
 
 		# defaults.
-		_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.ratelimit",)
+		_defaults_.dev0s.defaults.__init__(self, traceback="w3bsite.Website.ratelimit",)
 		self.assign(defaults.dict())
 
 		# objects.
@@ -40,8 +40,8 @@ class RateLimit(_defaults_.Defaults):
 	):
 		
 		# check options.
-		if email == None and ip == None: return Response.error("Specify parameter [email] or [ip].")
-		response = Response.parameters.check(
+		if email == None and ip == None: return dev0s.response.error("Specify parameter [email] or [ip].")
+		response = dev0s.response.parameters.check(
 			traceback=self.__traceback__(function="increment"),
 			parameters={
 				"mode":mode,
@@ -89,7 +89,7 @@ class RateLimit(_defaults_.Defaults):
 		document["rate_limits"] = rate_limits
 		response = self.db.save(reference, document)
 		if not response.success: return response
-		return Response.success("Successfully incremented the rate limit.")
+		return dev0s.response.success("Successfully incremented the rate limit.")
 
 		#
 	def verify(self, 
@@ -110,8 +110,8 @@ class RateLimit(_defaults_.Defaults):
 		increment_count=1,
 	):
 		# check options.
-		if email == None and ip == None: return Response.error("Specify parameter [email] or [ip].")
-		response = Response.parameters.check(
+		if email == None and ip == None: return dev0s.response.error("Specify parameter [email] or [ip].")
+		response = dev0s.response.parameters.check(
 			traceback=self.__traceback__(function="verify"),
 			parameters={
 				"mode":mode,
@@ -167,9 +167,9 @@ class RateLimit(_defaults_.Defaults):
 				document["rate_limits"] = rate_limits
 				response = self.db.save(reference, document)
 				if not response.success: return response
-			return Response.success(f"Successfully verified the {mode} rate limit.")
+			return dev0s.response.success(f"Successfully verified the {mode} rate limit.")
 		else:
-			return Response.error(f"You have exhausted your {mode} rate limit.")
+			return dev0s.response.error(f"You have exhausted your {mode} rate limit.")
 	def __get_path__(self, email=None, username=None):
 		if self.id_by_username:
 			if username == None and email != None:

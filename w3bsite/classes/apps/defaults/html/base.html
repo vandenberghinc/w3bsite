@@ -39,25 +39,30 @@
 			{% endif %}
 			
 			<!-- LEFT BAR -->
-			<div id="leftbar" class="widget" style="position: fixed; top: 90px; left: 15px; width: 250px; bottom: 35px; margin-top: 0px;  display: none; ">
-				<div style="overflow: scroll; position: relative; width: 100%; height: 100%;">
-					{% block leftbar %}
-					{% endblock %}
+			<div id="leftbar" class="widget" style="position: fixed; top: 0px; left: 15px; width: 250px; bottom: 0px; margin-top: 0px;  display: none; ">
+				<div id="leftbar_child" style="position: absolute; top: 0px; bottom: 35px; right: 15px; left: 15px; overflow: visible;">
+					<div style="overflow: scroll; position: relative; width: 100%; height: 100%;">
+						{% block leftbar %}
+						{% endblock %}
+					</div>
 				</div>
 			</div>
 
 			<!-- RIGHT BAR -->
-			<div id="rightbar" class="widget" style="position: fixed; top: 90px; right: 15px; width: 250px; bottom: 35px; margin-top: 0px; display: none;">
-				<div style="overflow: scroll; position: relative; width: 100%; height: 100%;">
-					{% block rightbar %}
-					{% endblock %}
+			<div id="rightbar" class="widget" style="position: fixed; top: 0px; right: 15px; width: 250px; bottom: 0px; margin-top: 0px; display: none;">
+				<div id="rightbar_child" style="position: absolute; top: 0px; bottom: 35px; right: 15px; left: 15px; overflow: visible;">
+					<div style="overflow: scroll; position: relative; width: 100%; height: 100%;">
+						{% block rightbar %}
+						{% endblock %}
+					</div>
 				</div>
 			</div>
 
 			<!-- BLOCKS -->
-			<div id="content" style="z-index: 7; position: fixed; top: 15px; bottom: 35px; right: 15px; left: 15px; overflow: visible; border-radius: 0px;">
-				<div style="position: relative; width: 100%; height: 100%; overflow: visible;">
-				
+			<div id="content" style="z-index: 7; position: fixed; top: 0px; bottom: 0px; right: 0px; left: 0px; margin-top: 0px; overflow: visible; border-radius: 0px;">
+				<!-- <div id="content_child" style="position: absolute; top: 0px; bottom: 35px; right: 15px; left: 15px; overflow: visible;"> -->
+				<div style="display: inherit; position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px; padding: 15px 15px 15px 15px; overflow: scroll;">
+			
 					<!-- error pop up -->
 					<div class="full_window_centered" id="error.popup" style="padding-top: 25px; display: none;">
 						<div class="widget_container">
@@ -156,8 +161,7 @@
 					</script>
 					
 					<!-- content blocks -->
-					<div id="content_blocks" style="display: inherit; position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px; 
-					overflow: scroll;">
+					<div id="content_blocks" style="">
 						{% block content %}
 						{% endblock %}
 					</div>
@@ -168,8 +172,9 @@
 					</h1>
 					-->
 
+				</div>
 
-					<!-- DARK MODE CONTROL BAR -->
+			</div>
 
 			<!-- DARK MODE CONTROL BAR -->
 			<div id="darkmode_control_bar" class="widget" style="position: fixed; right: 15px; bottom: 15px;  margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px; z-index: 12;">

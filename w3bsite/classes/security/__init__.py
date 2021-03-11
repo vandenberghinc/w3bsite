@@ -7,7 +7,7 @@ from w3bsite.classes import utils
 from w3bsite.classes import defaults as _defaults_
 
 # the security class.
-class Security(_defaults_.Defaults):
+class Security(_defaults_.dev0s.defaults.):
 	def __init__(self,
 		# optional if defaults not initialized.
 		root=None,
@@ -23,7 +23,7 @@ class Security(_defaults_.Defaults):
 
 		# defaults.
 		if defaults != None:
-			_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.security",)
+			_defaults_.dev0s.defaults.__init__(self, traceback="w3bsite.Website.security",)
 			self.assign(defaults.dict())
 		else:
 			self.root = root
@@ -43,7 +43,7 @@ class Security(_defaults_.Defaults):
 
 		# check duplicate.
 		if Files.exists(f"{base}/tls.key") or Files.exists(f"{base}/server.crt"):
-			return Response.error("The tls certificate already exists.")
+			return dev0s.response.error("The tls certificate already exists.")
 
 		# generate.
 		print("Generating a tls certificate ...")
@@ -73,9 +73,9 @@ class Security(_defaults_.Defaults):
 		# handler.
 		if not Files.exists(f"{self.database}/tls/server.key") or not Files.exists(f"{self.database}/tls/server.crt"):
 			os.system(f"rm -fr {base}")
-			return Response.error(f"Failed to generate a tls certificate.")
+			return dev0s.response.error(f"Failed to generate a tls certificate.")
 		else:
-			return Response.success(f"Successfully generated a tls certificate.")
+			return dev0s.response.success(f"Successfully generated a tls certificate.")
 
 		#
 	def set_secret_env(self, key, value):
@@ -203,9 +203,9 @@ class Security(_defaults_.Defaults):
 			if "\n\n" in env: env = env.replace("\n\n","\n")
 			else: break
 		Files.save(f"{self.root}/__defaults__/env/bash", env)
-		return Response.success(f"Successfully setted the secret environment variable [{key}].")
+		return dev0s.response.success(f"Successfully setted the secret environment variable [{key}].")
 	def get_secret_env(self, key, default=None, required=True):
-		value = Environment.get_string(key, default=default)
+		value = dev0s.env.get_string(key, default=default)
 		if value == "None": value = None
 		if value == None and required: raise ValueError(f"Secret enironment variable [{key}] is undefined.")
 		try:

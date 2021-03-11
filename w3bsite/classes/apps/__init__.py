@@ -8,7 +8,7 @@ from w3bsite.classes import defaults as _defaults_
 from w3bsite.classes.apps import payments, authentication
 
 # the apps holder.
-class Apps(_defaults_.Defaults):
+class Apps(_defaults_.dev0s.defaults.):
 	def __init__(self, 
 		# passed Website.x objects.
 		template_data=None,
@@ -19,7 +19,7 @@ class Apps(_defaults_.Defaults):
 		defaults=None,
 	):
 		# defaults.
-		_defaults_.Defaults.__init__(self)
+		_defaults_.dev0s.defaults.__init__(self)
 		defaults.template_data = template_data
 		defaults.rate_limit = rate_limit
 		defaults.users = users
@@ -31,17 +31,17 @@ class Apps(_defaults_.Defaults):
 		self.payments = self.Payments(defaults=defaults, stripe=stripe)
 
 	# the authentication app.
-	class Authentication(_defaults_.Defaults):
+	class Authentication(_defaults_.dev0s.defaults.):
 		def __init__(self, defaults=None):
-			_defaults_.Defaults.__init__(self)
+			_defaults_.dev0s.defaults.__init__(self)
 			self.assign(defaults.dict())
 			self.requests = authentication.requests.Requests(defaults=defaults,)
 			self.views = authentication.views.Views(defaults=defaults,)
 
 	# the payments app.
-	class Payments(_defaults_.Defaults):
+	class Payments(_defaults_.dev0s.defaults.):
 		def __init__(self, defaults=None, stripe=None):
-			_defaults_.Defaults.__init__(self)
+			_defaults_.dev0s.defaults.__init__(self)
 			self.assign(defaults.dict())
 			self.requests = payments.requests.Requests(defaults=defaults, stripe=stripe)
 			self.views = payments.views.Views(defaults=defaults)

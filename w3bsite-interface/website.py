@@ -2,7 +2,7 @@
 import json
 from r3sponse import r3sponse
 from w3bsite import Website
-from dev0s import *
+from dev0s.shortcuts import *
 website = Website(
 	# the root path.
 	root=FilePath(__file__).base(back=2),

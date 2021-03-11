@@ -30,16 +30,16 @@ class Database(Traceback):
 		if firestore == None:
 			self.mode = "cache"
 			if self.live and not self.fp.exists():
-				Response.log(f"&ORANGE&Root permission&END& required to create database [{self.path}].")
+				dev0s.response.log(f"&ORANGE&Root permission&END& required to create database [{self.path}].")
 				os.system(f"sudo mkdir {self.path}")
 				Files.chmod(path=self.path, permission=700, sudo=True)
-				Files.chown(path=self.path, owner=Defaults.vars.user, group=Defaults.vars.group, sudo=True)
+				Files.chown(path=self.path, owner=dev0s.defaults.vars.user, group=dev0s.defaults.vars.group, sudo=True)
 
 		#
 
 	# functions.
 	def load(self, path=None):
-		if path == None: return Response.error(self.__traceback__(function="load")+" Define parameter: [path].")
+		if path == None: return dev0s.response.error(self.__traceback__(function="load")+" Define parameter: [path].")
 		path = gfp.clean(path)
 		if self.mode == "firestore":
 			return self.firestore.load(path)
@@ -47,14 +47,14 @@ class Database(Traceback):
 			path = gfp.clean(f"{self.path}/{path}")
 			try:
 				data = Files.load(path=path, format="json")
-			except Exception as e: return Response.error(str(e))
-			return Response.success(f"Successfully loaded [{path}].", {
+			except Exception as e: return dev0s.response.error(str(e))
+			return dev0s.response.success(f"Successfully loaded [{path}].", {
 				"data":data,
 			})
 		else: raise exceptions.InvalidUsage(self.__traceback__(function="load")+f" Unknown mode [{self.mode}].")
 	def save(self, path=None, data=None, overwrite=False):
-		if path == None: return Response.error(self.__traceback__(function="save")+" Define parameter: [path].")
-		if data == None: return Response.error(self.__traceback__(function="save")+" Define parameter: [data].")
+		if path == None: return dev0s.response.error(self.__traceback__(function="save")+" Define parameter: [path].")
+		if data == None: return dev0s.response.error(self.__traceback__(function="save")+" Define parameter: [data].")
 		path = gfp.clean(path)
 		if self.mode == "firestore":
 			return self.firestore.save(path, data)
@@ -85,11 +85,11 @@ class Database(Traceback):
 				data = insert(old_data, data)
 			try:
 				Files.save(path=path, data=data, format="json")
-			except Exception as e: return Response.error(str(e))
-			return Response.success(f"Successfully saved [{path}].")
+			except Exception as e: return dev0s.response.error(str(e))
+			return dev0s.response.success(f"Successfully saved [{path}].")
 		else: raise exceptions.InvalidUsage(self.__traceback__(function="save")+f" Unknown mode [{self.mode}].")
 	def delete(self, path=None, data=None):
-		if path == None: return Response.error(self.__traceback__(function="delete")+" Define parameter: [path].")
+		if path == None: return dev0s.response.error(self.__traceback__(function="delete")+" Define parameter: [path].")
 		path = gfp.clean(path)
 		if self.mode == "firestore":
 			return self.firestore.delete(path)
@@ -97,9 +97,9 @@ class Database(Traceback):
 			path = gfp.clean(f"{self.path}/{path}")
 			try:
 				Files.delete(path=path)
-			except Exception as e: return Response.error(str(e))
-			if Files.exists(path): return Response.error(f"Failed to delete [{path}].")
-			return Response.success(f"Successfully deleted [{path}].")
+			except Exception as e: return dev0s.response.error(str(e))
+			if Files.exists(path): return dev0s.response.error(f"Failed to delete [{path}].")
+			return dev0s.response.success(f"Successfully deleted [{path}].")
 		else: raise exceptions.InvalidUsage(self.__traceback__(function="delete")+f" Unknown mode [{self.mode}].")
 
 	# join.
@@ -114,7 +114,7 @@ class Database(Traceback):
 	):
 
 		# checks.
-		if path == None: return Response.error(self.__traceback__(function="names")+" Define parameter: [path].")
+		if path == None: return dev0s.response.error(self.__traceback__(function="names")+" Define parameter: [path].")
 		path = gfp.clean(path)
 
 		# vars.

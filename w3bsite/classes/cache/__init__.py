@@ -1,7 +1,6 @@
 # user wide cache to share variables across tty sessions since default env variables is instable.
-import syst3m
-from dev0s import *
-if not Files.exists(f"{Defaults.vars.home}/.w3bsite/"): 
-	Files.create(path=f"{Defaults.vars.home}/.w3bsite/", directory=True)
-cache = syst3m.cache.Cache(
-	path=f"{Defaults.vars.home}/.w3bsite/.cache/")
+from dev0s.shortcuts import *
+if not Files.exists(f"{dev0s.defaults.vars.home}/.w3bsite/"): 
+	Files.create(path=f"{dev0s.defaults.vars.home}/.w3bsite/", directory=True)
+cache = dev0s.database.Database(
+	path=f"{dev0s.defaults.vars.home}/.w3bsite/.cache/")

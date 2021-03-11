@@ -10,16 +10,16 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
-import os, syst3m
-from dev0s import *
+import os
+from dev0s.shortcuts import *
 
-# Environment.
+# dev0s.env.
 SOURCE = Directory(gfp.base(__file__, back=3))
-DATABASE = Directory(Environment.get("DATABASE", default=str(SOURCE)))
-PRODUCTION = Environment.get("PRODUCTION", default=True, format=bool)
-DOMAIN = Environment.get("DOMAIN", default=None)
-SECRET_KEY = Environment.get("DJANGO_SECRET_KEY", default=String().generate(length=128, capitalize=True, digits=True, special=True))
-#WEBSITE_BASE = Environment.get("WEBSITE_BASE", default=None)
+DATABASE = Directory(dev0s.env.get("DATABASE", default=str(SOURCE)))
+PRODUCTION = dev0s.env.get("PRODUCTION", default=True, format=bool)
+DOMAIN = dev0s.env.get("DOMAIN", default=None)
+SECRET_KEY = dev0s.env.get("DJANGO_SECRET_KEY", default=String().generate(length=128, capitalize=True, digits=True, special=True))
+#WEBSITE_BASE = dev0s.env.get("WEBSITE_BASE", default=None)
 #if WEBSITE_BASE == None:
 #    raise ValueError("Improperly configured run, env variable [WEBSITE_BASE] is None.")
     
@@ -86,7 +86,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             SOURCE.join("apps"),
-            str(Defaults.vars.site_packages),
+            str(dev0s.defaults.vars.site_packages),
         ],
         'APP_DIRS': True,
         'OPTIONS': {

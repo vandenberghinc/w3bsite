@@ -7,19 +7,19 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseNotAllowed, JsonResponse
 
 # inc imports.
-import syst3m, w3bsite
-from dev0s import *
+import w3bsite
+from dev0s.shortcuts import *
 
 # source.
 SOURCE_NAME = ALIAS = "api.vandenberghinc.com"
-SOURCE_PATH = Defaults.source_path(__file__, back=3)
-OS = Defaults.operating_system(supported=["linux", "macos"])
-#Defaults.alias(alias=ALIAS, executable=SOURCE_PATH, sudo=True)
+SOURCE_PATH = dev0s.defaults.source_path(__file__, back=3)
+OS = dev0s.defaults.operating_system(supported=["linux", "macos"])
+#dev0s.defaults.alias(alias=ALIAS, executable=SOURCE_PATH, sudo=True)
 
 # production settings.
 # do not deploy to heroku with production disabled.
-PRODUCTION = Environment.get_boolean("PRODUCTION", default=True)
-MAINTENANCE = Environment.get_boolean("MAINTENANCE", default=True)
+PRODUCTION = dev0s.env.get_boolean("PRODUCTION", default=True)
+MAINTENANCE = dev0s.env.get_boolean("MAINTENANCE", default=True)
 
 # website.
 website = w3bsite.Website(
@@ -30,7 +30,7 @@ website = w3bsite.Website(
 	production=PRODUCTION,)
 
 # synchronize users.
-if Environment.get_boolean("MIGRATIONS") == False:
+if dev0s.env.get_boolean("MIGRATIONS") == False:
 	response = website.users.synchronize()
 	if not response.success: raise ValueError(response['error'])
 
@@ -86,6 +86,6 @@ website.template_data["COLORS"] = COLORS
 
 # database.
 DATABASE = website.database
-if not Files.exists(DATABASE): os.system(f"sudo mkdir {DATABASE} && sudo chown {Defaults.vars.user}:{Defaults.vars.group} {DATABASE}")
+if not Files.exists(DATABASE): os.system(f"sudo mkdir {DATABASE} && sudo chown {dev0s.defaults.vars.user}:{dev0s.defaults.vars.group} {DATABASE}")
 if not Files.exists(f"{DATABASE}/data/"): os.mkdir(f"{DATABASE}/data/") # for database.
 if not Files.exists(f"{DATABASE}/packages/"): os.mkdir(f"{DATABASE}/packages/")

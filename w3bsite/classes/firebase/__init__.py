@@ -29,7 +29,7 @@ class FirebaseCLI(object):
 	"""
 	
 # the firebase class.
-class Firebase(_defaults_.Defaults):
+class Firebase(_defaults_.dev0s.defaults.):
 	def __init__(self, 
 		# the firebase key.
 		key=None, 
@@ -46,11 +46,11 @@ class Firebase(_defaults_.Defaults):
 			notes=[], )
 		
 		# defaults.
-		_defaults_.Defaults.__init__(self)
+		_defaults_.dev0s.defaults.__init__(self)
 		self.assign(defaults.dict())
 
 		# check arguments.
-		#response = Response.parameters.check({
+		#response = dev0s.response.parameters.check({
 		#	#"ip":ip,
 		#})
 		#if not response.success: raise ValueError(response.error)
@@ -101,10 +101,10 @@ class FireStore(object):
 			success = True
 		except: success = False
 		if not success:
-			return Response.error(f"Failed to load document [{reference}].")
+			return dev0s.response.error(f"Failed to load document [{reference}].")
 		if not isinstance(doc, list):
-			return Response.error(f"Reference [{reference}] leads to a document, not a collection.")
-		return Response.success(f"Successfully listed the content of collection [{reference}].", {"collection":doc})
+			return dev0s.response.error(f"Reference [{reference}] leads to a document, not a collection.")
+		return dev0s.response.success(f"Successfully listed the content of collection [{reference}].", {"collection":doc})
 	def load(self, reference):
 		doc = self.__get_doc__(reference)
 		try:
@@ -112,14 +112,14 @@ class FireStore(object):
 			success = True
 		except: success = False
 		if not success:
-			return Response.error(f"Failed to load document [{reference}].")
+			return dev0s.response.error(f"Failed to load document [{reference}].")
 		if isinstance(doc, list):
-			return Response.error(f"Reference [{reference}] leads to a collection, not a document.")
+			return dev0s.response.error(f"Reference [{reference}] leads to a collection, not a document.")
 		if not doc.exists:
-			return Response.error(f"Document [{reference}] does not exist.")
+			return dev0s.response.error(f"Document [{reference}] does not exist.")
 		else:
 			data = doc.to_dict()
-			return Response.success(f"Successfully loaded document [{reference}].", {"data":data})
+			return dev0s.response.success(f"Successfully loaded document [{reference}].", {"data":data})
 	def load_collection(self, reference):
 		doc = self.__get_doc__(reference)
 		try:
@@ -127,14 +127,14 @@ class FireStore(object):
 			success = True
 		except: success = False
 		if not success:
-			return Response.error(f"Failed to load document [{reference}].")
+			return dev0s.response.error(f"Failed to load document [{reference}].")
 		if isinstance(doc, dict):
-			return Response.error(f"Reference [{reference}] leads to a document, not a collection.")
+			return dev0s.response.error(f"Reference [{reference}] leads to a document, not a collection.")
 		data = []
 		for i in doc:
 			if i.exists:
 				data.append(i.id)
-		return Response.success(f"Successfully loaded the document names of collection [{reference}].", {"collection":data, "documents":doc})
+		return dev0s.response.success(f"Successfully loaded the document names of collection [{reference}].", {"collection":data, "documents":doc})
 	def save(self, reference, data):
 		doc = self.__get_doc__(reference)
 		try:
@@ -142,9 +142,9 @@ class FireStore(object):
 			success = True
 		except: success = False
 		if success:
-			return Response.success(f"Successfully saved document [{reference}].")
+			return dev0s.response.success(f"Successfully saved document [{reference}].")
 		else:
-			return Response.error(f"Failed to save document [{reference}].")
+			return dev0s.response.error(f"Failed to save document [{reference}].")
 	def delete(self, reference):
 		doc = self.__get_doc__(reference)
 		try:
@@ -152,9 +152,9 @@ class FireStore(object):
 			success = True
 		except: success = False
 		if success:
-			return Response.success(f"Successfully deleted document [{reference}].")
+			return dev0s.response.success(f"Successfully deleted document [{reference}].")
 		else:
-			return Response.error(f"Failed to delete document [{reference}].")
+			return dev0s.response.error(f"Failed to delete document [{reference}].")
 	# system functions.
 	def __get_doc__(self, reference):
 		reference = reference.replace("//", "/")
@@ -175,7 +175,7 @@ class FireStore(object):
 
 # the firebase users class.
 # firebase users are no longer created, just in firestore database & django.
-class Users(_defaults_.Defaults):
+class Users(_defaults_.dev0s.defaults.):
 	def __init__(self, defaults=None, firestore=None):
 		
 		# docs.
@@ -185,7 +185,7 @@ class Users(_defaults_.Defaults):
 			notes=[], )
 
 		# defaults.
-		_defaults_.Defaults.__init__(self)
+		_defaults_.dev0s.defaults.__init__(self)
 		self.assign(defaults.dict())
 
 		# objects.
@@ -210,15 +210,15 @@ class Users(_defaults_.Defaults):
 				user = auth.get_user_by_phone_number(phone_number)
 				variable = str(phone_number)
 			else:
-				return Response.error("Invalid usage, define one of the following parameters: [uid, email, phone_number].")
+				return dev0s.response.error("Invalid usage, define one of the following parameters: [uid, email, phone_number].")
 		except _auth_utils.UserNotFoundError:
-			return Response.error("User does not exist.")
+			return dev0s.response.error("User does not exist.")
 
 		# check success.
 		if user == None: 
-			return Response.error(f"Failed to retrieve user [{variable}].")
+			return dev0s.response.error(f"Failed to retrieve user [{variable}].")
 		else:
-			return Response.success(f"Successfully retrieved user [{variable}].", {"user":user})
+			return dev0s.response.success(f"Successfully retrieved user [{variable}].", {"user":user})
 
 
 		#
@@ -235,7 +235,7 @@ class Users(_defaults_.Defaults):
 	):
 
 		# check parameters.
-		response = Response.parameters.check(default=None, parameters={
+		response = dev0s.response.parameters.check(default=None, parameters={
 			"email":email,
 			"password":password,
 			"verify_password":verify_password,
@@ -245,11 +245,11 @@ class Users(_defaults_.Defaults):
 		password = str(password)
 		verify_password = str(verify_password)
 		if len(password) < 8:
-			return Response.error("The password must contain at least 8 characters.")
+			return dev0s.response.error("The password must contain at least 8 characters.")
 		elif password.lower() == password:
-			return Response.error("The password must regular and capital letters.")
+			return dev0s.response.error("The password must regular and capital letters.")
 		elif password != verify_password:
-			return Response.error("Passwords do not match.")
+			return dev0s.response.error("Passwords do not match.")
 
 		# create.
 		try:
@@ -268,10 +268,10 @@ class Users(_defaults_.Defaults):
 
 		# handle error.
 		if not success:
-			return Response.error(f"Failed to create user [{email}], error: {error}")
+			return dev0s.response.error(f"Failed to create user [{email}], error: {error}")
 
 		# handle success.
-		return Response.success(f"Successfully created user [{email}].", {
+		return dev0s.response.success(f"Successfully created user [{email}].", {
 			"user":user,
 			"uid":user.uid,
 			"email":user.email,
@@ -309,11 +309,11 @@ class Users(_defaults_.Defaults):
 			password = str(password)
 			verify_password = str(verify_password)
 			if len(password) < 8:
-				return Response.error("The password must contain at least 8 characters.")
+				return dev0s.response.error("The password must contain at least 8 characters.")
 			elif password.lower() == password:
-				return Response.error("The password must regular and capital letters.")
+				return dev0s.response.error("The password must regular and capital letters.")
 			elif password != verify_password:
-				return Response.error("Passwords do not match.")
+				return dev0s.response.error("Passwords do not match.")
 
 		# create
 		try:
@@ -333,9 +333,9 @@ class Users(_defaults_.Defaults):
 
 		# handle success.
 		if success:
-			return Response.success(f"Successfully updated user [{uid}].")
+			return dev0s.response.success(f"Successfully updated user [{uid}].")
 		else:
-			return Response.error(f"Failed to update user [{uid}], error: {error}")
+			return dev0s.response.error(f"Failed to update user [{uid}], error: {error}")
 
 		#
 	def delete(self, 
@@ -354,10 +354,10 @@ class Users(_defaults_.Defaults):
 				success = False
 				error = e
 			if not success:
-				return Response.error(f"Failed to delete user [{uid}], error: {error}")
+				return dev0s.response.error(f"Failed to delete user [{uid}], error: {error}")
 			response = self.firestore.delete(f"{self.users_subpath}/{uid}")
 			if not response.success: return response
-			return Response.success(f"Successfully deleted user [{uid}].")
+			return dev0s.response.success(f"Successfully deleted user [{uid}].")
 		else:
 			response = self.get(email=email)
 			if not response.success: return response
@@ -381,11 +381,11 @@ class Users(_defaults_.Defaults):
 			success = False
 			error = e
 		if not success:
-			return Response.error(f"You are not signed in, error: {error}")
+			return dev0s.response.error(f"You are not signed in, error: {error}")
 		response = self.get(uid=uid)
 		if not response.success: return response
 		user = response.user
-		return Response.success("You are signed in.", {"uid":uid, "email":user.email})	
+		return dev0s.response.success("You are signed in.", {"uid":uid, "email":user.email})	
 
 		#
 		

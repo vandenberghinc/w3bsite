@@ -62,9 +62,9 @@ class Heroku(object):
 		for key, _ in variables.items():
 			if key+":" not in output: success = False ; break
 		if success:
-			return Response.success("Success")
+			return dev0s.response.success("Success")
 		else:
-			return Response.error(f"Error, output: {output}")
+			return dev0s.response.error(f"Error, output: {output}")
 	def remove_environment_variables(self, variables={}):
 		c = "cd "+self.root+"/"
 		for key, value in variables.items():
@@ -86,11 +86,11 @@ class Heroku(object):
 		git push heroku master
 		""", silent=log_level!=0)
 		if "Verifying deploy... done." in output:
-			return Response.success(f"Successfully pushed website [{self.root}] to heroku.")
+			return dev0s.response.success(f"Successfully pushed website [{self.root}] to heroku.")
 		elif "Everything up-to-date" in output or "nothing to commit, working tree clean" in output:
-			return Response.error(f"Website [{self.root}] is already up to date.")
+			return dev0s.response.error(f"Website [{self.root}] is already up to date.")
 		else:
-			return Response.error(f"Failed to push website [{self.root}] to heroku.")
+			return dev0s.response.error(f"Failed to push website [{self.root}] to heroku.")
 	def get_deploy_app(self):
 
 		# variables.
@@ -117,11 +117,11 @@ class Heroku(object):
 					if app == None:
 						app = str(l_app)
 					elif mode == "Heroku Domain":
-						return Response.error(f"Detected multiple heroku apps for project [{self.root}].")				
+						return dev0s.response.error(f"Detected multiple heroku apps for project [{self.root}].")				
 
 				
 		# handlers.
-		return Response.success(f"Successfully retrieved the heroku app name of project [{self.root}].", {"app":app})
+		return dev0s.response.success(f"Successfully retrieved the heroku app name of project [{self.root}].", {"app":app})
 
 		#
 	def get_deploy_domain(self,
@@ -141,13 +141,13 @@ class Heroku(object):
 		try:
 			dict = response["domains"][app]
 		except KeyError:
-			return Response.error(f"Unable to find heroku app [{app}] from project [{self.root}.")
+			return dev0s.response.error(f"Unable to find heroku app [{app}] from project [{self.root}.")
 		if len(dict) == 0:
-			return Response.error(f"Unable to find any heroku domains for heroku app [{app}] from project [{self.root}].")
+			return dev0s.response.error(f"Unable to find any heroku domains for heroku app [{app}] from project [{self.root}].")
 		elif len(dict) > 1:
-			return Response.error(f"Found multiple heroku domains for heroku app [{app}] from project [{self.root}].")
+			return dev0s.response.error(f"Found multiple heroku domains for heroku app [{app}] from project [{self.root}].")
 		else:
-			return Response.success(f"Successfully found the deploy domain for project [{self.root}].", {
+			return dev0s.response.success(f"Successfully found the deploy domain for project [{self.root}].", {
 				"domain":list(dict.keys())[0]
 			})
 
@@ -192,7 +192,7 @@ class Heroku(object):
 						domains[app][domain][custom_domain] = target
 
 		# handlers.
-		return Response.success(f"Successfully retrieved the heroku domains of project [{self.root}].", {"domains":domains})
+		return dev0s.response.success(f"Successfully retrieved the heroku domains of project [{self.root}].", {"domains":domains})
 
 		#
 	def check_domain(self, domain=None):
@@ -207,7 +207,7 @@ class Heroku(object):
 					if _domain_ == domain:
 						match = True
 						break
-		return Response.success(f"Successfully checked the existance of domain [{domain}].", {"exists":match})
+		return dev0s.response.success(f"Successfully checked the existance of domain [{domain}].", {"exists":match})
 	def add_domain(self, domain=None):
 
 		# set default domain.
@@ -217,7 +217,7 @@ class Heroku(object):
 		response = self.check_domain(domain)
 		if response.error != None: return response
 		elif response["exists"]:
-			return Response.error(f"Domain [{domain}] is already added to heroku project [{self.root}].")
+			return dev0s.response.error(f"Domain [{domain}] is already added to heroku project [{self.root}].")
 
 		# add.
 		output = utils.__execute_script__(f"""
@@ -229,9 +229,9 @@ class Heroku(object):
 		response = self.check_domain(domain)
 		if response.error != None: return response
 		elif response["exists"]:
-			return Response.success(f"Successfully added domain [{domain}] to heroku project [{self.root}].")
+			return dev0s.response.success(f"Successfully added domain [{domain}] to heroku project [{self.root}].")
 		else:
-			return Response.error(f"Failed to add domain [{domain}] to heroku project [{self.root}].")
+			return dev0s.response.error(f"Failed to add domain [{domain}] to heroku project [{self.root}].")
 
 		#
 	def check_logged_in(self):
@@ -240,9 +240,9 @@ class Heroku(object):
 			heroku auth:whoami
 		""")
 		if "Error: not logged in" in output:
-			return Response.error("The heroku cli is not signed in. Open a terminal and execute the following command to login: [ $ heroku login].")
+			return dev0s.response.error("The heroku cli is not signed in. Open a terminal and execute the following command to login: [ $ heroku login].")
 		else:
-			return Response.success("The heroku cli is Successfully signed in.")
+			return dev0s.response.success("The heroku cli is Successfully signed in.")
 
 		#	
 	def install_tls(self,
@@ -272,9 +272,9 @@ class Heroku(object):
 
 		# handlers.
 		if "Your certificate has been added successfully." in output or ("Updating SSL certificate " in output and "... done" in output):
-			return Response.success(f"Successfully installed the tls certificate of domain [{domain}].")
+			return dev0s.response.success(f"Successfully installed the tls certificate of domain [{domain}].")
 		else:
-			return Response.error(f"Failed to install the tls certificate of domain [{domain}].")
+			return dev0s.response.error(f"Failed to install the tls certificate of domain [{domain}].")
 	def check_dns(self, log_level=0):
 
 		# check heroku (sub) domains.
@@ -282,27 +282,27 @@ class Heroku(object):
 		for domain in domains:
 			response = self.check_domain(domain)
 			if response.error != None: 
-				Response.log(response=response, log_level=log_level)
+				dev0s.response.log(response=response, log_level=log_level)
 				return response
 			elif not response["exists"]:
-				loader = Console.Loader(f"Adding domain [{domain}].")
+				loader = dev0s.console.Loader(f"Adding domain [{domain}].")
 				response = self.add_domain(domain)
 				loader.stop(response=response)
 				if response.error != None: 
-					Response.log(response=response, log_level=log_level)
+					dev0s.response.log(response=response, log_level=log_level)
 					return response
 
 		# get heroku app.
 		response = self.get_domains()
 		if response.error != None: 
-			Response.log(response=response, log_level=log_level)
+			dev0s.response.log(response=response, log_level=log_level)
 			return response
 		heroku_domains = response["domains"]
 
 		# get heroku app.
 		response = self.get_deploy_app()
 		if response.error != None: 
-			Response.log(response=response, log_level=log_level)
+			dev0s.response.log(response=response, log_level=log_level)
 			return response
 		app = response["app"]
 		print(f"Heroku deploy app: {app}")
@@ -310,7 +310,7 @@ class Heroku(object):
 		# get heroku deploy domain.
 		response = self.get_deploy_domain(app=app)
 		if response.error != None: 
-			Response.log(response=response, log_level=log_level)
+			dev0s.response.log(response=response, log_level=log_level)
 			return response
 		deploy_domain = response["domain"]
 		print(f"Heroku deploy domain: {deploy_domain}")
@@ -321,16 +321,16 @@ class Heroku(object):
 			# check namecheap domain.
 			response = self.namecheap.check_domain(domain)
 			if response.error != None: 
-				Response.log(response=response, log_level=log_level)
+				dev0s.response.log(response=response, log_level=log_level)
 				return response
 			elif not response["exists"]:
-				return Response.error(f"Specified domain [{domain}] is not owned by namecheap user [{self.namecheap.username}].", log_level=log_level)
+				return dev0s.response.error(f"Specified domain [{domain}] is not owned by namecheap user [{self.namecheap.username}].", log_level=log_level)
 
 			# get dns target.
 			try:
 				target = heroku_domains[app][deploy_domain][domain]
 			except KeyError:
-				return Response.error(f"Specified domain [{domain}] is not added to the domains of heroku app [{app}] from project [{self.name}].", log_level=log_level)
+				return dev0s.response.error(f"Specified domain [{domain}] is not added to the domains of heroku app [{app}] from project [{self.name}].", log_level=log_level)
 			print(f"Heroku DNS target: {target}")
 
 			# add dns records.
@@ -346,10 +346,10 @@ class Heroku(object):
 				# the get_dns.dns dictionary (optionally to increase speed).
 				records=None,)
 			if response.error != None and "] already exists." not in response.error: 
-				Response.log(response=response, log_level=log_level)
+				dev0s.response.log(response=response, log_level=log_level)
 				return response
 			elif response.error == None: 
-				Response.log(response=response, log_level=log_level)
+				dev0s.response.log(response=response, log_level=log_level)
 			response = self.namecheap.add_dns(
 				# the domain (optional).
 				domain=domain,
@@ -362,19 +362,19 @@ class Heroku(object):
 				# the get_dns.dns dictionary (optionally to increase speed).
 				records=None,)
 			if response.error != None and "] already exists." not in response.error: 
-				Response.log(response=response, log_level=log_level)
+				dev0s.response.log(response=response, log_level=log_level)
 				return response
 			elif response.error == None: 
-				Response.log(response=response, log_level=log_level)
+				dev0s.response.log(response=response, log_level=log_level)
 		
 		# handlers.
-		return Response.success(f"Successfully checked the heroku dns settings for domain {self.domain}.", log_level=log_level)
+		return dev0s.response.success(f"Successfully checked the heroku dns settings for domain {self.domain}.", log_level=log_level)
 
 		#
 	def deploy(self, log_level=0):
 
 		# set heroku env.
-		loader = Console.Loader("Configuring heroku environment ...")
+		loader = dev0s.console.Loader("Configuring heroku environment ...")
 		response = self.add_environment_variables(variables=utils.__load_json__(f"{self.root}/__defaults__/env/json"))
 		if not response.success: 
 			loader.stop(success=False)
@@ -382,17 +382,17 @@ class Heroku(object):
 		loader.stop()
 
 		# push to heroku.
-		loader = Console.Loader("Pushing to heroku ...")
+		loader = dev0s.console.Loader("Pushing to heroku ...")
 		response = self.push(log_level=log_level)
 		if response.error != None and "] is already up to date." not in response.error: 
 			loader.stop(success=False)
 			return response
 		elif response.error == None:
 			loader.stop()
-			Response.log(response=response, log_level=log_level)
+			dev0s.response.log(response=response, log_level=log_level)
 
 		# handlers.
-		return Response.success(f"Successfully deployed website {self.domain} on heroku.", log_level=log_level)
+		return dev0s.response.success(f"Successfully deployed website {self.domain} on heroku.", log_level=log_level)
 
 		#
 

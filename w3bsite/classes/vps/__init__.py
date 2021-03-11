@@ -5,7 +5,7 @@ from w3bsite.classes import utils
 from w3bsite.classes import defaults as _defaults_
 
 # the vps object class.
-class VPS(_defaults_.Defaults):
+class VPS(_defaults_.dev0s.defaults.):
 	def __init__(self,
 		# the remote ip address.
 		ip=None,
@@ -28,11 +28,11 @@ class VPS(_defaults_.Defaults):
 			notes=[], )
 
 		# defaults.
-		_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.vps",)
+		_defaults_.dev0s.defaults.__init__(self, traceback="w3bsite.Website.vps",)
 		self.assign(defaults.dict())
 
 		# check arguments.
-		response = Response.parameters.check(
+		response = dev0s.response.parameters.check(
 			traceback=self.__traceback__(),
 			parameters={
 				"ip":ip,
@@ -60,10 +60,10 @@ class VPS(_defaults_.Defaults):
 	def configure(self, reinstall=False, log_level=0):
 
 		# check already live.
-		#if self.live: return Response.error("VPS is already live in production.", log_level=log_level)
+		#if self.live: return dev0s.response.error("VPS is already live in production.", log_level=log_level)
 
 		# loader.
-		if log_level >= 0: loader = Console.Loader(f"Configuring vps settings of website {self.domain} ...")
+		if log_level >= 0: loader = dev0s.console.Loader(f"Configuring vps settings of website {self.domain} ...")
 
 		# not live.
 		if not self.live:
@@ -98,7 +98,7 @@ class VPS(_defaults_.Defaults):
 
 		# handler.
 		if log_level >= 0: loader.stop()
-		return Response.success("Successfully configured the vps settings.", log_level=log_level)
+		return dev0s.response.success("Successfully configured the vps settings.", log_level=log_level)
 
 		#
 	def deploy(self, code_update=False, reinstall=False, log_level=0):
@@ -112,20 +112,20 @@ class VPS(_defaults_.Defaults):
 		if not response.success: return response
 
 		# loader.
-		if log_level >= 0: loader = Console.Loader(f"Configuring deployment of website {self.domain} to vps {self.ip} ...")
+		if log_level >= 0: loader = dev0s.console.Loader(f"Configuring deployment of website {self.domain} to vps {self.ip} ...")
 
 		# check already live.
 		if self.live: 
 			if log_level >= 0: loader.stop(success=False)
-			return Response.error("VPS is already live in production.", log_level=log_level)
+			return dev0s.response.error("VPS is already live in production.", log_level=log_level)
 
 		# check installer & requirements file.
 		if not Files.exists(f"{self.root}/requirements/installer"):
 			if log_level >= 0: loader.stop(success=False)
-			return Response.error(f"Required requirements file {self.root}/requirements/installer does not exist.", log_level=log_level)
+			return dev0s.response.error(f"Required requirements file {self.root}/requirements/installer does not exist.", log_level=log_level)
 		if not Files.exists(f"{self.root}/requirements/requirements.pip"):
 			if log_level >= 0: loader.stop(success=False)
-			return Response.error(f"Required requirements file {self.root}/requirements/requirements.pip does not exist.", log_level=log_level)
+			return dev0s.response.error(f"Required requirements file {self.root}/requirements/requirements.pip does not exist.", log_level=log_level)
 		data = Files.load(f"{self.root}/requirements/installer")
 		installed_alias = data.split('alias="')[1].split('"')[0]
 		#installed_location = data.split('package="')[1].split('"')[0].replace("$alias", installed_alias)
@@ -137,10 +137,10 @@ class VPS(_defaults_.Defaults):
 		if "Permission denied (publickey)" in output:
 			if log_level >= 0:  loader.stop(success=False)
 			data = Files.load(f'{self.root}/__defaults__/ssh/public_key').replace('\n','')
-			return Response.error(f"Unable to connect with {self.domain} over ssh (permission denied). Did you install public key {data} into the vps server?", log_level=log_level)
+			return dev0s.response.error(f"Unable to connect with {self.domain} over ssh (permission denied). Did you install public key {data} into the vps server?", log_level=log_level)
 		elif "Hello World" not in output:
 			if log_level >= 0:  loader.stop(success=False)
-			return Response.error(f"Unable to connect with {self.domain} over ssh, ssh output: \n{output}.", log_level=log_level)
+			return dev0s.response.error(f"Unable to connect with {self.domain} over ssh, ssh output: \n{output}.", log_level=log_level)
 
 		# installer arguments.
 		installer_arguments = ""
@@ -164,8 +164,8 @@ class VPS(_defaults_.Defaults):
 			check_base=False,)
 		if not response.success: 
 			if log_level >= 0: loader.stop(success=False)
-			return Response.error(f"Failed to deploy website {self.domain} on vps {self.ip}, error (#1): {response.error}.", log_level=log_level)
-		#Response.log(f"&ORANGE&Do not forget&END& to remove the [{tmp}/website.py] file.")
+			return dev0s.response.error(f"Failed to deploy website {self.domain} on vps {self.ip}, error (#1): {response.error}.", log_level=log_level)
+		#dev0s.response.log(f"&ORANGE&Do not forget&END& to remove the [{tmp}/website.py] file.")
 		#response = ssht00ls.ssh.command(
 		#	alias=self.domain,
 		#	command=f"rm -fr {tmp}/website.py",
@@ -181,7 +181,7 @@ class VPS(_defaults_.Defaults):
 			log_level=-1,)
 		if not response.success: 
 			if log_level >= 0: loader.stop(success=False)
-			return Response.error(f"Failed to deploy website {self.domain} on vps {self.ip}, error (#2): {response.error}.", log_level=log_level)
+			return dev0s.response.error(f"Failed to deploy website {self.domain} on vps {self.ip}, error (#2): {response.error}.", log_level=log_level)
 
 
 		# execute installer script.
@@ -193,7 +193,7 @@ class VPS(_defaults_.Defaults):
 				log_level=-1,)
 			if not response.success: 
 				if log_level >= 0: loader.stop(success=False)
-				return Response.error(f"Failed to deploy website {self.domain} on vps {self.ip}, error (#2): {response.error}.", log_level=log_level)
+				return dev0s.response.error(f"Failed to deploy website {self.domain} on vps {self.ip}, error (#2): {response.error}.", log_level=log_level)
 
 			# deploy.
 			if log_level >= 0: loader.mark(new_message=f"Deploying domain {self.domain} on vps {self.ip}")
@@ -203,10 +203,10 @@ class VPS(_defaults_.Defaults):
 				log_level=-1,)
 			if not response.success:
 				if log_level >= 0: loader.stop(success=False)
-				return Response.error(response.error, log_level=log_level)
+				return dev0s.response.error(response.error, log_level=log_level)
 			elif "Successfully deployed website https://" not in response.output:
 				if log_level >= 0: loader.stop(success=False)
-				return Response.error(f"Failed to deploy website {self.domain} on vps {self.ip}, error (#3): {response.output}.", log_level=log_level)
+				return dev0s.response.error(f"Failed to deploy website {self.domain} on vps {self.ip}, error (#3): {response.output}.", log_level=log_level)
 
 		# code update restart.
 		else:
@@ -218,6 +218,6 @@ class VPS(_defaults_.Defaults):
 
 		# handler.
 		if log_level >= 0: loader.stop()
-		return Response.success(f"Successfully deployed website {self.domain} on vps {self.ip}.", log_level=log_level)
+		return dev0s.response.success(f"Successfully deployed website {self.domain} on vps {self.ip}.", log_level=log_level)
 
 		#

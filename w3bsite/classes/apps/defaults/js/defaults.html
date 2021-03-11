@@ -58,7 +58,7 @@ function request(
 		loader.style.display = "block"
 	}
 	var error_msg = `Request (${url}) failed, error: `
-	Response.log(`Request (${url}).`)
+	//Response.log(`Request (${url}).`)
 	//console.log(" * data: "+Response.dump(data))
 	$.ajax({
 			url: url,
@@ -249,11 +249,7 @@ function toggle_left_bar(mode="toggle", options=["toggle", "show", "hide"]) {
 		leftbar.setAttribute("open", "true")
 	} else if (mode == "hide") {
 		leftbar.style.display = "none"
-		if (content.getAttribute("fullscreen") == "true") {
-			content.style.left = "0px"
-		} else {
-			content.style.left = "15px"
-		}
+		content.style.left = "0px"
 		leftbar.setAttribute("open", "false")
 	} else if (mode == "toggle") {
 		if (leftbar.getAttribute("open") == "true") {
@@ -274,11 +270,7 @@ function toggle_right_bar(mode="toggle", options=["toggle", "show", "hide"]) {
 		rightbar.setAttribute("open", "true")
 	} else if (mode == "hide") {
 		rightbar.style.display = "none"
-		if (content.getAttribute("fullscreen") == "true") {
-			content.style.right = "0px"
-		} else {
-			content.style.right = "15px"
-		}
+		content.style.right = "0px"
 		rightbar.setAttribute("open", "false")
 	} else if (mode == "toggle") {
 		if (rightbar.getAttribute("open") == "true") {
@@ -302,15 +294,9 @@ function toggle_top_bar(mode="toggle", options=["toggle", "show", "hide"]) {
 		topbar.setAttribute("open", "true")
 	} else if (mode == "hide") {
 		topbar.style.display = "none"
-		if (content.getAttribute("fullscreen") == "true") {
-			content.style.top = "0px"
-			leftbar.style.top = "0px"
-			rightbar.style.top = "0px"
-		} else {
-			content.style.top = "15px"
-			leftbar.style.top = "15px"
-			rightbar.style.top = "15px"
-		}
+		content.style.top = "0px"
+		leftbar.style.top = "0px"
+		rightbar.style.top = "0px"
 		topbar.setAttribute("open", "false")
 	} else if (mode == "toggle") {
 		if (topbar.getAttribute("open") == "true") {

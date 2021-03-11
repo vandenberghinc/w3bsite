@@ -7,7 +7,7 @@ from w3bsite.classes import utils
 
 # the namecheap object class.
 class Namecheap(Object):
-	# does not use Defaults so also accessable without Website init.
+	# does not use dev0s.defaults. so also accessable without Website init.
 	# source: https://www.namecheap.com/support/api/methods/
 	# go to [Profile > Tools > Developer > API > Manage] and enable the APi and whitelist your public ip.
 	def __init__(self,
@@ -82,7 +82,7 @@ class Namecheap(Object):
 			info = response["domains"][domain]
 			exists = True
 		except: exists = False
-		return Response.success(f"Successfully checked the ownership for domain [{domain}] from namecheap user [{self.username}].", {"exists":exists})
+		return dev0s.response.success(f"Successfully checked the ownership for domain [{domain}] from namecheap user [{self.username}].", {"exists":exists})
 
 		#
 	def get_domains(self):
@@ -92,7 +92,7 @@ class Namecheap(Object):
 		if response["api_response"]["errors"] != None: 
 			try: error = response["api_response"]["errors"]["error"]["#text"]
 			except KeyError: error = response["api_response"]["errors"]
-			return Response.error(f"Failed to retrieve the domains of namecheap user [{self.username}], error: {error}")
+			return dev0s.response.error(f"Failed to retrieve the domains of namecheap user [{self.username}], error: {error}")
 
 		# handle response.
 		domains = {}
@@ -108,7 +108,7 @@ class Namecheap(Object):
 			else: raise ValueError(f"Unkown domain type: {domain}.")
 
 		# handlers.
-		return Response.success(f"Successfully retrieved the domains of namecheap user [{self.username}].", {
+		return dev0s.response.success(f"Successfully retrieved the domains of namecheap user [{self.username}].", {
 			"domains":domains,
 		})
 
@@ -122,23 +122,23 @@ class Namecheap(Object):
 		response = self.check_domain(domain)
 		if response.error != None: return response
 		elif not response["exists"]:
-			return Response.error(f"Namecheap user [{self.username}] does not own domain [{domain}].")
+			return dev0s.response.error(f"Namecheap user [{self.username}] does not own domain [{domain}].")
 
 		# api request get info.
 		response = self.__request__("namecheap.domains.getInfo", {"DomainName":domain})
 		if response["api_response"]["errors"] != None: 
 			try: error = response["api_response"]["errors"]["error"]["#text"]
 			except KeyError: error = response["api_response"]["errors"]
-			return Response.error(f"Failed to retrieve the info of domain [{domain}] from namecheap user [{self.username}], error: {error}")
+			return dev0s.response.error(f"Failed to retrieve the info of domain [{domain}] from namecheap user [{self.username}], error: {error}")
 
 		# handle response.
 		try:
 			info = response["api_response"]["command_response"]["domain_get_info_result"]
 		except KeyError:
-			return Response.error(f"Failed to retrieve the info of domain [{domain}] from namecheap user [{self.username}].")
+			return dev0s.response.error(f"Failed to retrieve the info of domain [{domain}] from namecheap user [{self.username}].")
 
 		# handlers.
-		return Response.success(f"Successfully retrieved the domain info of namecheap user [{self.username}].", {
+		return dev0s.response.success(f"Successfully retrieved the domain info of namecheap user [{self.username}].", {
 			"info":info,
 		})
 
@@ -152,7 +152,7 @@ class Namecheap(Object):
 		response = self.check_domain(domain)
 		if response.error != None: return response
 		elif not response["exists"]:
-			return Response.error(f"Namecheap user [{self.username}] does not own domain [{domain}].")
+			return dev0s.response.error(f"Namecheap user [{self.username}] does not own domain [{domain}].")
 
 		# api request.
 		response = self.get_sld_and_tld(domain)
@@ -162,13 +162,13 @@ class Namecheap(Object):
 		if response["api_response"]["errors"] != None: 
 			try: error = response["api_response"]["errors"]["error"]["#text"]
 			except KeyError: error = response["api_response"]["errors"]
-			return Response.error(f"Failed to retrieve the dns info for domain [{domain}] from namecheap user [{self.username}], error: {error}")
+			return dev0s.response.error(f"Failed to retrieve the dns info for domain [{domain}] from namecheap user [{self.username}], error: {error}")
 
 		# handle response.
 		try:
 			data = response["api_response"]["command_response"]["domain_dnsget_hosts_result"]
 		except KeyError:
-			return Response.error(f"Failed to retrieve the dns info for domain [{domain}] from namecheap user [{self.username}].")
+			return dev0s.response.error(f"Failed to retrieve the dns info for domain [{domain}] from namecheap user [{self.username}].")
 
 		# iterate data.
 		records = {}
@@ -201,7 +201,7 @@ class Namecheap(Object):
 				records[tag] = serialized
 
 		# handlers.
-		return Response.success(f"Successfully retrieved the dns info of namecheap user [{self.username}].", {
+		return dev0s.response.success(f"Successfully retrieved the dns info of namecheap user [{self.username}].", {
 			"records":records,
 		})
 
@@ -239,7 +239,7 @@ class Namecheap(Object):
 
 		# handlers.
 		exists = tag in list(records.keys())
-		return Response.success(f"Successfully checked dns record [{tag}] of namecheap user [{self.username}].", {
+		return dev0s.response.success(f"Successfully checked dns record [{tag}] of namecheap user [{self.username}].", {
 			"exists":exists,
 			"tag":tag,
 		})
@@ -270,7 +270,7 @@ class Namecheap(Object):
 		response = self.check_domain(domain)
 		if response.error != None: return response
 		elif not response["exists"]:
-			return Response.error(f"Namecheap user [{self.username}] does not own domain [{domain}].")
+			return dev0s.response.error(f"Namecheap user [{self.username}] does not own domain [{domain}].")
 
 		# sld & tld.
 		response = self.get_sld_and_tld(domain)
@@ -292,13 +292,13 @@ class Namecheap(Object):
 				except KeyError:
 					data[f"TTL{c}"] = 1800
 			except KeyError:
-				return Response.error(f"Invalid usage, each record dictionary must have the following keys: [host, type, value].")
+				return dev0s.response.error(f"Invalid usage, each record dictionary must have the following keys: [host, type, value].")
 			c += 1
 		response = self.__request__("namecheap.domains.dns.setHosts", data)
 		if response["api_response"]["errors"] != None: 
 			try: error = response["api_response"]["errors"]["error"]["#text"]
 			except KeyError: error = response["api_response"]["errors"]
-			return Response.error(f"Failed to set the dns records for domain [{domain}] from namecheap user [{self.username}], error: {error}")
+			return dev0s.response.error(f"Failed to set the dns records for domain [{domain}] from namecheap user [{self.username}], error: {error}")
 
 		# handle response.
 		try:
@@ -308,9 +308,9 @@ class Namecheap(Object):
 
 		# handlers.
 		if success:
-			return Response.success(f"Successfully set dns records for domain [{domain}] from namecheap user [{self.username}].")
+			return dev0s.response.success(f"Successfully set dns records for domain [{domain}] from namecheap user [{self.username}].")
 		else:
-			return Response.error(f"Failed to set the dns records for domain [{domain}] from namecheap user [{self.username}].")
+			return dev0s.response.error(f"Failed to set the dns records for domain [{domain}] from namecheap user [{self.username}].")
 
 		#
 	def add_dns(self,
@@ -348,7 +348,7 @@ class Namecheap(Object):
 		# handle exact duplicate.
 		elif response["exists"]:
 			tag = response["tag"]
-			return Response.error(f"DNS record [{tag}] from namecheap domain [{domain}] already exists.")
+			return dev0s.response.error(f"DNS record [{tag}] from namecheap domain [{domain}] already exists.")
 
 		# add new.
 		else:
@@ -368,7 +368,7 @@ class Namecheap(Object):
 			if response.error != None: return response
 
 			# success.
-			return Response.success(f"Successfully added dns record [{tag}] to namecheap domain [{domain}].", {"tag":tag})
+			return dev0s.response.success(f"Successfully added dns record [{tag}] to namecheap domain [{domain}].", {"tag":tag})
 
 		#
 	def tag_dns(self,
@@ -380,7 +380,7 @@ class Namecheap(Object):
 		value=None,
 	):
 		tag = f"{type}|{host}|{value}"
-		return Response.success(f"Successfully taggeed dns record [{tag}].", {"tag":tag})
+		return dev0s.response.success(f"Successfully taggeed dns record [{tag}].", {"tag":tag})
 	def get_sld_and_tld(self, domain=None):
 
 		# set default domain.
@@ -401,7 +401,7 @@ class Namecheap(Object):
 			c += 1
 
 		# handlers.
-		return Response.success(f"Successfully retrieded the SLD & TLD of domain [{domain}].", {
+		return dev0s.response.success(f"Successfully retrieded the SLD & TLD of domain [{domain}].", {
 			"tld":tld,
 			"sld":sld,
 		})
@@ -414,13 +414,13 @@ class Namecheap(Object):
 		if response["api_response"]["errors"] != None: 
 			try: error = response["api_response"]["errors"]["error"]["#text"]
 			except KeyError: error = response["api_response"]["errors"]
-			return Response.error(f"Failed to retrieve the tls list from namecheap user [{self.username}], error: {error}")
+			return dev0s.response.error(f"Failed to retrieve the tls list from namecheap user [{self.username}], error: {error}")
 
 		# handle response.
 		try:
 			data = response["api_response"]["command_response"]["ssllist_result"]
 		except KeyError:
-			return Response.error(f"Failed to retrieve the tls list from namecheap user [{self.username}].")
+			return dev0s.response.error(f"Failed to retrieve the tls list from namecheap user [{self.username}].")
 
 		# iterate data.
 		tls = {}
@@ -434,7 +434,7 @@ class Namecheap(Object):
 				tls[_data_["certificate_id"]] = _data_
 
 		# handlers.
-		return Response.success(f"Successfully retrieved the tls list for namecheap user [{self.username}].", {
+		return dev0s.response.success(f"Successfully retrieved the tls list for namecheap user [{self.username}].", {
 			"tls":tls,
 			"certificates":len(tls),
 		})
@@ -455,17 +455,17 @@ class Namecheap(Object):
 		if response["api_response"]["errors"] != None: 
 			try: error = response["api_response"]["errors"]["error"]["#text"]
 			except KeyError: error = response["api_response"]["errors"]
-			return Response.error(f"Failed to create tls certificate from namecheap user [{self.username}], error: {error}")
+			return dev0s.response.error(f"Failed to create tls certificate from namecheap user [{self.username}], error: {error}")
 
 		# handle response.
 		try:
 			data = response["api_response"]["command_response"]["sslcreate_result"]
 		except KeyError:
-			return Response.error(f"Failed to create a tls certificate for namecheap user [{self.username}].")
+			return dev0s.response.error(f"Failed to create a tls certificate for namecheap user [{self.username}].")
 
 		# handlers.
 		if data["is_success"]:
-			return Response.success(f"Successfully created a tls certificate for namecheap user [{self.username}].", {
+			return dev0s.response.success(f"Successfully created a tls certificate for namecheap user [{self.username}].", {
 				"certificate_id":data["sslcertificate"]["certificate_id"],
 				"order_id":data["order_id"],
 				"transaction_id":data["transaction_id"],
@@ -475,7 +475,7 @@ class Namecheap(Object):
 				"years":data["sslcertificate"]["years"],
 			})
 		else:
-			return Response.error(f"Failed to create a tls certificate for namecheap user [{self.username}].")
+			return dev0s.response.error(f"Failed to create a tls certificate for namecheap user [{self.username}].")
 
 		#
 	def activate_tls(self,
@@ -486,7 +486,7 @@ class Namecheap(Object):
 		# check csr.
 		csr = f"{self.database}/tls/server.csr"
 		if not Files.exists(csr):
-			return Response.error(f"There is no tls certificate present.")
+			return dev0s.response.error(f"There is no tls certificate present.")
 		csr = Files.load(csr)
 
 		# api request.
@@ -499,17 +499,17 @@ class Namecheap(Object):
 		if response["api_response"]["errors"] != None: 
 			try: error = response["api_response"]["errors"]["error"]["#text"]
 			except KeyError: error = response["api_response"]["errors"]
-			return Response.error(f"Failed to activate tls certificate [{certificate_id}] from namecheap user [{self.username}], error: {error}")
+			return dev0s.response.error(f"Failed to activate tls certificate [{certificate_id}] from namecheap user [{self.username}], error: {error}")
 
 		# handle response.
 		try:
 			data = response["api_response"]["command_response"]["sslactivate_result"]
 		except KeyError:
-			return Response.error(f"Failed to retrieve the tls list from namecheap user [{self.username}].")
+			return dev0s.response.error(f"Failed to retrieve the tls list from namecheap user [{self.username}].")
 
 		# handlers.
 		if not data["is_success"]:
-			return Response.error(f"Failed to activate tls certificate [{certificate_id}] from namecheap user [{self.username}].")
+			return dev0s.response.error(f"Failed to activate tls certificate [{certificate_id}] from namecheap user [{self.username}].")
 
 		# add dns validation record. 
 		dns_validation = data["dnsdcvalidation"]["dns"]
@@ -527,7 +527,7 @@ class Namecheap(Object):
 		if response.error != None and "] already exists." not in response.error: return response
 		
 		# handlers.
-		return Response.success(f"Successfully activated tls certificate [{certificate_id}] from namecheap user [{self.username}].")
+		return dev0s.response.success(f"Successfully activated tls certificate [{certificate_id}] from namecheap user [{self.username}].")
 
 		#
 	# system functions.

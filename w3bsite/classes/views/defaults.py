@@ -67,7 +67,7 @@ class Request(Object):
 
 		# defaultss.
 		Object.__init__(self)
-		self.parameters = Response.parameters
+		self.parameters = dev0s.response.parameters
 
 		# variables.
 		self.base = base
@@ -91,9 +91,9 @@ class Request(Object):
 		except Exception as e: return self._500(request, error=e)
 		return self.response(response)
 	def success(self, message, arguments={}):
-		return Response.success(message, arguments, django=True)
+		return dev0s.response.success(message, arguments, django=True)
 	def error(self, error):
-		return Response.error(error, django=True)
+		return dev0s.response.error(error, django=True)
 	def response(self, response):
 		if isinstance(response, JsonResponse):
 			return response
@@ -134,7 +134,7 @@ class View(Object):
 
 		# defaults.
 		Object.__init__(self)
-		self.parameters = Response.parameters
+		self.parameters = dev0s.response.parameters
 
 		# vars.
 		self.base = base
@@ -170,11 +170,11 @@ class View(Object):
 			if Files.exists(path):
 				path = Files.join(path, "html")
 				if not Files.exists(path): 
-					Response.log(f"&ORANGE&Creating&END& html base [{path}].")
+					dev0s.response.log(f"&ORANGE&Creating&END& html base [{path}].")
 					Files.create(path, directory=True)
 				path = Files.join("apps", self.html)
 				if not Files.exists(path):
-					Response.log(f"&ORANGE&Creating&END& default html view [{path}].")
+					dev0s.response.log(f"&ORANGE&Creating&END& default html view [{path}].")
 					base = FilePath(path).base(back=1)
 					if not Files.exists(base): Files.create(base, directory=True)
 					os.system(f"cp {SOURCE_PATH}/example/view.html {path}")
@@ -193,7 +193,7 @@ class View(Object):
 	):
 		if template_data == None: template_data = self.template_data
 		if html == None: html = self.html
-		if isinstance(template_data, (Dictionary, Response.ResponseObject)): 
+		if isinstance(template_data, (Dictionary, dev0s.response.ResponseObject)): 
 			template_data = template_data.raw()
 		return render(request, html, template_data)
 
@@ -223,28 +223,28 @@ class View(Object):
 			"redirect":redirect,
 			"redirect_button":redirect_button,
 		}
-		if isinstance(template_data, (Dictionary, Response.ResponseObject)): 
+		if isinstance(template_data, (Dictionary, dev0s.response.ResponseObject)): 
 			template_data = template_data.raw()
 		return render(request, f"w3bsite/classes/apps/defaults/html/error.html", template_data)
 
 	# default renders.
 	def maintenance(self, request, template_data=None):
 		if template_data == None: template_data = self.template_data
-		if isinstance(template_data, (Dictionary, Response.ResponseObject)): 
+		if isinstance(template_data, (Dictionary, dev0s.response.ResponseObject)): 
 			template_data = template_data.raw()
 		return render(request, f"w3bsite/classes/apps/defaults/html/maintenance.html", template_data)
 	def permission_denied(self, request, template_data=None):
 		if template_data == None: template_data = self.template_data
-		if isinstance(template_data, (Dictionary, Response.ResponseObject)): 
+		if isinstance(template_data, (Dictionary, dev0s.response.ResponseObject)): 
 			template_data = template_data.raw()
 		return render(request, f"w3bsite/classes/apps/defaults/html/permission_denied.html", template_data)
 	def _500(self, request, template_data=None, error=None):
 		if template_data == None: template_data = self.template_data
-		if isinstance(template_data, (Dictionary, Response.ResponseObject)): 
+		if isinstance(template_data, (Dictionary, dev0s.response.ResponseObject)): 
 			template_data = template_data.raw()
 		info = utils.utils.catch_error(error)
 		traceback, debug = None, False
-		if not Environment.get("PRODUCTION", format=bool, default=True) or Environment.get("DEBUG", format=bool, default=False):
+		if not dev0s.env.get("PRODUCTION", format=bool, default=True) or dev0s.env.get("DEBUG", format=bool, default=False):
 			debug = True
 			traceback = info["traceback"]
 		return render(request, f"w3bsite/classes/apps/defaults/html/500.html", self.template({

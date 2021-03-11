@@ -47,17 +47,17 @@ class Email(object):
 			smtp.login(self.email, self.password)
 			self.smtp = smtp
 		except AttributeError:
-			return Response.error("Define the noreply email address & password.")
+			return dev0s.response.error("Define the noreply email address & password.")
 		except smtplib.SMTPAuthenticationError:
-			return Response.error("Failed to log in, provided an incorrect email and password.")
+			return dev0s.response.error("Failed to log in, provided an incorrect email and password.")
 		except OSError as e:
 			if "Network is unreachable" in str(e):
-				return Response.error("Failed to log in, the network is unreachable. Make sure you provided the correct smtp host & port.")
+				return dev0s.response.error("Failed to log in, the network is unreachable. Make sure you provided the correct smtp host & port.")
 			else:
-				return Response.error(f"Failed to log in, error: {e}.")
+				return dev0s.response.error(f"Failed to log in, error: {e}.")
 
 		# response.
-		return Response.success(f"Successfully logged in to the email [{self.email}].")
+		return dev0s.response.success(f"Successfully logged in to the email [{self.email}].")
 	def send(self,
 		# the email's subject.
 		subject="Subject.",
@@ -73,12 +73,12 @@ class Email(object):
 		# checks.
 		if html != None: a=1
 		elif html_path == None: 
-			return Response.error("Define either parameter [html] or [html_path].")
+			return dev0s.response.error("Define either parameter [html] or [html_path].")
 		else: html = Files.load(html_path)
 		if len(recipients) == 0: 
-			return Response.error("Define one or multiple recipients")
+			return dev0s.response.error("Define one or multiple recipients")
 		elif  recipients in [[''], [" "]]: 
-			return Response.error("Define one or multiple recipients")
+			return dev0s.response.error("Define one or multiple recipients")
 
 		# create message.
 		#try:
@@ -107,9 +107,9 @@ class Email(object):
 			self.smtp.sendmail(self.email, recipients, msg.as_string())
 
 			# response.
-			return Response.success(f"Succesfully send the email to {recipients}.")
+			return dev0s.response.success(f"Succesfully send the email to {recipients}.")
 		#except:
-		#	return Response.error(f"Failed to send the email to {recipients}.")
+		#	return dev0s.response.error(f"Failed to send the email to {recipients}.")
 
 
 #
