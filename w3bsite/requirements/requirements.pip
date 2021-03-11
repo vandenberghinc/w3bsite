@@ -18,7 +18,7 @@ stripe
 # inc packages.
 encrypti0n>=3.22.4
 syst3m>=2.18.9
-dev0s>=3.4.6
+dev0s>=3.4.7
 netw0rk>=1.11.3
-ssht00ls>=3.24.4
+ssht00ls>=3.24.5
 
