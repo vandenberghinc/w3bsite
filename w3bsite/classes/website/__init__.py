@@ -446,14 +446,14 @@ class Website(dev0s.cli.CLI,Traceback):
 			root=self.root,
 			database=self.database,)
 		self.aes = dev0s.encryption.AsymmetricAES(
-			private_key=f"{self.database}/keys/master/private_key",
-			public_key=f"{self.database}/keys/master/public_key",
+			private_key=f"{self.database}/keys/{ALIAS}/private_key",
+			public_key=f"{self.database}/keys/{ALIAS}/public_key",
 			passphrase=self.aes_passphrase)
 		if  not Files.exists(self.aes.rsa.public_key):
 			response = self.aes.generate_keys()
 			if not response.success:
 				return response
-		self.defaults = defaults.dev0s.defaults.(
+		self.defaults = defaults.Defaults(
 			root=self.root,
 			library=self.library,
 			database=self.database,
