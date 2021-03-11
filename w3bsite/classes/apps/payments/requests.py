@@ -7,14 +7,14 @@ from w3bsite.classes import utils, views
 from w3bsite.classes import defaults as _defaults_
 
 # the payments requests.
-class Requests(_defaults_.dev0s.defaults.):
+class Requests(_defaults_.Defaults):
 	def __init__(self,
 		# passed Website.x objects.
 		stripe=None,
 		defaults=None,
 	):
 		# defaults.
-		_defaults_.dev0s.defaults.__init__(self)
+		_defaults_.Defaults.__init__(self)
 		defaults.stripe = stripe
 		self.assign(defaults.dict())
 		
@@ -35,7 +35,7 @@ class Requests(_defaults_.dev0s.defaults.):
 		# all-in-one purchase request.
 		class Purchase(views.Request):
 			def __init__(self, defaults=None,):
-				_defaults_.dev0s.defaults.__init__(self)
+				_defaults_.Defaults.__init__(self)
 				self.assign(defaults.dict())
 				views.Request.__init__(self, "requests/payments/subscriptions/", "purchase")
 			def view(self, request):
@@ -77,7 +77,7 @@ class Requests(_defaults_.dev0s.defaults.):
 		# create subscription.
 		class Create(views.Request):
 			def __init__(self, defaults=None,):
-				_defaults_.dev0s.defaults.__init__(self)
+				_defaults_.Defaults.__init__(self)
 				self.assign(defaults.dict())
 				views.Request.__init__(self, "requests/payments/subscriptions/", "create")
 			def view(self, request):
@@ -110,7 +110,7 @@ class Requests(_defaults_.dev0s.defaults.):
 		# delete subscription.
 		class Delete(views.Request):
 			def __init__(self, defaults=None,):
-				_defaults_.dev0s.defaults.__init__(self)
+				_defaults_.Defaults.__init__(self)
 				self.assign(defaults.dict())
 				views.Request.__init__(self, "requests/payments/subscriptions/", "delete")
 			def view(self, request):
@@ -160,7 +160,7 @@ class Requests(_defaults_.dev0s.defaults.):
 		# list methods.
 		class List(views.Request):
 			def __init__(self, defaults=None,):
-				_defaults_.dev0s.defaults.__init__(self)
+				_defaults_.Defaults.__init__(self)
 				self.assign(defaults.dict())
 				views.Request.__init__(self, "requests/payments/subscriptions/", "list")
 			def view(self, request):
@@ -209,7 +209,7 @@ class Requests(_defaults_.dev0s.defaults.):
 		# create method.
 		class Create(views.Request):
 			def __init__(self, defaults=None,):
-				_defaults_.dev0s.defaults.__init__(self)
+				_defaults_.Defaults.__init__(self)
 				self.assign(defaults.dict())
 				views.Request.__init__(self, "requests/payments/methods/", "create")
 			def view(self, request):
@@ -247,7 +247,7 @@ class Requests(_defaults_.dev0s.defaults.):
 		# delete method.
 		class Delete(views.Request):
 			def __init__(self, defaults=None,):
-				_defaults_.dev0s.defaults.__init__(self)
+				_defaults_.Defaults.__init__(self)
 				self.assign(defaults.dict())
 				views.Request.__init__(self, "requests/payments/methods/", "delete")
 			def view(self, request):
@@ -274,7 +274,7 @@ class Requests(_defaults_.dev0s.defaults.):
 		# list methods.
 		class List(views.Request):
 			def __init__(self, defaults=None,):
-				_defaults_.dev0s.defaults.__init__(self)
+				_defaults_.Defaults.__init__(self)
 				self.assign(defaults.dict())
 				views.Request.__init__(self, "requests/payments/methods/", "list")
 			def view(self, request):

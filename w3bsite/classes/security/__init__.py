@@ -7,7 +7,7 @@ from w3bsite.classes import utils
 from w3bsite.classes import defaults as _defaults_
 
 # the security class.
-class Security(_defaults_.dev0s.defaults.):
+class Security(_defaults_.Defaults):
 	def __init__(self,
 		# optional if defaults not initialized.
 		root=None,
@@ -23,7 +23,7 @@ class Security(_defaults_.dev0s.defaults.):
 
 		# defaults.
 		if defaults != None:
-			_defaults_.dev0s.defaults.__init__(self, traceback="w3bsite.Website.security",)
+			_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.security",)
 			self.assign(defaults.dict())
 		else:
 			self.root = root

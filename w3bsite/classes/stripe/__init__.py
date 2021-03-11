@@ -14,7 +14,7 @@ def __handle_stripe_exception__(exception):
 	else: return dev0s.response.error(f"{exception}")
 
 # the stripe object class_.
-class Stripe(_defaults_.dev0s.defaults.):
+class Stripe(_defaults_.Defaults):
 	# privacy policy generator.
 	# https://getterms.io/
 	def __init__(self,
@@ -37,7 +37,7 @@ class Stripe(_defaults_.dev0s.defaults.):
 			notes=[], )
 
 		# defaults.
-		_defaults_.dev0s.defaults.__init__(self, traceback="w3bsite.Website.stripe")
+		_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.stripe")
 		self.assign(defaults.dict())
 
 		# arguments.

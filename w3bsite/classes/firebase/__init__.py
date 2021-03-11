@@ -29,7 +29,7 @@ class FirebaseCLI(object):
 	"""
 	
 # the firebase class.
-class Firebase(_defaults_.dev0s.defaults.):
+class Firebase(_defaults_.Defaults):
 	def __init__(self, 
 		# the firebase key.
 		key=None, 
@@ -46,7 +46,7 @@ class Firebase(_defaults_.dev0s.defaults.):
 			notes=[], )
 		
 		# defaults.
-		_defaults_.dev0s.defaults.__init__(self)
+		_defaults_.Defaults.__init__(self)
 		self.assign(defaults.dict())
 
 		# check arguments.
@@ -175,7 +175,7 @@ class FireStore(object):
 
 # the firebase users class.
 # firebase users are no longer created, just in firestore database & django.
-class Users(_defaults_.dev0s.defaults.):
+class Users(_defaults_.Defaults):
 	def __init__(self, defaults=None, firestore=None):
 		
 		# docs.
@@ -185,7 +185,7 @@ class Users(_defaults_.dev0s.defaults.):
 			notes=[], )
 
 		# defaults.
-		_defaults_.dev0s.defaults.__init__(self)
+		_defaults_.Defaults.__init__(self)
 		self.assign(defaults.dict())
 
 		# objects.

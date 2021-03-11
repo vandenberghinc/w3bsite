@@ -7,7 +7,7 @@ from w3bsite.classes import utils
 from w3bsite.classes import defaults as _defaults_
 
 # the git object class.
-class Git(_defaults_.dev0s.defaults.):
+class Git(_defaults_.Defaults):
 	def __init__(self,
 		# defaults.
 		defaults=None,
@@ -20,7 +20,7 @@ class Git(_defaults_.dev0s.defaults.):
 			notes=[], )
 
 		# defaults.
-		_defaults_.dev0s.defaults.__init__(self, traceback="w3bsite.Website.git",)
+		_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.git",)
 		self.assign(defaults.dict())
 
 		# arguments.

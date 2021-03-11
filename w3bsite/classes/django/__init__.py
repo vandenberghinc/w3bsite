@@ -15,7 +15,7 @@ if not dev0s.env.get("MIGRATIONS", format=bool, default=False):
 			raise ValueError(e)
 
 # the django object class.
-class Django(_defaults_.dev0s.defaults.):
+class Django(_defaults_.Defaults):
 	def __init__(self, 
 		# the security object.
 		security=None,
@@ -31,7 +31,7 @@ class Django(_defaults_.dev0s.defaults.):
 			notes=[], )
 
 		# defaults.
-		_defaults_.dev0s.defaults.__init__(self, traceback="w3bsite.Website.django",)
+		_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.django",)
 		self.assign(defaults.dict())
 
 		# arguments.
@@ -180,7 +180,7 @@ class Django(_defaults_.dev0s.defaults.):
 		return dev0s.response.success(f"Successfully checked the static files.")
 
 # the django database users.
-class Users(_defaults_.dev0s.defaults.):
+class Users(_defaults_.Defaults):
 	def __init__(self, 
 		# defaults.
 		defaults=None,
@@ -193,7 +193,7 @@ class Users(_defaults_.dev0s.defaults.):
 			notes=[], )
 
 		# defaults.
-		_defaults_.dev0s.defaults.__init__(self, traceback="w3bsite.Website.django.users")
+		_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.django.users")
 		self.assign(defaults.dict())
 
 		#

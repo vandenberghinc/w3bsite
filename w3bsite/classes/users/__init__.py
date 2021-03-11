@@ -16,7 +16,7 @@ from w3bsite.classes import defaults as _defaults_
 from w3bsite.classes import email, utils
 
 # the users class.
-class Users(_defaults_.dev0s.defaults.):
+class Users(_defaults_.Defaults):
 	def __init__(self,
 		# noreply email settings.
 		email_enabled=True,
@@ -41,7 +41,7 @@ class Users(_defaults_.dev0s.defaults.):
 			notes=[], )
 
 		# defaults.
-		_defaults_.dev0s.defaults.__init__(self, traceback="w3bsite.Website.users",)
+		_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.users",)
 		self.assign(defaults.dict())
 
 		# variables.

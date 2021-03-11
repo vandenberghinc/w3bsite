@@ -5,7 +5,7 @@ from w3bsite.classes import utils
 from w3bsite.classes import defaults as _defaults_
 
 # the vps object class.
-class VPS(_defaults_.dev0s.defaults.):
+class VPS(_defaults_.Defaults):
 	def __init__(self,
 		# the remote ip address.
 		ip=None,
@@ -28,7 +28,7 @@ class VPS(_defaults_.dev0s.defaults.):
 			notes=[], )
 
 		# defaults.
-		_defaults_.dev0s.defaults.__init__(self, traceback="w3bsite.Website.vps",)
+		_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.vps",)
 		self.assign(defaults.dict())
 
 		# check arguments.

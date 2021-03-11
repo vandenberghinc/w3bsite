@@ -4,7 +4,7 @@ from w3bsite.classes.config import *
 from w3bsite.classes import defaults as _defaults_
 
 # the rate limit object class.
-class RateLimit(_defaults_.dev0s.defaults.):
+class RateLimit(_defaults_.Defaults):
 	def __init__(self, 
 		# objects.
 		db=None,
@@ -19,7 +19,7 @@ class RateLimit(_defaults_.dev0s.defaults.):
 			notes=[], )
 
 		# defaults.
-		_defaults_.dev0s.defaults.__init__(self, traceback="w3bsite.Website.ratelimit",)
+		_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.ratelimit",)
 		self.assign(defaults.dict())
 
 		# objects.

@@ -10,13 +10,13 @@ from w3bsite.classes import defaults as _defaults_
 APP = "authentication"
 
 # the x views.
-class Views(_defaults_.dev0s.defaults.):
+class Views(_defaults_.Defaults):
 	def __init__(self, 
 		# passed Website.x objects.
 		defaults=None,
 	):
 		# defaults.
-		_defaults_.dev0s.defaults.__init__(self)
+		_defaults_.Defaults.__init__(self)
 		self.assign(defaults.dict())
 		
 		# urlpatterns.
@@ -30,7 +30,7 @@ class Views(_defaults_.dev0s.defaults.):
 	# sign in.
 	class SignIn(views.View):
 		def __init__(self, defaults=None):
-			_defaults_.dev0s.defaults.__init__(self)
+			_defaults_.Defaults.__init__(self)
 			views.View.__init__(self, f"{APP}/", "signin", html=f"w3bsite/classes/apps/authentication/html/signin.html")
 			self.assign(defaults.dict())
 		def view(self, request):
@@ -40,7 +40,7 @@ class Views(_defaults_.dev0s.defaults.):
 	# sign up.
 	class SignUp(views.View):
 		def __init__(self, defaults=None):
-			_defaults_.dev0s.defaults.__init__(self)
+			_defaults_.Defaults.__init__(self)
 			views.View.__init__(self, f"{APP}/", "signup", html=f"w3bsite/classes/apps/authentication/html/signup.html")
 			self.assign(defaults.dict())
 		def view(self, request):
@@ -50,7 +50,7 @@ class Views(_defaults_.dev0s.defaults.):
 	# reset password.
 	class Reset(views.View):
 		def __init__(self, defaults=None):
-			_defaults_.dev0s.defaults.__init__(self)
+			_defaults_.Defaults.__init__(self)
 			views.View.__init__(self, f"{APP}/", "reset", html=f"w3bsite/classes/apps/authentication/html/reset.html")
 			self.assign(defaults.dict())
 		def view(self, request):
@@ -60,7 +60,7 @@ class Views(_defaults_.dev0s.defaults.):
 	# activate account.
 	class Activate(views.View):
 		def __init__(self, defaults=None):
-			_defaults_.dev0s.defaults.__init__(self)
+			_defaults_.Defaults.__init__(self)
 			views.View.__init__(self, f"{APP}/", "activate", html=f"w3bsite/classes/apps/authentication/html/activate.html")
 			self.assign(defaults.dict())
 		def view(self, request):
