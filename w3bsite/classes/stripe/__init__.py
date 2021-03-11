@@ -61,7 +61,7 @@ class Stripe(_defaults_.Defaults):
 		self.template_data["STRIPE"]["PRODUCTS"] = {}
 
 		# defaults.
-		self.stripe_defaults = self.dev0s.defaults.(
+		self.stripe_defaults = self.Defaults(
 			secret_key=self.secret_key,
 			publishable_key=self.publishable_key,
 			products=self._subscriptions_,
@@ -238,7 +238,7 @@ class Stripe(_defaults_.Defaults):
 		return dev0s.response.error(f"Unable to find the name of plan {id}.")
 
 	# the defaults object.
-	class dev0s.defaults.(Object):
+	class Defaults(Object):
 		def __init__(self,
 			# the stripe secret key.
 			secret_key=None,

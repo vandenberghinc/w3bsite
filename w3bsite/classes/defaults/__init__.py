@@ -5,7 +5,7 @@
 from w3bsite.classes.config import *
 
 # the website defaults object class.
-class dev0s.defaults.(Object):
+class Defaults(Object):
 	def __init__(self,
 		# info.
 		root=None,
