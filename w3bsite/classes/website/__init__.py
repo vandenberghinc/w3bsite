@@ -725,7 +725,7 @@ class Website(dev0s.cli.CLI,Traceback):
 			if not self.live: 
 				dev0s.response.log(error="The executing library is not live.")
 				sys.exit(1)
-			response = website.deployment.tail()
+			response = self.deployment.tail()
 			if not response.success:
 				self.stop(response=response)
 			else:
