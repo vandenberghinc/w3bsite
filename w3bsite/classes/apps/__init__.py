@@ -30,6 +30,23 @@ class Apps(_defaults_.Defaults):
 		self.authentication = self.Authentication(defaults=defaults)
 		self.payments = self.Payments(defaults=defaults, stripe=stripe)
 
+
+	# 500.
+	class _500(w3bsite.views.View):
+		def __init__(self):
+			w3bsite.views.View.__init__(self, "/", "500", template_data=website.template_data)
+		def view(self, request):
+			if MAINTENANCE: return self.maintenance(request)
+			return self._500(request)
+
+	# 404.
+	class _404(w3bsite.views.View):
+		def __init__(self):
+			w3bsite.views.View.__init__(self, "/", "404", template_data=website.template_data)
+		def view(self, request):
+			if MAINTENANCE: return self.maintenance(request)
+			return self._404(request)
+
 	# the authentication app.
 	class Authentication(_defaults_.Defaults):
 		def __init__(self, defaults=None):
