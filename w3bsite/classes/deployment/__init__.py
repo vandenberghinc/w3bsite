@@ -229,7 +229,7 @@ class Deployment(Object):
 			if not Files.exists(f"{self.database}/logs"): Files.create(f"{self.database}/logs", directory=True)
 
 		# deployment.
-		if not Files.exists(f"{self.root}/deployment"): os.mkdir(f"{self.root}/deployment")
+		if not Files.exists(f"{self.root}/__defaults__/deployment"): Files.create(f"{self.root}/__defaults__/deployment", directory=True)
 		clean_root = gfp.clean(self.library, remove_last_slash=True, remove_double_slash=True) # <== note the library change instead of root.
 		replacements = {
 			"***ROOT***":clean_root, 
@@ -248,7 +248,7 @@ class Deployment(Object):
 			new_data = str(data)
 			for key,value in replacements.items():
 				new_data = new_data.replace(key, value)
-			Files.save(f"{self.root}/deployment/{name}", new_data)
+			Files.save(f"{self.root}/__defaults__/deployment/{name}", new_data)
 		
 		# success.
 		if log_level >= 0: loader.stop()
@@ -313,8 +313,8 @@ class Deployment(Object):
 		if reinstall: arguments += " --reinstall"
 		
 		# execute & handle.
-		Files.chmod(f"{self.root}/deployment/installer", "+x")
-		response = dev0s.code.execute(f"bash {self.root}/deployment/installer{arguments}")
+		Files.chmod(f"{self.root}/__defaults__/deployment/installer", "+x")
+		response = dev0s.code.execute(f"bash {self.root}/__defaults__/deployment/installer{arguments}")
 		if not response.success:
 			#if "Error:" in output or ("nginx: the configuration file /etc/nginx/nginx.conf syntax is ok" not in output and "nginx: configuration file /etc/nginx/nginx.conf test is successful" not in output): #"Successfully deployed domain " not in output
 			print(response.output)

@@ -132,7 +132,7 @@ DEPLOY=$(argument_present "--deploy" $@)
 if [ "$CODE_UPDATE" == "true" ] ; then
     echo "Finished installing $alias code updates."
     if [ "$DEPLOY" == "true" ] ; then
-        $package/deployment/installer --code-update
+        $package/__defaults__/deployment/installer --code-update
     fi
     # regular log for confirmation:
     echo "Successfully installed $alias."
@@ -190,7 +190,7 @@ sudo ufw allow 22
 
 # auto deploy.
 if [ "$DEPLOY" == "true" ] ; then
-    $package/deployment/installer
+    $package/__defaults__/deployment/installer
 fi
 
 # regular log for confirmation:

@@ -170,7 +170,7 @@ log "Configuring gunicorn socket" "done"
 # gunicorn socket.
 log "Deploying gunicorn socket"
 sudo rm -fr /etc/systemd/system/gunicorn.socket
-sudo cp $SOURCE/deployment/gunicorn.socket /etc/systemd/system/gunicorn.socket
+sudo cp $SOURCE/__defaults__/deployment/gunicorn.socket /etc/systemd/system/gunicorn.socket
 sudo systemctl daemon-reload
 sudo systemctl enable gunicorn.socket
 sudo systemctl restart gunicorn.socket
@@ -180,7 +180,7 @@ log "Deploying gunicorn socket" "done"
 # gunicorn service.
 log "Deploying gunicorn service"
 sudo rm -fr /etc/systemd/system/gunicorn.service
-sudo cp $SOURCE/deployment/gunicorn.service /etc/systemd/system/gunicorn.service
+sudo cp $SOURCE/__defaults__/deployment/gunicorn.service /etc/systemd/system/gunicorn.service
 sudo systemctl daemon-reload
 sudo systemctl enable gunicorn
 sudo systemctl restart gunicorn
@@ -190,7 +190,7 @@ log "Deploying gunicorn service" "done"
 log "Deploying nginx"
 sudo usermod -a -G www-data $USER
 sudo rm -fr /etc/nginx/sites-available/django
-sudo cp $SOURCE/deployment/django.nginx /etc/nginx/sites-available/django
+sudo cp $SOURCE/__defaults__/deployment/django.nginx /etc/nginx/sites-available/django
 sudo chown $USER:www-data /etc/nginx/sites-available/django
 sudo ln -sf /etc/nginx/sites-available/django /etc/nginx/sites-enabled
 sudo ufw delete allow 8000
