@@ -7,6 +7,9 @@ from w3bsite.classes import utils
 from w3bsite.classes import defaults as _defaults_
 from w3bsite.classes.apps import payments, authentication
 
+# django imports.
+from django.shortcuts import render
+
 # the apps holder.
 class Apps(_defaults_.Defaults):
 	def __init__(self, 
