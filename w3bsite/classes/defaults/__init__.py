@@ -14,8 +14,16 @@ class Defaults(Object):
 
 		#
 	def template(self, dictionary={}):
-		dictionary = Dictionary(self.template_data) + Dictionary(dictionary)
-		if isinstance(dictionary, Dictionary): dictionary = dictionary.dictionary
+		if dictionary.__class__.__name__ in ["Dictionary"]:
+			dictionary = dictionary.dictionary
+		elif dictionary.__class__.__name__ in ["ResponseObject", "OutputObject"]:
+			dictionary = dictionary.dict()
+		if dictionary.__class__.__name__ in ["Dictionary"]:
+			l_template_data = dict(self.template_data.dictionary)
+		else:
+			l_template_data = dict(self.template_data)
+		dictionary = Dictionary(l_template_data) + Dictionary(dictionary)
+		if dictionary.__class__.__name__ in ["Dictionary"]: dictionary = dictionary.dictionary
 		return dictionary
 		#
 
