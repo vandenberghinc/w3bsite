@@ -721,7 +721,10 @@ class Website(dev0s.cli.CLI,Traceback):
 
 		# tail.
 		elif self.arguments.present('--tail'):
-			response = self.deployment.tail()
+			response = self.deployment.tail(
+				nginx=self.arguments.present("--nginx"),
+				debug=self.arguments.present("--debug"),
+			)
 			if not response.success:
 				self.stop(response=response)
 			else:
