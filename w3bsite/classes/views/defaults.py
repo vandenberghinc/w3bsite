@@ -90,7 +90,7 @@ class Request(Object):
 	def error(self, error):
 		return dev0s.response.error(error, django=True)
 	def response(self, response):
-		if isinstance(response, JsonResponse):
+		if isinstance(response, (JsonResponse, HttpResponse)):
 			return response
 		else:
 			try:
