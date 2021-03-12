@@ -36,9 +36,9 @@ class Apps(_defaults_.Defaults):
 		def __init__(self, defaults=None):
 			_defaults_.Defaults.__init__(self)
 			self.assign(defaults.dict())
-		def _404(request):
+		def _404(self, request, *args, **argv):
 			return render(request, 'w3bsite/classes/apps/defaults/html/404.html', self.template_data)
-		def _500(request):
+		def _500(self, request, *args, **argv):
 			return render(request, 'w3bsite/classes/apps/defaults/html/500.html', self.template_data)
 
 	# the authentication app.
