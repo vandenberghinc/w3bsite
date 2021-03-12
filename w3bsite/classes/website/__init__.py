@@ -252,6 +252,8 @@ class Website(dev0s.cli.CLI,Traceback):
 		if not response.success: response.crash()
 
 		#
+
+	# initialize.
 	def initialize(self):
 
 		# overall arguments.
@@ -453,31 +455,32 @@ class Website(dev0s.cli.CLI,Traceback):
 			response = self.aes.generate_keys()
 			if not response.success:
 				return response
-		self.defaults = defaults.Defaults(
-			root=self.root,
-			library=self.library,
-			database=self.database,
-			name=self.name,
-			author=self.author,
-			email=self.email,
-			organization=self.organization,
-			country_code=self.country_code,
-			province=self.province,
-			city=self.city,
-			organization_unit=self.organization_unit,
-			domain=self.domain,
-			https_domain=self.https_domain,
-			developers=self.developers,
-			remote=self.remote,
-			live=self.live,
-			interactive=self.interactive,
-			_2fa=self._2fa,
-			maintenance=self.maintenance,
-			users_subpath=self.users_subpath,
-			template_data=self.template_data,
-			id_by_username=self.id_by_username,
-			aes=self.aes,
-			logging=self.logging,)
+		self.defaults = defaults.Defaults({
+			"root":self.root,
+			"library":self.library,
+			"database":self.database,
+			"name":self.name,
+			"author":self.author,
+			"email":self.email,
+			"organization":self.organization,
+			"country_code":self.country_code,
+			"province":self.province,
+			"city":self.city,
+			"organization_unit":self.organization_unit,
+			"domain":self.domain,
+			"https_domain":self.https_domain,
+			"developers":self.developers,
+			"remote":self.remote,
+			"live":self.live,
+			"interactive":self.interactive,
+			"_2fa":self._2fa,
+			"maintenance":self.maintenance,
+			"users_subpath":self.users_subpath,
+			"template_data":self.template_data,
+			"id_by_username":self.id_by_username,
+			"aes":self.aes,
+			"logging":self.logging,	})
+		self.template = self.defaults.template
 		self.utils = utils.Utils(attributes=self.defaults.attributes())
 
 		# objects.
@@ -624,6 +627,8 @@ class Website(dev0s.cli.CLI,Traceback):
 		return dev0s.response.success(f"Successfully initialized website [{self.name}].")
 
 		#
+
+	# cli.
 	def cli(self):
 
 		# check args.
@@ -769,6 +774,8 @@ class Website(dev0s.cli.CLI,Traceback):
 		else: self.invalid()
 
 		#
+
+	# management.
 	def deploy(self, code_update=False, reinstall=False, log_level=0):
 
 		# check git.
@@ -858,6 +865,8 @@ class Website(dev0s.cli.CLI,Traceback):
 		return dev0s.response.success(f"Successfully created website [{self.name}].")
 
 		#
+
+	# serialization.
 	def serialize(self, save=False):
 		# serizalized is used by the config.py in deployment.
 		# all non secret variables are stored in __defaults__/env/website inside the root/. directory .
@@ -908,7 +917,30 @@ class Website(dev0s.cli.CLI,Traceback):
 		}
 
 		# save all secret variables in secrets.
-		def __handle_dict__(dictionary={}, base=""):
+		local_security = security.Security(
+			# the root path.
+			root=self.root,)
+		def __handle_dict__(base="", dictionary={
+			"FIREBASE_ADMIN":self.firebase_admin,
+			"FIREBASE_JS":self.firebase_js,
+			"STRIPE": {
+				"SECRET_KEY":self.stripe_secret_key,
+				"PUBLISHABLE_KEY":self.stripe_publishable_key,
+			},
+			"EMAIL": {
+				"ADDRESS":self.email_address,
+				"PASSWORD":self.email_password,
+			},
+			"AES_PASSPHRASE":self.aes_passphrase,
+			"NAMECHEAP_USERNAME":self.namecheap_username,
+			"NAMECHEAP_API_KEY":self.namecheap_api_key,
+			# add these for the settings.py
+			"DOMAIN":self.domain,
+			"DATABASE":self.database,
+			"PRODUCTION":self.production,
+			"MAINTENANCE":self.maintenance,
+			"LOG_LEVEL":self.log_level,
+		}):
 			stored = []
 			for key, value in dictionary.items():
 				key = key.upper().replace("-","_").replace(".","_")
@@ -935,30 +967,7 @@ class Website(dev0s.cli.CLI,Traceback):
 				#print(f"Stored secret environment variable: {key}.")
 				stored.append([full_key, _format_])
 			return stored
-		local_security = security.Security(
-			# the root path.
-			root=self.root,)
-		stored = __handle_dict__({
-			"FIREBASE_ADMIN":self.firebase_admin,
-			"FIREBASE_JS":self.firebase_js,
-			"STRIPE": {
-				"SECRET_KEY":self.stripe_secret_key,
-				"PUBLISHABLE_KEY":self.stripe_publishable_key,
-			},
-			"EMAIL": {
-				"ADDRESS":self.email_address,
-				"PASSWORD":self.email_password,
-			},
-			"AES_PASSPHRASE":self.aes_passphrase,
-			"NAMECHEAP_USERNAME":self.namecheap_username,
-			"NAMECHEAP_API_KEY":self.namecheap_api_key,
-			# add these for the settings.py
-			"DOMAIN":self.domain,
-			"DATABASE":self.database,
-			"PRODUCTION":self.production,
-			"MAINTENANCE":self.maintenance,
-			"LOG_LEVEL":self.log_level,
-		})
+		__handle_dict__()
 
 		# save.
 		if save: 
@@ -1055,6 +1064,8 @@ class Website(dev0s.cli.CLI,Traceback):
 		return True
 
 		#
+
+	# system functions.
 	def __str__(self, indent=0):
 		def __indent__(indent):
 			s = ""
@@ -1072,8 +1083,8 @@ class Website(dev0s.cli.CLI,Traceback):
 		_indent_ = __indent__(indent)
 		str = json.dumps(_serialized_, indent=indent).replace('": "', ': ').replace('": ', ': ').replace('",', "").replace(f'\n{_indent_}"', f'\n{_indent_} * ').replace("{\n", "").replace('"\n}', "").replace("\n}", "").replace("{", "")
 		return f"<w3bsite.Website; \n{str}\n>"
-	def template(self, dictionary={}):
-		dictionary = Dictionary(self.template_data) + Dictionary(dictionary)
-		if isinstance(dictionary, Dictionary): dictionary = dictionary.dictionary
-		return dictionary
-		#
+	
+	#
+
+#
+
