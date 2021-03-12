@@ -50,10 +50,7 @@ server {
     } 
 
     # 404.
-    location @fallback {
-        proxy_pass http://unix:/www-data/gunicorn.sock/404;
-    }
-    error_page 404 = @fallback ; 
+    error_page 404 https://***DOMAIN***/404.html;
 
     # socket.
     location / {
