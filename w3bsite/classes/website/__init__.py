@@ -961,7 +961,7 @@ class Website(dev0s.cli.CLI,Traceback):
 					local_security.set_secret_env(full_key, "None")
 				elif isinstance(value, dict):
 					_format_ = "dict"
-					stored += __handle_dict__(value, base=full_key)
+					stored += __handle_dict__(dictionary=value, base=full_key)
 				else:
 					raise ValueError(f"Cannot secretly serialize [{key}:{value}].")
 				#print(f"Stored secret environment variable: {key}.")
