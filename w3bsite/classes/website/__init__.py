@@ -643,6 +643,11 @@ class Website(dev0s.cli.CLI,Traceback):
 				response = ssht00ls_agent.activate()
 				if not response.success: self.stop(response=response, json=dev0s.defaults.options.json)
 
+		# ______________________________________________________________________________________
+		#
+		# Defaults.
+		#
+
 		# help.
 		if self.arguments.present("-h"):
 			self.docs(success=True)
@@ -651,102 +656,81 @@ class Website(dev0s.cli.CLI,Traceback):
 		elif self.arguments.present(['--version']):
 			self.stop(message=f"{ALIAS} version:"+Files.load(f"{SOURCE_PATH}/.version").replace("\n",""), json=dev0s.defaults.options.json)
 
+		# ______________________________________________________________________________________
+		#
+		# Development.
+		#
+
 		# developer start.
-		elif self.arguments.present("--start") and self.arguments.present("--developer"):
-			response = self.django.start()
+		elif self.arguments.present('--start') and self.arguments.present('--developer'):
+			response = self.django.start(
+				host=self.arguments.get("--host", required=False, default="127.0.0.1"), 
+				port=self.arguments.get("--port", required=False, default=8000),
+			)
+			self.stop(response=response)
+
+		# create.
+		elif self.arguments.present("--create"):
+			response = self.create()
 			dev0s.response.log(response=response)
+
+		# create app.
+		elif self.arguments.present("--create-app"):
+			response = self.django.create_app(name=self.arguments.get("--create-app"))
+			dev0s.response.log(response=response)
+
+		# ______________________________________________________________________________________
+		#
+		# Live.
+		#
+
+		# deploy.
+		elif self.arguments.present('--deploy'):
+			self.stop(response=self.deploy(
+				code_update=self.arguments.present("--code-update"),
+				reinstall=self.arguments.present("--reinstall"),
+			))
 
 		# start.
 		elif self.arguments.present('--start'):
-			if not self.live: 
-				dev0s.response.log(error="The executing library is not live.")
-				sys.exit(1)
-			dev0s.defaults.operating_system(supported=["linux"])
-			command = ""
-			for i in ["gunicorn.socket", "gunicorn", "nginx"]:
-				command += f"sudo systemctl start {i} &&"
-			command = command[:-3]
-			output = dev0s.utils.__execute_script__(command)
-			if output in ["", "\n"]:
-				print(f"Successfully started {self.domain}")
-			else:
-				print(f"Failed to started {self.domain};\n{output}")
+			response = self.deployment.start()
+			self.stop(response=response)
 
 		# stop.
 		elif self.arguments.present('--stop'):
-			if not self.live: 
-				dev0s.response.log(error="The executing library is not live.")
-				sys.exit(1)
-			dev0s.defaults.operating_system(supported=["linux"])
-			command = ""
-			for i in ["gunicorn.socket", "gunicorn", "nginx"]:
-				command += f"sudo systemctl stop {i} &&"
-			command = command[:-3]
-			output = dev0s.utils.__execute_script__(command)
-			if output in ["", "\n"]:
-				print(f"Successfully stopped {self.domain}")
-			else:
-				print(f"Failed to stopped {self.domain};\n{output}")
+			response = self.deployment.stop()
+			self.stop(response=response)
 
 		# restart.
 		elif self.arguments.present('--restart'):
-			if not self.live: 
-				dev0s.response.log(error="The executing library is not live.")
-				sys.exit(1)
-			dev0s.defaults.operating_system(supported=["linux"])
-			command = ""
-			for i in ["gunicorn.socket", "gunicorn", "nginx"]:
-				command += f"sudo systemctl restart {i} &&"
-			command = command[:-3]
-			output = dev0s.utils.__execute_script__(command)
-			if output in ["", "\n"]:
-				print(f"Successfully restarted {self.domain}")
-			else:
-				print(f"Failed to restarted {self.domain};\n{output}")
+			response = self.deployment.restart()
+			self.stop(response=response)
 
 		# status.
 		elif self.arguments.present('--status'):
-			if not self.live: 
-				dev0s.response.log(error="The executing library is not live.")
-				sys.exit(1)
-			dev0s.defaults.operating_system(supported=["linux"])
-			os.system("sudo systemctl status gunicorn")
+			response = self.deployment.status()
+			if not response.success:
+				self.stop(response=response)
+			else:
+				print(response.status)
 
 		# reset logs.
 		elif self.arguments.present('--reset-logs'):
-			if not self.live: 
-				dev0s.response.log(error="The executing library is not live.")
-				sys.exit(1)
-			os.system(f"echo '' > {self.database}/logs/logs.txt")
-			dev0s.response.log("Successfully resetted the logs.", log_level=0, save=True)
+			response = self.deployment.reset_logs()
+			self.stop(response=response)
 
 		# tail.
 		elif self.arguments.present('--tail'):
-			if not self.live: 
-				dev0s.response.log(error="The executing library is not live.")
-				sys.exit(1)
 			response = self.deployment.tail()
 			if not response.success:
 				self.stop(response=response)
 			else:
 				print(response.logs)
-			"""
-			if self.arguments.present(["--nginx", "-n"]):
-				if self.arguments.present(["--debug", "-d"]):
-					os.system(f"cat /var/log/nginx/{self.domain}.debug")
-				else:
-					os.system(f"cat /var/log/nginx/{self.domain}")
-			else:
-				os.system(f"cat {self.database}/logs/logs.txt")
-			"""
 
-		# deploy.
-		elif self.arguments.present("--deploy"):
-			response = self.deploy(
-				code_update=self.arguments.present("--code-update"),
-				reinstall=self.arguments.present("--reinstall"),
-			)
-			dev0s.response.log(response=response)
+		# ______________________________________________________________________________________
+		#
+		# TLS & AES
+		#
 
 		# generate tls.
 		elif self.arguments.present("--generate-tls"):
@@ -761,16 +745,6 @@ class Website(dev0s.cli.CLI,Traceback):
 		# bundle tls.
 		elif self.arguments.present("--bundle-tls"):
 			response = self.deployment.bundle_tls(directory=self.arguments.get("--bundle-tls"))
-			dev0s.response.log(response=response)
-		
-		# create.
-		elif self.arguments.present("--create"):
-			response = self.create()
-			dev0s.response.log(response=response)
-
-		# create app.
-		elif self.arguments.present("--create-app"):
-			response = self.django.create_app(name=self.arguments.get("--create-app"))
 			dev0s.response.log(response=response)
 
 		# generate aes passphrase.
