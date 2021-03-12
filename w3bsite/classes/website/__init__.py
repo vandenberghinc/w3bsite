@@ -725,6 +725,12 @@ class Website(dev0s.cli.CLI,Traceback):
 			if not self.live: 
 				dev0s.response.log(error="The executing library is not live.")
 				sys.exit(1)
+			response = website.deployment.tail()
+			if not response.success:
+				self.stop(response=response)
+			else:
+				print(response.logs)
+			"""
 			if self.arguments.present(["--nginx", "-n"]):
 				if self.arguments.present(["--debug", "-d"]):
 					os.system(f"cat /var/log/nginx/{self.domain}.debug")
@@ -732,6 +738,7 @@ class Website(dev0s.cli.CLI,Traceback):
 					os.system(f"cat /var/log/nginx/{self.domain}")
 			else:
 				os.system(f"cat {self.database}/logs/logs.txt")
+			"""
 
 		# deploy.
 		elif self.arguments.present("--deploy"):
