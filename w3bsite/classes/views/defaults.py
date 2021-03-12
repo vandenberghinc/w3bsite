@@ -45,15 +45,16 @@ def build_urls(views=[]):
 	for view in views:
 		if view.type.lower() in ["view", "documentationview"] and not landing_page and view.landing_page:
 			landing_page = True
-			urls.append(path("", view.view))
-			urls.append(path("/", view.view))
+			urls.append(path("", view.__view__))
+			urls.append(path("/", view.__view__))
 		urls.append(
-			path(gfp.clean(view.url, remove_first_slash=True), view.view),
+			path(gfp.clean(view.url, remove_first_slash=True, remove_last_slash=True)+"/", view.__view__),
 		)
 	return urls
 	
 # the django request object class.
 class Request(Object):
+	# do not forget the self.parameters's functions.
 	def __init__(self,
 		# the base path (required; if url path is null) [#1 argument].
 		base=None,
@@ -82,14 +83,8 @@ class Request(Object):
 		self.base = gfp.clean(self.base, remove_first_slash=True)
 		self.type = "request"
 		self.template_data = template_data
-	# default view that does not require [return self.response()] but just [return response].
-	def view(self, request):
-		# default view, user needs to create default def request(self, request)
-		# can be overwritten with default def view(self, request):
-		try: 
-			response = self.request(request)
-		except Exception as e: return self._500(request, error=e)
-		return self.response(response)
+
+	# response functions.
 	def success(self, message, arguments={}):
 		return dev0s.response.success(message, arguments, django=True)
 	def error(self, error):
@@ -102,6 +97,8 @@ class Request(Object):
 				return JsonResponse(response.dict(), safe=False)
 			except AttributeError:
 				return JsonResponse(response)
+
+	# default responses.
 	def maintenance(self):
 		return self.error("Domain is under maintenance.")
 	def permission_denied(self, request=None):
@@ -111,10 +108,19 @@ class Request(Object):
 		return self.error("Server error [500].")
 	def _404(self, request=None, error=None):
 		return self.error("Page not found [404].")
-	# do not forget the self.parameters's functions.
+
+	# the view function.
+	def __view__(self, request):
+		try: 
+			response = self.request(request)
+		except Exception as e: return self._500(request, error=e)
+		return self.response(response)
+
+	#
 
 # the django view object class.
 class View(Object):
+	# do not forget the self.parameters's functions.
 	def __init__(self, 
 		# the base path (required; if url path is null) [#1 argument].
 		base=None,
@@ -181,8 +187,8 @@ class View(Object):
 
 		#
 	#@w3bsite.views.method_decorator(w3bsite.views.login_required)
-	def view(self, request):
-		return self.render(request)
+
+	# render functions.
 	def render(self, 
 		# the request (obj) (#1)
 		request, 
@@ -196,8 +202,6 @@ class View(Object):
 		if isinstance(template_data, (Dictionary, dev0s.response.ResponseObject)): 
 			template_data = template_data.raw()
 		return render(request, html, template_data)
-
-	# error render.
 	def error(self, 
 		# the django request parameter.
 		request, 
@@ -255,6 +259,7 @@ class View(Object):
 	def _404(self, request, template_data=None):
 		if template_data == None: template_data = self.template_data
 		return render(request, f"w3bsite/classes/apps/defaults/html/404.html", self.template(template_data))
+	
 	# append template data.
 	def template(self, dictionary={}):
 		if dictionary == None: 
@@ -263,7 +268,23 @@ class View(Object):
 		dictionary = Dictionary(self.template_data) + Dictionary(dictionary)
 		if isinstance(dictionary, (Dictionary, ResponseObject)): dictionary = dictionary.raw()
 		return dictionary
-	# do not forget the self.parameters's functions.
+
+	# the view function.
+	def __view__(self, request):
+		try: 
+			return self.view(request)
+		except Exception as e: return self._500(request, error=e)
+		return self.render(request)
+
+
+
+
+
+
+
+
+
+
 
 
 

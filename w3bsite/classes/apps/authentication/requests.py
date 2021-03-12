@@ -32,7 +32,7 @@ class Requests(_defaults_.Defaults):
 			views.Request.__init__(self, "requests/authentication/", "signup")
 			self.assign(defaults.dict())
 			self.send_code = send_code
-		def view(self, request):
+		def request(self, request):
 			try:
 
 				# permission denied.
@@ -91,7 +91,7 @@ class Requests(_defaults_.Defaults):
 		def __init__(self, defaults=None,):
 			views.Request.__init__(self, "requests/authentication/", "signin")
 			self.assign(defaults.dict())
-		def view(self, request):
+		def request(self, request):
 			try:
 
 				# permission denied.
@@ -138,7 +138,7 @@ class Requests(_defaults_.Defaults):
 		def __init__(self, defaults=None,):
 			views.Request.__init__(self, "requests/authentication/", "signout")
 			self.assign(defaults.dict())
-		def view(self, request):
+		def request(self, request):
 			try:
 
 				# make request.
@@ -154,7 +154,7 @@ class Requests(_defaults_.Defaults):
 		def __init__(self, defaults=None,):
 			views.Request.__init__(self, "requests/authentication/", "send_code", )
 			self.assign(defaults.dict())
-		def view(self, request):
+		def request(self, request):
 			try:
 
 				# check overall rate limit.
@@ -227,7 +227,7 @@ class Requests(_defaults_.Defaults):
 		def __init__(self, defaults=None,):
 			views.Request.__init__(self, "requests/authentication/", "reset_password",)
 			self.assign(defaults.dict())
-		def view(self, request):
+		def request(self, request):
 			try:
 
 				# check overall rate limit.
@@ -271,7 +271,7 @@ class Requests(_defaults_.Defaults):
 		def __init__(self, defaults=None,):
 			views.Request.__init__(self, "requests/authentication/", "activate")
 			self.assign(defaults.dict())
-		def view(self, request):
+		def request(self, request):
 			try:
 
 				# check overall rate limit.
@@ -310,7 +310,7 @@ class Requests(_defaults_.Defaults):
 		def __init__(self, defaults=None,):
 			views.Request.__init__(self, "requests/authentication/", "activate")
 			self.assign(defaults.dict())
-		def view(self, request):
+		def request(self, request):
 			try:
 
 				# check overall rate limit.

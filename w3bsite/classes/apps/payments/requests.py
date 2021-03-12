@@ -38,7 +38,7 @@ class Requests(_defaults_.Defaults):
 				_defaults_.Defaults.__init__(self)
 				self.assign(defaults.dict())
 				views.Request.__init__(self, "requests/payments/subscriptions/", "purchase")
-			def view(self, request):
+			def request(self, request):
 
 				# check overall rate limit.
 				response = self.rate_limit.verify(ip=utils.get_client_ip(request), mode="daily", limit=1000, reset_minutes=3600*24, increment=True)
@@ -80,7 +80,7 @@ class Requests(_defaults_.Defaults):
 				_defaults_.Defaults.__init__(self)
 				self.assign(defaults.dict())
 				views.Request.__init__(self, "requests/payments/subscriptions/", "create")
-			def view(self, request):
+			def request(self, request):
 
 				# check overall rate limit.
 				response = self.rate_limit.verify(ip=utils.get_client_ip(request), mode="daily", limit=1000, reset_minutes=3600*24, increment=True)
@@ -113,7 +113,7 @@ class Requests(_defaults_.Defaults):
 				_defaults_.Defaults.__init__(self)
 				self.assign(defaults.dict())
 				views.Request.__init__(self, "requests/payments/subscriptions/", "delete")
-			def view(self, request):
+			def request(self, request):
 
 				# check overall rate limit.
 				response = self.rate_limit.verify(ip=utils.get_client_ip(request), mode="daily", limit=1000, reset_minutes=3600*24, increment=True)
@@ -163,7 +163,7 @@ class Requests(_defaults_.Defaults):
 				_defaults_.Defaults.__init__(self)
 				self.assign(defaults.dict())
 				views.Request.__init__(self, "requests/payments/subscriptions/", "list")
-			def view(self, request):
+			def request(self, request):
 
 				# check overall rate limit.
 				response = self.rate_limit.verify(ip=utils.get_client_ip(request), mode="daily", limit=1000, reset_minutes=3600*24, increment=True)
@@ -212,7 +212,7 @@ class Requests(_defaults_.Defaults):
 				_defaults_.Defaults.__init__(self)
 				self.assign(defaults.dict())
 				views.Request.__init__(self, "requests/payments/methods/", "create")
-			def view(self, request):
+			def request(self, request):
 
 				# check overall rate limit.
 				response = self.rate_limit.verify(ip=utils.get_client_ip(request), mode="daily", limit=1000, reset_minutes=3600*24, increment=True)
@@ -250,7 +250,7 @@ class Requests(_defaults_.Defaults):
 				_defaults_.Defaults.__init__(self)
 				self.assign(defaults.dict())
 				views.Request.__init__(self, "requests/payments/methods/", "delete")
-			def view(self, request):
+			def request(self, request):
 
 				# check overall rate limit.
 				response = self.rate_limit.verify(ip=utils.get_client_ip(request), mode="daily", limit=1000, reset_minutes=3600*24, increment=True)
@@ -277,7 +277,7 @@ class Requests(_defaults_.Defaults):
 				_defaults_.Defaults.__init__(self)
 				self.assign(defaults.dict())
 				views.Request.__init__(self, "requests/payments/methods/", "list")
-			def view(self, request):
+			def request(self, request):
 
 				# check overall rate limit.
 				response = self.rate_limit.verify(ip=utils.get_client_ip(request), mode="daily", limit=1000, reset_minutes=3600*24, increment=True)
