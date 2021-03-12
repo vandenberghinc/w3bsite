@@ -27,8 +27,19 @@ class Apps(_defaults_.Defaults):
 		self.assign(defaults.dict())
 
 		# apps.
+		self.exceptions = self.Exceptions(defaults=defaults)
 		self.authentication = self.Authentication(defaults=defaults)
 		self.payments = self.Payments(defaults=defaults, stripe=stripe)
+
+	# the exceptions app.
+	class Exceptions(_defaults_.Defaults):
+		def __init__(self, defaults=None):
+			_defaults_.Defaults.__init__(self)
+			self.assign(defaults.dict())
+		def _404(request):
+			return render(request, 'w3bsite/classes/apps/defaults/html/404.html', self.template_data)
+		def _500(request):
+			return render(request, 'w3bsite/classes/apps/defaults/html/500.html', self.template_data)
 
 	# the authentication app.
 	class Authentication(_defaults_.Defaults):
