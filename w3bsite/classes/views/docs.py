@@ -394,7 +394,7 @@ class Documentations(View):
 								else:
 									words.append(self.__create_word__(word=item, color="orange", italic=True, joiner="", language=language))
 							else:
-								before, after = String(item).before_after_first_occurence__(slicer="=", include=False)
+								before, after = String(item).before_after_first_occurence(slicer="=", include=False)
 								words.append(self.__create_word__(word=before, color="orange", italic=True, joiner="", language=language))
 								words.append(self.__create_word__(word="=", color="red", joiner="", language=language))
 								if "(" in after:
