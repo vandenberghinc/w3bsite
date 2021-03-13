@@ -829,22 +829,22 @@ class Documentations(View):
 				block = False
 				if not block and tag in ["<bold>"]:
 					block = True
-					styles = utils.__append_dict__(old=styles, overwrite=True, new={
-						"font_weight":"700",})
+					styles = Dictionary(styles) + {
+						"font_weight":"700",}
 				if not block and tag in ["<italic>"]:
 					block = True
-					styles = utils.__append_dict__(old=styles, overwrite=True, new={
-						"font_style":"italic",})
+					styles = Dictionary(styles) + {
+						"font_style":"italic",}
 				if not block and tag in ["<code>", "<parameter>", "<attribute>"]:
-					styles = utils.__append_dict__(old=styles, overwrite=True, new={
+					styles = Dictionary(styles) + {
 						"background": f"#00000025", 
 						"border":"1px solid #00000035",
 						"border_radius":"10px",
 						"font_family":"Courier New",
-						"padding":"1.5px 7.5px 1.5px 7.5px",})
+						"padding":"1.5px 7.5px 1.5px 7.5px",}
 				if not block and tag in ["<parameter>", "<attribute>"]:
-					styles = utils.__append_dict__(old=styles, overwrite=True, new={
-						"font_style":"italic",})
+					styles = Dictionary(styles) + {
+						"font_style":"italic",}
 				# append tagless word.
 				if styles == {}:
 					_words_.append(word)
