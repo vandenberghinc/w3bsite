@@ -374,9 +374,9 @@ class Documentations(View):
 								words.append(self.__create_word__(word=item, color=None, joiner="", language=language))
 							elif "=" not in item:
 								if "(" in item:
-									slicer_id = utils.__first_occurence_reversed__(string=item, charset=[" ", "\n", "\r"])
+									slicer_id = str(String(item).first_occurence_reversed(charset=[" ", "\n", "\r"]))
 									if slicer_id == None: slicer_id = " "
-									before, after = utils.__before_after_last_occurence__(string=item, slicer=slicer_id, include_before=True)
+									before, after = String(item).before_after_last_occurence(slicer=slicer_id, include_before=True)
 									if len(after) > 0:
 										words.append(self.__create_word__(word=before, joiner="", language=language))
 									else:
@@ -385,7 +385,7 @@ class Documentations(View):
 										words.append(self.__create_word__(word=after[:-1], color="blue", joiner="", language=language))
 										words.append(self.__create_word__(word="(", joiner="", language=language))
 									else:
-										before, after = utils.__before_after_last_occurence__(string=after, slicer=".", include_before=True)
+										before, after = String(after).before_after_last_occurence(slicer=".", include_before=True)
 										words.append(self.__create_word__(word=before, joiner="", language=language))
 										words.append(self.__create_word__(word=after[:-1], color="blue", joiner="", language=language))
 										words.append(self.__create_word__(word="(", joiner="", language=language))
@@ -394,7 +394,7 @@ class Documentations(View):
 								else:
 									words.append(self.__create_word__(word=item, color="orange", italic=True, joiner="", language=language))
 							else:
-								before, after = utils.__before_after_first_occurence__(string=item, slicer="=", include=False)
+								before, after = String(item).before_after_first_occurence__(slicer="=", include=False)
 								words.append(self.__create_word__(word=before, color="orange", italic=True, joiner="", language=language))
 								words.append(self.__create_word__(word="=", color="red", joiner="", language=language))
 								if "(" in after:
@@ -402,7 +402,7 @@ class Documentations(View):
 										words.append(self.__create_word__(word=after[:-1], color="blue", joiner="", language=language))
 										words.append(self.__create_word__(word="(", joiner="", language=language))
 									else:
-										before, after = utils.__before_after_last_occurence__(string=after, slicer=".", include_before=True)
+										before, after = String(after).before_after_last_occurence(slicer=".", include_before=True)
 										words.append(self.__create_word__(word=before, joiner="", language=language))
 										words.append(self.__create_word__(word=after[:-1], color="blue", joiner="", language=language))
 										words.append(self.__create_word__(word="(", joiner="", language=language))
@@ -452,7 +452,7 @@ class Documentations(View):
 					_chars_, slices, slicer_count, catch_function = "", 0, 0, False
 					integer_block, int_chars, slicer_id = False, "", None
 					if parentheses_end:
-						slicer_id = utils.__first_occurence_reversed__(string=chars, charset=[" ", "\n", "\r"]) 
+						slicer_id = str(String(chars).first_occurence_reversed(charset=[" ", "\n", "\r"]))
 						slicer_count = chars.count(slicer_id)
 					firstline, lastchar, nextchar, charcount = True, None, None, 0
 					for char in chars:
@@ -485,10 +485,10 @@ class Documentations(View):
 									words.append(self.__create_word__(word=_chars_, color="green", joiner="", language=language))
 								else:
 									if "." in _chars_:
-										before, after_1 = utils.__before_after_last_occurence__(string=_chars_, slicer=".", include_before=True)
-										first = utils.__first_occurence_reversed__(string=before, charset=[" string.", "\nstring."])
+										before, after_1 = String(_chars_).before_after_last_occurence(slicer=".", include_before=True)
+										first = str(String(before).first_occurence_reversed(charset=[" string.", "\nstring."]))
 										if first != None:
-											before, selected, after_2 = utils.__before_selected_after_first_occurence__(string=before, slicer="first")
+											before, selected, after_2 = String(before).before_selected_after_first_occurence(slicer="first")
 											words.append(self.__create_word__(word=before, joiner="", language=language))
 											words.append(self.__create_word__(word=selected, color="orange", italic=True, joiner="", language=language))
 											words.append(self.__create_word__(word=after_2, color="blue", joiner="", language=language))
@@ -823,7 +823,7 @@ class Documentations(View):
 				# style tags.
 				tag = clean_tag(word["value"].split(">")[0]+">")
 				word["value"] = word["value"][len(tag):]
-				word["value"], _ = utils.__before_after_last_occurence__(string=word["value"], slicer="<", include=False)
+				word["value"], _ = String(word["value"]).before_after_last_occurence(slicer="<", include=False)
 				styles = {}
 				# append styles.
 				block = False
