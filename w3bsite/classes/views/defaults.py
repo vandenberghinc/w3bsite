@@ -3,7 +3,7 @@
 
 # imports.
 from w3bsite.classes.config import *
-from w3bsite.classes import utils
+from w3bsite.classes.utils import utils
 
 # django imports.
 from django.shortcuts import render
@@ -104,7 +104,7 @@ class Request(Object):
 	def permission_denied(self, request=None):
 		return self.error("Permission denied.")
 	def _500(self, request=None, error=None):
-		info = utils.utils.catch_error(error)
+		info = utils.catch_error(error)
 		return self.error("Server error [500].")
 	def _404(self, request=None, error=None):
 		return self.error("Page not found [404].")
@@ -246,15 +246,15 @@ class View(Object):
 		if template_data == None: template_data = self.template_data
 		if isinstance(template_data, (Dictionary, dev0s.response.ResponseObject)): 
 			template_data = template_data.raw()
-		info = utils.utils.catch_error(error)
+		info = utils.catch_error(error)
 		traceback, debug = None, False
 		if not dev0s.env.get("PRODUCTION", format=bool, default=True) or dev0s.env.get("DEBUG", format=bool, default=False):
 			debug = True
 			traceback = info["traceback"]
 		return render(request, f"w3bsite/classes/apps/defaults/html/500.html", self.template({
-			"ERROR_ID":info["id"],
-			"DEBUG":debug,
-			"TRACEBACK":traceback,
+			"ERROR_ID":str(info["id"]),
+			"DEBUG":str(debug),
+			"TRACEBACK":str(traceback),
 		}))
 	def _404(self, request, template_data=None):
 		if template_data == None: template_data = self.template_data
@@ -262,12 +262,7 @@ class View(Object):
 	
 	# append template data.
 	def template(self, dictionary={}):
-		if dictionary == None: 
-			if isinstance(self.template, (Dictionary, ResponseObject)): return self.template.raw()
-			else: return self.template
-		dictionary = Dictionary(self.template_data) + Dictionary(dictionary)
-		if isinstance(dictionary, (Dictionary, ResponseObject)): dictionary = dictionary.raw()
-		return dictionary
+		return utils.template(old=self.template_data, new=dictionary)
 
 	# the view function.
 	def __view__(self, request):

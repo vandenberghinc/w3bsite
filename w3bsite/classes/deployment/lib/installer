@@ -124,22 +124,22 @@ else
 fi
 # fuck face wont overwrite requiremnts for some reason while it says it does but all old versions remain installed.
 sudo rm -fr /www-data/venv
-pip3 install -r $requirements_file
+pip3 install -r $requirements_file --user $user
 if [ ! -d "/www-data/venv" ]; then
 	log "Installing virtual environment"
 	python3 -m venv /www-data/venv
-	/www-data/venv/bin/pip3 install wheel
-	/www-data/venv/bin/pip3 install uwsgi gunicorn whitenoise django psycopg2-binary
-	/www-data/venv/bin/pip3 install syst3m w3bsite
+	/www-data/venv/bin/pip3 install wheel  --user $user
+	/www-data/venv/bin/pip3 install uwsgi gunicorn whitenoise django psycopg2-binary  --user $user
+	/www-data/venv/bin/pip3 install syst3m w3bsite  --user $user
 	chown -R $USER:www-data /www-data/venv
 	log "Installing requirements" "done"
 else
 	log "Activating virtual environment"
-	pip3 install -r $requirements_file
+	pip3 install -r $requirements_file  --user $user
 	source /www-data/venv/bin/activate
 	log "Activating virtual environment" "done"
 fi
-/www-data/venv/bin/pip3 install -r $requirements_file
+/www-data/venv/bin/pip3 install -r $requirements_file  --user $user
 
 # pwd.
 cd $SOURCE

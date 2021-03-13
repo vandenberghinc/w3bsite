@@ -17,6 +17,45 @@ class Utils(Object):
 
 		#
 
+	# create tempalte data.
+	def template(self, old={}, new={})
+		if new.__class__.__name__ in ["Dictionary"]:
+			new = new.dictionary
+		elif new.__class__.__name__ in ["ResponseObject", "OutputObject"]:
+			new = new.dict()
+		if old.__class__.__name__ in ["Dictionary"]:
+			l_template_data = dict(old.dictionary)
+		else:
+			l_template_data = dict(old)
+		new = Dictionary(l_template_data) + Dictionary(new)
+		if new.__class__.__name__ in ["Dictionary"]: new = new.dictionary
+		return self.serialize_template(new)
+
+	# serialize dictionary to template safe dict.
+	def serialize_template(self, value={}):
+		if value.__class__.__name__ in ["OutputObject", "ResponseObject"]:
+			return self.serialize_template(value.dict())
+		elif value.__class__.__name__ in ["Dictionary"]:
+			return self.serialize_template(value.dictionary)
+		elif value.__class__.__name__ in ["Array"]:
+			return self.serialize_template(value.array)
+		elif value.__class__.__name__ in ["list"]:
+			new = []
+			for _value_ in value:
+				new.append(self.serialize_template(_value_))
+			return new
+		elif value.__class__.__name__ in ["dict"]:
+			new = {}
+			for key, _value_ in value.items():
+				new[key] = self.serialize_template(_value_)
+			return new
+		elif value.__class__.__name__ in ["float", "Integer"]:
+			return float(value)
+		elif value.__class__.__name__ in ["int"]:
+			return int(value)
+		else:
+			return str(value)
+		
 	# catch request error.
 	def catch_error(self, error):
 		try:

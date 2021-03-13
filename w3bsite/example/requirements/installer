@@ -164,7 +164,7 @@ fi
 file=$requirements_dir"/requirements.txt"
 if [ -f "$file" ] ; then
     echo "Installing PIP requirements..."
-    pip3 install -r $file
+    pip3 install -r $file  --user $user
 fi
 
 # install alias.
@@ -177,7 +177,7 @@ fi
 # install pypi package.
 if [[ "$pypi_package" == "true" ]] || [[ "$pypi_package" == "True" ]] ; then
     cd $current_installation
-    pip3 install .
+    pip3 install .  --user $user
     cd ~
 fi
 

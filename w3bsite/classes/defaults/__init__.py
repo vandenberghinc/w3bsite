@@ -3,6 +3,7 @@
 
 # imports.
 from w3bsite.classes.config import *
+from w3bsite.classes.utils import utils
 
 # the website defaults object class.
 class Defaults(Object):
@@ -14,17 +15,7 @@ class Defaults(Object):
 
 		#
 	def template(self, dictionary={}):
-		if dictionary.__class__.__name__ in ["Dictionary"]:
-			dictionary = dictionary.dictionary
-		elif dictionary.__class__.__name__ in ["ResponseObject", "OutputObject"]:
-			dictionary = dictionary.dict()
-		if dictionary.__class__.__name__ in ["Dictionary"]:
-			l_template_data = dict(self.template_data.dictionary)
-		else:
-			l_template_data = dict(self.template_data)
-		dictionary = Dictionary(l_template_data) + Dictionary(dictionary)
-		if dictionary.__class__.__name__ in ["Dictionary"]: dictionary = dictionary.dictionary
-		return dictionary
+		return utils.template(old=self.template_data, new=dictionary)
 		#
 
 	

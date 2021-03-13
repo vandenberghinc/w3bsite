@@ -177,7 +177,7 @@ class VPS(_defaults_.Defaults):
 		if log_level >= 0: loader.mark(new_message=f"Installing requirements {path} on vps {self.ip}")
 		response = ssht00ls.ssh.command(
 			alias=self.domain,
-			command=f'''python3 -m pip install -r {path}\nif [[ -d "/www-data/venv/" ]] ; then\n    /www-data/venv/bin/python3 -m pip install -r {path}\nfi''',
+			command=f'''python3 -m pip install -r {path} --user {self.username}\nif [[ -d "/www-data/venv/" ]] ; then\n    /www-data/venv/bin/python3 -m pip install -r {path} --user {self.username}\nfi''',
 			log_level=-1,)
 		if not response.success: 
 			if log_level >= 0: loader.stop(success=False)
