@@ -828,7 +828,7 @@ class Stripe(_defaults_.Defaults):
 					item["price"] = item["unit_amount"]/100 # round(item["unit_amount"]/100,2)
 					plans[item["id"]] = item
 			else: 
-				return dev0s.response.error(f"Failed to retrieve the plans, unkown data instance, data: {data}.")
+				return dev0s.response.error(f"Failed to retrieve the plans, unknown data instance, data: {data}.")
 
 			# by no id.
 			if id == None:
@@ -952,7 +952,7 @@ class Stripe(_defaults_.Defaults):
 						item["plans"] = product_plans
 					products[item["id"]] = item
 			else: 
-				return dev0s.response.error(f"Failed to retrieve the products, unkown data instance, data: {data}.")
+				return dev0s.response.error(f"Failed to retrieve the products, unknown data instance, data: {data}.")
 
 			# by no id.
 			if id == None:

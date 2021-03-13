@@ -85,7 +85,7 @@ class Documentations(View):
 		content={
 			"json":{},
 			"python":"",
-			# use your own. Unkown types are just non colored strings.
+			# use your own. Unknown types are just non colored strings.
 		},
 		# the content css style with python_like or jsLike keys.
 		styles={
@@ -151,7 +151,7 @@ class Documentations(View):
 							items.append(["string", chars+char])
 							chars = ""
 							previous = "default"
-					elif previous != None: raise ValueError(f"Unkown previous: {previous}")
+					elif previous != None: raise ValueError(f"Unknown previous: {previous}")
 				elif previous not in ["comment", "string"] and parentheses > 0:
 					#if previous in ["string", "default", "comment"]:
 					if previous != "parentheses":
@@ -167,7 +167,7 @@ class Documentations(View):
 					if previous in ["string", "comment", "parentheses"]:
 						items.append([previous, chars])
 						chars = ""
-					elif previous not in ["default",None]: raise ValueError(f"Unkown previous: {previous}")
+					elif previous not in ["default",None]: raise ValueError(f"Unknown previous: {previous}")
 					previous = "default"
 				lastchar = char
 				if add_char: chars += char
@@ -279,7 +279,7 @@ class Documentations(View):
 				# process.
 				if isinstance(data, dict):
 					data = json.dumps(data, indent=4)
-				elif not isinstance(data, str): raise ValueError(f"Unkown json code area content format: {data}")
+				elif not isinstance(data, str): raise ValueError(f"Unknown json code area content format: {data}")
 				items = process_data(data)
 				words[language] = process_items(items)
 
@@ -724,7 +724,7 @@ class Documentations(View):
 				# process.
 				if isinstance(data, dict):
 					data = json.dumps(data, indent=4)
-				elif not isinstance(data, str): raise ValueError(f"Unkown json code area content format: {data}")
+				elif not isinstance(data, str): raise ValueError(f"Unknown json code area content format: {data}")
 				items = process_data(data)
 				words[language] = process_items(items)
 
@@ -753,7 +753,7 @@ class Documentations(View):
 		if isinstance(format, str):
 			format = [format]
 		elif not isinstance(format, list):
-			raise ValueError(f"Unkown format instance [{format}]. The format should be a list with formats or a single string format.")
+			raise ValueError(f"Unknown format instance [{format}]. The format should be a list with formats or a single string format.")
 		return {
 			"id":id,
 			"format":format,
@@ -863,7 +863,7 @@ class Documentations(View):
 			dictionary = {}
 			for _, value in variable.items(): dictionary[value[key]] = value
 			variable = dictionary
-		else: raise ValueError(f"Unkown variable format: {variable}")
+		else: raise ValueError(f"Unknown variable format: {variable}")
 		return variable
 
 # the documentation view.

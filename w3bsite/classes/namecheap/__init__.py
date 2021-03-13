@@ -105,7 +105,7 @@ class Namecheap(Object):
 				for item in domain:
 					item = self.__serialize_dictionary__(item)
 					domains[item["name"]] = item
-			else: raise ValueError(f"Unkown domain type: {domain}.")
+			else: raise ValueError(f"Unknown domain type: {domain}.")
 
 		# handlers.
 		return dev0s.response.success(f"Successfully retrieved the domains of namecheap user [{self.username}].", {
