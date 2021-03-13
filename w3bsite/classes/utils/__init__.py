@@ -19,39 +19,38 @@ class Utils(Object):
 
 	# create tempalte data.
 	def template(self, old={}, new={}):
-		if new.__class__.__name__ in ["Dictionary"]:
+		if isinstance(new, (Dictionary)):
 			new = new.dictionary
-		elif new.__class__.__name__ in ["ResponseObject", "OutputObject"]:
+		elif isinstance(new, (OutputObject, ResponseObject)):
 			new = new.dict()
-		if old.__class__.__name__ in ["Dictionary"]:
+		if isinstance(old, (Dictionary)):
 			l_template_data = dict(old.dictionary)
 		else:
 			l_template_data = dict(old)
 		new = Dictionary(l_template_data) + Dictionary(new)
-		if new.__class__.__name__ in ["Dictionary"]: new = new.dictionary
-		return self.serialize_template(new)
+		if isinstance(new, (Dictionary)): new = new.dictionary
+		return new
+		#return self.serialize_template(new)
 
 	# serialize dictionary to template safe dict.
 	def serialize_template(self, value={}):
-		if value.__class__.__name__ in ["OutputObject", "ResponseObject"]:
-			return self.serialize_template(value.dict())
-		elif value.__class__.__name__ in ["Dictionary"]:
-			return self.serialize_template(value.dictionary)
-		elif value.__class__.__name__ in ["Array"]:
-			return self.serialize_template(value.array)
-		elif value.__class__.__name__ in ["list"]:
+		if isinstance(value, (dict, Dictionary, OutputObject, ResponseObject)):
+			if isinstance(value, (OutputObject, ResponseObject)):
+				value = value.dict()
+			new = {}
+			print(f"===============\nITERATE: {value}")
+			for key, _value_ in value.items():
+				print(f"===============\nINSIDE ITERATE: {_value_}")
+				new[key] = self.serialize_template(_value_)
+			return new
+		elif isinstance(value, (list, Array)):
 			new = []
 			for _value_ in value:
 				new.append(self.serialize_template(_value_))
 			return new
-		elif value.__class__.__name__ in ["dict"]:
-			new = {}
-			for key, _value_ in value.items():
-				new[key] = self.serialize_template(_value_)
-			return new
-		elif value.__class__.__name__ in ["float", "Integer"]:
+		elif isinstance(value, (float, Integer)):
 			return float(value)
-		elif value.__class__.__name__ in ["int"]:
+		elif isinstance(value, (int)):
 			return int(value)
 		else:
 			return str(value)

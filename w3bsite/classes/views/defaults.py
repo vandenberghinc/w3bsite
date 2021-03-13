@@ -103,11 +103,11 @@ class Request(Object):
 		return self.error("Domain is under maintenance.")
 	def permission_denied(self, request=None):
 		return self.error("Permission denied.")
+	def _404(self, request=None, error=None):
+		return self.error("Page not found [404].")
 	def _500(self, request=None, error=None):
 		info = utils.catch_error(error)
 		return self.error("Server error [500].")
-	def _404(self, request=None, error=None):
-		return self.error("Page not found [404].")
 
 	# the view function.
 	def __view__(self, request):
@@ -199,9 +199,7 @@ class View(Object):
 	):
 		if template_data == None: template_data = self.template_data
 		if html == None: html = self.html
-		if isinstance(template_data, (Dictionary, dev0s.response.ResponseObject)): 
-			template_data = template_data.raw()
-		return render(request, html, template_data)
+		return render(request, str(html), self.template(template_data))
 	def error(self, 
 		# the django request parameter.
 		request, 
@@ -227,42 +225,32 @@ class View(Object):
 			"redirect":redirect,
 			"redirect_button":redirect_button,
 		}
-		if isinstance(template_data, (Dictionary, dev0s.response.ResponseObject)): 
-			template_data = template_data.raw()
-		return render(request, f"w3bsite/classes/apps/defaults/html/error.html", template_data)
+		return self.render(request, f"w3bsite/classes/apps/defaults/html/error.html", template_data)
 
 	# default renders.
 	def maintenance(self, request, template_data=None):
-		if template_data == None: template_data = self.template_data
-		if isinstance(template_data, (Dictionary, dev0s.response.ResponseObject)): 
-			template_data = template_data.raw()
-		return render(request, f"w3bsite/classes/apps/defaults/html/maintenance.html", template_data)
+		return self.render(request, f"w3bsite/classes/apps/defaults/html/maintenance.html", template_data)
 	def permission_denied(self, request, template_data=None):
-		if template_data == None: template_data = self.template_data
-		if isinstance(template_data, (Dictionary, dev0s.response.ResponseObject)): 
-			template_data = template_data.raw()
-		return render(request, f"w3bsite/classes/apps/defaults/html/permission_denied.html", template_data)
+		return self.render(request, f"w3bsite/classes/apps/defaults/html/permission_denied.html", template_data)
+	def _404(self, request, template_data=None):
+		return self.render(request, f"w3bsite/classes/apps/defaults/html/404.html", template_data)
 	def _500(self, request, template_data=None, error=None):
 		if template_data == None: template_data = self.template_data
-		if isinstance(template_data, (Dictionary, dev0s.response.ResponseObject)): 
-			template_data = template_data.raw()
 		info = utils.catch_error(error)
 		traceback, debug = None, False
 		if not dev0s.env.get("PRODUCTION", format=bool, default=True) or dev0s.env.get("DEBUG", format=bool, default=False):
 			debug = True
 			traceback = info["traceback"]
-		return render(request, f"w3bsite/classes/apps/defaults/html/500.html", self.template({
+		return render(request, f"w3bsite/classes/apps/defaults/html/500.html", utils.template(old=template_data, new={
 			"ERROR_ID":str(info["id"]),
 			"DEBUG":str(debug),
 			"TRACEBACK":str(traceback),
 		}))
-	def _404(self, request, template_data=None):
-		if template_data == None: template_data = self.template_data
-		return render(request, f"w3bsite/classes/apps/defaults/html/404.html", self.template(template_data))
-	
+
 	# append template data.
-	def template(self, dictionary={}):
-		return utils.template(old=self.template_data, new=dictionary)
+	def template(self, dictionary={}, old=None):
+		if old == None: old = self.template_data
+		return utils.template(old=old, new=dictionary)
 
 	# the view function.
 	def __view__(self, request):
