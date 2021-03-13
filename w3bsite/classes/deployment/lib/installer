@@ -161,7 +161,7 @@ source $SOURCE/__defaults__/env/bash
 sudo rm -fr /www-data/static
 python3 $SOURCE/manage.py collectstatic --no-input
 sudo rm -fr /www-data/favicon.ico
-cp $SOURCE/static/favicon.ico /www-data/favicon.ico
+cp $SOURCE/__defaults__/static/favicon.ico /www-data/favicon.ico
 export MIGRATIONS="false"
 sudo chmod -R 770 /www-data
 sudo chown -R $USER:www-data /www-data
