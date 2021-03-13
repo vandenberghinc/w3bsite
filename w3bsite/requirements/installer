@@ -29,7 +29,7 @@ apt_requirements="/requirements/requirements.apt"
 brew_requirements="/requirements/requirements.brew"
 
 # install the source code to a lib path (leave "none" to ignore).
-lib="none" 
+lib="/usr/local/lib/$alias/" 
 
 # create an database directory (leave "none" to ignore).
 database="none" 
