@@ -846,6 +846,8 @@ class Documentations(View):
 					styles = Dictionary(styles) + {
 						"font_style":"italic",}
 				# append tagless word.
+				if isinstance(styles, (Dictionary)):
+					styles = styles.dictionary
 				if styles == {}:
 					_words_.append(word)
 				# append tag word.
