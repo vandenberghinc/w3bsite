@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+# import dev0s library.
+curl -s https://raw.githubusercontent.com/vandenberghinc/dev0s/master/dev0s/lib/bash/import | bash 
+if [[ "$OSTYPE" == "darwin"* ]] ; then source /usr/local/lib/dev0s/lib/bash/import --lib /usr/local/lib/dev0s/lib/ --silent ; else . /usr/local/lib/dev0s/lib/bash/import --lib /usr/local/lib/dev0s/lib/ --silent ; fi
+	
+# the alias.
+alias="w3bsite"
+
+# the pypi package name (may differ from alias).
+pypi_name=$alias
+
+# boolean indicating whether the package is an pypi package.
+pypi_package="true"
+
+# execute packge installer.
+remote-install-package \
+    --alias $alias \
+    --pypi-name $pypi_name \
+    --pypi-package $pypi_package \
+    $@
