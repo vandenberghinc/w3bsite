@@ -14,10 +14,10 @@ class Git(_defaults_.Defaults):
 	):
 
 		# docs.
-		Docs.__init__(self,
-			initialized=True,
-			module="website.git", 
-			notes=[], )
+		DOCS = {
+			"module":"website.git", 
+			"initialized":True,
+			"description":[], }
 
 		# defaults.
 		_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.git",)

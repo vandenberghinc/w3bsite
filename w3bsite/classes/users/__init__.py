@@ -35,10 +35,10 @@ class Users(_defaults_.Defaults):
 	):	
 
 		# docs.
-		Docs.__init__(self,
-			initialized=True,
-			module="website.users", 
-			notes=[], )
+		DOCS = {
+			"module":"website.users", 
+			"initialized":True,
+			"description":[], }
 
 		# defaults.
 		_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.users",)

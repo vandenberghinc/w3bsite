@@ -24,10 +24,10 @@ class Email(object):
 	):
 
 		# docs.
-		Docs.__init__(self,
-			initialized=True,
-			module="website.users.email", 
-			notes=[], )
+		DOCS = {
+			"module":"website.users.email", 
+			"initialized":True,
+			"description":[], }
 
 		# attributes.
 		self.email = str(email)

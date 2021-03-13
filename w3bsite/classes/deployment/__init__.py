@@ -38,10 +38,10 @@ class Deployment(Object):
 	):	
 
 		# docs.
-		Docs.__init__(self,
-			initialized=True,
-			module="website.deployment", 
-			notes=[], )
+		DOCS = {
+			"module":"website.deployment", 
+			"initialized":True,
+			"description":[], }
 
 		# defaults.
 		Object.__init__(self, traceback="w3bsite.Website.deployment",)

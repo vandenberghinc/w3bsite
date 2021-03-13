@@ -31,10 +31,10 @@ class Heroku(object):
 	):
 
 		# docs.
-		Docs.__init__(self,
-			initialized=True,
-			module="website.heroku", 
-			notes=[], )
+		DOCS = {
+			"module":"website.heroku", 
+			"initialized":True,
+			"description":[], }
 
 		# arguments.
 		self.root = root

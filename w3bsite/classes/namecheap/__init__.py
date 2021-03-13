@@ -26,10 +26,10 @@ class Namecheap(Object):
 	):	
 
 		# docs.
-		Docs.__init__(self,
-			initialized=True,
-			module="website.namecheap", 
-			notes=[], )
+		DOCS = {
+			"module":"website.namecheap", 
+			"initialized":True,
+			"description":[], }
 
 		# defaults.
 		Object.__init__(self, traceback="w3bsite.Website.namecheap",)

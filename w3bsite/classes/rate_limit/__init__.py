@@ -13,10 +13,10 @@ class RateLimit(_defaults_.Defaults):
 	):	
 
 		# docs.
-		Docs.__init__(self,
-			initialized=True,
-			module="website.ratelimit", 
-			notes=[], )
+		DOCS = {
+			"module":"website.ratelimit", 
+			"initialized":True,
+			"description":[], }
 
 		# defaults.
 		_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.ratelimit",)

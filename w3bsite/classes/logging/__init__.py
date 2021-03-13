@@ -9,10 +9,10 @@ class Logging(object):
 	def __init__(self, name=None, root=None, database=None):
 
 		# docs.
-		Docs.__init__(self,
-			initialized=True,
-			module="website.logging", 
-			notes=[], )
+		DOCS = {
+			"module":"website.logging", 
+			"initialized":True,
+			"description":[], }
 
 		# attributes.
 		self.name = name

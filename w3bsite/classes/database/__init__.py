@@ -10,10 +10,10 @@ class Database(Traceback):
 	def __init__(self, firestore=None, path=None, live=False):
 		
 		# docs.
-		Docs.__init__(self,
-			initialized=True,
-			module="website.db", 
-			notes=[], )
+		DOCS = {
+			"module":"website.db", 
+			"initialized":True,
+			"description":[], }
 
 		# traceback.
 		Traceback.__init__(self, traceback="w3bsite.Website.db")

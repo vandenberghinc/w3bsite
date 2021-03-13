@@ -16,10 +16,10 @@ class Security(_defaults_.Defaults):
 	):	
 		
 		# docs.
-		Docs.__init__(self,
-			initialized=True,
-			module="website.security", 
-			notes=[], )
+		DOCS = {
+			"module":"website.security", 
+			"initialized":True,
+			"description":[], }
 
 		# defaults.
 		if defaults != None:

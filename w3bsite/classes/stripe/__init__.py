@@ -31,10 +31,10 @@ class Stripe(_defaults_.Defaults):
 	):
 
 		# docs.
-		Docs.__init__(self,
-			initialized=True,
-			module="website.stripe", 
-			notes=[], )
+		DOCS = {
+			"module":"website.stripe", 
+			"initialized":True,
+			"description":[], }
 
 		# defaults.
 		_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.stripe")
@@ -272,10 +272,10 @@ class Stripe(_defaults_.Defaults):
 		def __init__(self, defaults=None):
 			
 			# docs.
-			Docs.__init__(self,
-				initialized=True,
-				module="website.stripe.customers", 
-				notes=[], )
+			DOCS = {
+				"module":"website.stripe.customers", 
+				"initialized":True,
+				"description":[], }
 
 			# defaults.
 			Object.__init__(self, traceback="w3bsite.Website.stripe.customers")
@@ -597,10 +597,10 @@ class Stripe(_defaults_.Defaults):
 		def __init__(self, defaults=None, customers=None):
 			
 			# docs.
-			Docs.__init__(self,
-				initialized=True,
-				module="website.stripe.subscriptions", 
-				notes=[], )
+			DOCS = {
+				"module":"website.stripe.subscriptions", 
+				"initialized":True,
+				"description":[], }
 
 			# defaults.
 			Object.__init__(self, traceback="w3bsite.Website.stripe.subscriptions")
@@ -771,10 +771,10 @@ class Stripe(_defaults_.Defaults):
 		def __init__(self, defaults=None, subscriptions=None):
 			
 			# docs.
-			Docs.__init__(self,
-				initialized=True,
-				module="website.stripe.plans", 
-				notes=[], )
+			DOCS = {
+				"module":"website.stripe.plans", 
+				"initialized":True,
+				"description":[], }
 
 			# defaults.
 			Object.__init__(self, traceback="w3bsite.Website.stripe.plans")
@@ -898,10 +898,10 @@ class Stripe(_defaults_.Defaults):
 		def __init__(self, defaults=None, plans=None):
 			
 			# docs.
-			Docs.__init__(self,
-				initialized=True,
-				module="website.stripe.products", 
-				notes=[], )
+			DOCS = {
+				"module":"website.stripe.products", 
+				"initialized":True,
+				"description":[], }
 
 			# defaults.
 			Object.__init__(self, traceback="w3bsite.Website.stripe.products")

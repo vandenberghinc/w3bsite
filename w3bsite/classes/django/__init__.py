@@ -25,10 +25,10 @@ class Django(_defaults_.Defaults):
 
 
 		# docs.
-		Docs.__init__(self,
-			initialized=True,
-			module="website.django", 
-			notes=[], )
+		DOCS = {
+			"module":"website.django", 
+			"initialized":True,
+			"description":[], }
 
 		# defaults.
 		_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.django",)
@@ -187,10 +187,10 @@ class Users(_defaults_.Defaults):
 	):
 
 		# docs.
-		Docs.__init__(self,
-			initialized=True,
-			module="website.django.users", 
-			notes=[], )
+		DOCS = {
+			"module":"website.django.users", 
+			"initialized":True,
+			"description":[], }
 
 		# defaults.
 		_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.django.users")

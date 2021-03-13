@@ -40,10 +40,10 @@ class Firebase(_defaults_.Defaults):
 	):
 
 		# docs.
-		Docs.__init__(self,
-			initialized=True,
-			module="website.firebase", 
-			notes=[], )
+		DOCS = {
+			"module":"website.firebase", 
+			"initialized":True,
+			"description":[], }
 		
 		# defaults.
 		_defaults_.Defaults.__init__(self)
@@ -84,10 +84,10 @@ class FireStore(object):
 	def __init__(self):
 		
 		# docs.
-		Docs.__init__(self,
-			initialized=True,
-			module="website.firebase.firestore", 
-			notes=[], )
+		DOCS = {
+			"module":"website.firebase.firestore", 
+			"initialized":True,
+			"description":[], }
 
 		# initialize firestore.
 		self.db = firestore.client()
@@ -179,10 +179,10 @@ class Users(_defaults_.Defaults):
 	def __init__(self, defaults=None, firestore=None):
 		
 		# docs.
-		Docs.__init__(self,
-			initialized=True,
-			module="website.firebase.users", 
-			notes=[], )
+		DOCS = {
+			"module":"website.firebase.users", 
+			"initialized":True,
+			"description":[], }
 
 		# defaults.
 		_defaults_.Defaults.__init__(self)
