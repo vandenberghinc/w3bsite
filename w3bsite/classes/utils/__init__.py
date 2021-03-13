@@ -18,7 +18,7 @@ class Utils(Object):
 		#
 
 	# create tempalte data.
-	def template(self, old={}, new={})
+	def template(self, old={}, new={}):
 		if new.__class__.__name__ in ["Dictionary"]:
 			new = new.dictionary
 		elif new.__class__.__name__ in ["ResponseObject", "OutputObject"]:
