@@ -225,15 +225,15 @@ class View(Object):
 			"redirect":redirect,
 			"redirect_button":redirect_button,
 		}
-		return self.render(request, f"w3bsite/classes/apps/defaults/html/error.html", template_data)
+		return self.render(request=request, template_data=template_data, html=f"w3bsite/classes/apps/defaults/html/error.html")
 
 	# default renders.
 	def maintenance(self, request, template_data=None):
-		return self.render(request, f"w3bsite/classes/apps/defaults/html/maintenance.html", template_data)
+		return self.render(request=request, template_data=template_data, html=f"w3bsite/classes/apps/defaults/html/maintenance.html")
 	def permission_denied(self, request, template_data=None):
-		return self.render(request, f"w3bsite/classes/apps/defaults/html/permission_denied.html", template_data)
+		return self.render(request=request, template_data=template_data, html=f"w3bsite/classes/apps/defaults/html/permission_denied.html")
 	def _404(self, request, template_data=None):
-		return self.render(request, f"w3bsite/classes/apps/defaults/html/404.html", template_data)
+		return self.render(request=request, template_data=template_data, html=f"w3bsite/classes/apps/defaults/html/404.html")
 	def _500(self, request, template_data=None, error=None):
 		if template_data == None: template_data = self.template_data
 		if template_data == None: template_data = {}
@@ -242,24 +242,24 @@ class View(Object):
 		if not dev0s.env.get("PRODUCTION", format=bool, default=True) or dev0s.env.get("DEBUG", format=bool, default=False):
 			debug = True
 			traceback = info["traceback"]
-		return render(request, f"w3bsite/classes/apps/defaults/html/500.html", utils.template(old=template_data, new={
+		return self.render(request=request, html=f"w3bsite/classes/apps/defaults/html/500.html", template_data=self.template(old=template_data, new={
 			"ERROR_ID":str(info["id"]),
 			"DEBUG":str(debug),
 			"TRACEBACK":str(traceback),
 		}))
 
 	# append template data.
-	def template(self, dictionary={}, old=None):
+	def template(self, new={}, old=None):
 		if old == None: old = self.template_data
-		if dictionary == None or dictionary == "None": return old
-		return utils.template(old=old, new=dictionary)
+		if new == None or new == "None": return old
+		return utils.template(old=old, new=new)
 
 	# the view function.
 	def __view__(self, request):
 		try: 
 			return self.view(request)
 		except Exception as e: return self._500(request, error=e)
-		return self.render(request)
+		return self.render(request=request)
 
 
 
