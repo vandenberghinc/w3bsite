@@ -86,12 +86,12 @@ class Website(dev0s.cli.CLI,Traceback):
 		#		do not edit the plan & product names after creation.
 		#		price changes are not supported yet, will be in the future.
 		stripe_subscriptions={
-			#"nas-server": {
+			#"vserver": {
 			#	"basic": {
 			#		"rank":1,
 			#		"price":50,
 			#		"currency":"eur",
-			#		"favicon":"https://raw.githubusercontent.com/vandenberghinc/public-storage/master/nas-server/icon/icon.png"
+			#		"favicon":"https://raw.githubusercontent.com/vandenberghinc/public-storage/master/vserver/icon/icon.png"
 			#	},
 			#	"premium": {
 			#		"rank":2,
@@ -107,12 +107,12 @@ class Website(dev0s.cli.CLI,Traceback):
 		},
 		# 	the stripe products.
 		stripe_products={
-			#"nas-server": {
+			#"vserver": {
 			#	"basic": {
 			#		"rank":1,
 			#		"price":50,
 			#		"currency":"eur",
-			#		"favicon":"https://raw.githubusercontent.com/vandenberghinc/public-storage/master/nas-server/icon/icon.png"
+			#		"favicon":"https://raw.githubusercontent.com/vandenberghinc/public-storage/master/vserver/icon/icon.png"
 			#	},
 			#	"premium": {
 			#		"rank":2,

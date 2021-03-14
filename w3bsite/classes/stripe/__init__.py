@@ -161,7 +161,7 @@ class Stripe(_defaults_.Defaults):
 							response = self.plans.create(
 								id=plan_name,
 								product=product,
-								price=plan_info["price"],
+								price=int(round(plan_info["price"], 0)),
 								currency=plan_info["currency"],)
 							dev0s.response.log(response=response)
 							edits += 1
