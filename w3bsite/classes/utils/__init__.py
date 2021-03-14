@@ -23,13 +23,15 @@ class Utils(Object):
 			new = new.dictionary
 		elif isinstance(new, (OutputObject, ResponseObject)):
 			new = new.dict()
+		if not isinstance(new, (dict)):
+			raise Exceptions.InvalidUsage(f"<website.utils.template>: Parameter [new] requires to be a [dict] not [{new.__class__.__name__}] ({new}).")
+		if not isinstance(old, (dict, Dictionary)):
+			raise Exceptions.InvalidUsage(f"<website.utils.template>: Parameter [old] requires to be a [dict, Dictionary] not [{new.__class__.__name__}] ({new}).")
 		if isinstance(old, (Dictionary)):
 			l_template_data = dict(old.dictionary)
 		else:
 			l_template_data = dict(old)
 		if new == None or new == "None": return l_template_data
-		dev0s.response.log(f"FROM: {l_template_data}", save=True)
-		dev0s.response.log(f"TO: {new}", save=True)
 		new = Dictionary(l_template_data) + Dictionary(new)
 		if isinstance(new, (Dictionary)): new = new.dictionary
 		return new
