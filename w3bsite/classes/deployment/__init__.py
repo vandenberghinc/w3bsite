@@ -214,6 +214,12 @@ class Deployment(Object):
 				if not response.success: return response
 				output = response.output
 
+		# database.
+		if self.live:
+			if not Files.exists(self.database): 
+				os.system(f"sudo mkdir -p {self.database} && sudo chown {dev0s.defaults.vars.user}:{dev0s.defaults.vars.group} {self.database} && sudo chmod 770 {self.database}")
+			if not Files.exists(f"{self.database}/logs"): Files.create(f"{self.database}/logs", directory=True)
+
 		# tls.
 		if self.live:
 			if not Files.exists(f"{self.database}/tls/server.key") and not Files.exists(f"{self.database}/tls/server.crt"):
@@ -221,12 +227,6 @@ class Deployment(Object):
 				if not response.success: 
 					if log_level >= 0: loader.stop(success=False)
 					return response
-
-		# database.
-		if self.live:
-			if not Files.exists(self.database): 
-				os.system(f"sudo mkdir -p {self.database} && sudo chown {dev0s.defaults.vars.user}:{dev0s.defaults.vars.group} {self.database} && sudo chmod 770 {self.database}")
-			if not Files.exists(f"{self.database}/logs"): Files.create(f"{self.database}/logs", directory=True)
 
 		# deployment.
 		if not Files.exists(f"{self.root}/__defaults__/deployment"): Files.create(f"{self.root}/__defaults__/deployment", directory=True)
