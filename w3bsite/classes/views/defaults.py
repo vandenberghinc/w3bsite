@@ -250,8 +250,7 @@ class View(Object):
 	# append template data.
 	def template(self, dictionary={}, old=None):
 		if old == None: old = self.template_data
-		if dictionary == None:
-			return old
+		if dictionary == None or dictionary == "None": return old
 		return utils.template(old=old, new=dictionary)
 
 	# the view function.

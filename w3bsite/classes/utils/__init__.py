@@ -27,6 +27,7 @@ class Utils(Object):
 			l_template_data = dict(old.dictionary)
 		else:
 			l_template_data = dict(old)
+		if new == None or new == "None": return l_template_data
 		new = Dictionary(l_template_data) + Dictionary(new)
 		if isinstance(new, (Dictionary)): new = new.dictionary
 		return new
