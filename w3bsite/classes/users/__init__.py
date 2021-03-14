@@ -508,8 +508,11 @@ class Users(_defaults_.Defaults):
 		self.__verification_codes__.save()
 
 		# html vars.
+		domain = utils.utils.naked_url(self.domain)
+		if dev0s.system.env.get("PRODUCTION", format=bool, default=True):
+			domain = "https://"+utils.utils.naked_url(self.domain)
 		for from_, to_ in {
-			"$DOMAIN": self.domain,
+			"$DOMAIN": domain,
 			"$USERNAME": user.username,
 			"$EMAIL": user.email,
 			"$CODE": code,
@@ -521,8 +524,6 @@ class Users(_defaults_.Defaults):
 		# html colors.
 		for key,value in self.template_data["COLORS"].items():
 			html = html.replace(f"(${key.upper()})", str(value))
-		print("HTML:", save=True)
-		print(html, save=True)
 
 		# send email.
 		if dev0s.defaults.options.log_level >= 1:
