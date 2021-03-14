@@ -374,7 +374,7 @@ class Documentations(View):
 								words.append(self.__create_word__(word=item, color=None, joiner="", language=language))
 							elif "=" not in item:
 								if "(" in item:
-									slicer_id = str(String(item).first_occurence_reversed(charset=[" ", "\n", "\r"]))
+									slicer_id = str(String(item).first_occurence(charset=[" ", "\n", "\r"], reversed=True))
 									if slicer_id == None: slicer_id = " "
 									before, after = String(item).before_after_last_occurence(slicer=slicer_id, include_before=True)
 									if len(after) > 0:
@@ -452,7 +452,7 @@ class Documentations(View):
 					_chars_, slices, slicer_count, catch_function = "", 0, 0, False
 					integer_block, int_chars, slicer_id = False, "", None
 					if parentheses_end:
-						slicer_id = str(String(chars).first_occurence_reversed(charset=[" ", "\n", "\r"]))
+						slicer_id = str(String(chars).first_occurence(charset=[" ", "\n", "\r"], reversed=True))
 						slicer_count = chars.count(slicer_id)
 					firstline, lastchar, nextchar, charcount = True, None, None, 0
 					for char in chars:
@@ -486,7 +486,7 @@ class Documentations(View):
 								else:
 									if "." in _chars_:
 										before, after_1 = String(_chars_).before_after_last_occurence(slicer=".", include_before=True)
-										first = str(String(before).first_occurence_reversed(charset=[" string.", "\nstring."]))
+										first = str(String(before).first_occurence(charset=[" string.", "\nstring."], reversed=True))
 										if first != None:
 											before, selected, after_2 = String(before).before_selected_after_first_occurence(slicer="first")
 											words.append(self.__create_word__(word=before, joiner="", language=language))
