@@ -236,6 +236,7 @@ class View(Object):
 		return self.render(request, f"w3bsite/classes/apps/defaults/html/404.html", template_data)
 	def _500(self, request, template_data=None, error=None):
 		if template_data == None: template_data = self.template_data
+		if template_data == None: template_data = {}
 		info = utils.catch_error(error)
 		traceback, debug = None, False
 		if not dev0s.env.get("PRODUCTION", format=bool, default=True) or dev0s.env.get("DEBUG", format=bool, default=False):
