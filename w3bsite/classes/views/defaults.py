@@ -249,9 +249,9 @@ class View(Object):
 		}))
 
 	# append template data.
-	def template(self, new={}, old=None):
+	def template(self, new={}, old=None, safe=False):
 		if old == None: old = self.template_data
-		return utils.template(old=old, new=new)
+		return utils.template(old=old, new=new, safe=safe)
 
 	# the view function.
 	def __view__(self, request):

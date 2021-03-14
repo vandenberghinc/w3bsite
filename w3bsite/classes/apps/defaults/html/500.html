@@ -19,12 +19,12 @@
 	<div class="widget_container" style="max-width: 800px">
 		<div class="widget_child"  style="max-width: 750px">
 			<h1 class="title">
-				Server Error [500]
+				Internal Server Error
 			</h1>
 			<p class="text">
 				Encoutered an internal server error, contact your server administrator.
 			</p>
-			{% if TRACEBACK != "None" %}
+			{% if TRACEBACK != "None" and if TRACEBACK != "" %}
 				<div class="divider"></div>
 				<h2 class="subtitle" style="text-align: center; padding-bottom: 15px;">
 					Traceback

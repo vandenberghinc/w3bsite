@@ -18,7 +18,7 @@ class Utils(Object):
 		#
 
 	# create tempalte data.
-	def template(self, old={}, new={}):
+	def template(self, old={}, new={}, safe=False):
 		if isinstance(old, (Dictionary)):
 			old = dict(old.dictionary)
 		else:
@@ -34,8 +34,10 @@ class Utils(Object):
 			raise dev0s.exceptions.InvalidUsage(f"<website.utils.template>: Parameter [old] requires to be a [dict, Dictionary] not [{new.__class__.__name__}] ({new}).")
 		new = Dictionary(old) + Dictionary(new)
 		if isinstance(new, (Dictionary)): new = new.dictionary
-		return self.serialize_template(new)
-		return new
+		if safe:
+			return self.serialize_template(new)
+		else:
+			return new
 		
 
 	# serialize dictionary to template safe dict.
