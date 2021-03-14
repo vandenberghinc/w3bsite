@@ -309,7 +309,7 @@ class Requests(_defaults_.Defaults):
 	# is authenticated.
 	class Authenticated(views.Request):
 		def __init__(self, defaults=None,):
-			views.Request.__init__(self, "requests/authentication/", "activate")
+			views.Request.__init__(self, "requests/authentication/", "authenticated")
 			self.assign(defaults.dict())
 		def request(self, request):
 			try:
