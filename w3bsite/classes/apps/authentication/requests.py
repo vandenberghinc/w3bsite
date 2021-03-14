@@ -323,7 +323,7 @@ class Requests(_defaults_.Defaults):
 					email = request.user.email
 				except AttributeError:
 					email = None
-				return self.response("Successfully checked if the user is authenticated.", {
+				return self.success("Successfully checked if the user is authenticated.", {
 					"authenticated":request.user.username != None and request.user.is_authenticated == True,
 					"username":request.user.username,
 					"email":email,
