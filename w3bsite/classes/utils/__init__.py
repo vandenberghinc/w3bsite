@@ -19,6 +19,11 @@ class Utils(Object):
 
 	# create tempalte data.
 	def template(self, old={}, new={}):
+		if isinstance(old, (Dictionary)):
+			old = dict(old.dictionary)
+		else:
+			old = dict(old)
+		if new == None or new == "None": return old
 		if isinstance(new, (Dictionary)):
 			new = new.dictionary
 		elif isinstance(new, (OutputObject, ResponseObject)):
@@ -27,15 +32,11 @@ class Utils(Object):
 			raise dev0s.exceptions.InvalidUsage(f"<website.utils.template>: Parameter [new] requires to be a [dict] not [{new.__class__.__name__}] ({new}).")
 		if not isinstance(old, (dict, Dictionary)):
 			raise dev0s.exceptions.InvalidUsage(f"<website.utils.template>: Parameter [old] requires to be a [dict, Dictionary] not [{new.__class__.__name__}] ({new}).")
-		if isinstance(old, (Dictionary)):
-			l_template_data = dict(old.dictionary)
-		else:
-			l_template_data = dict(old)
-		if new == None or new == "None": return l_template_data
-		new = Dictionary(l_template_data) + Dictionary(new)
+		new = Dictionary(old) + Dictionary(new)
 		if isinstance(new, (Dictionary)): new = new.dictionary
+		return self.serialize_template(new)
 		return new
-		#return self.serialize_template(new)
+		
 
 	# serialize dictionary to template safe dict.
 	def serialize_template(self, value={}):
@@ -73,9 +74,10 @@ class Utils(Object):
 		dev0s.response.log(message=trace, save=False)
 		id = String().generate(length=32, digits=True, capitalize=True)
 		if database != None and Files.exists(database):
-			dev0s.response.log_to_file("----------------------------------------------------------\nException ("+str(id)+").\n ", raw=True)
-			dev0s.response.log_to_file(trace)
-			dev0s.response.log_to_file(" ")
+			dev0s.response.log_to_file("\n----------------------------------------------------------\n", raw=True)
+			dev0s.response.log_to_file("Exception ("+str(id)+").\n ")
+			dev0s.response.log_to_file(trace, raw=True)
+			dev0s.response.log_to_file(" ", raw=True)
 		info = {
 			"id":id,
 			"traceback":trace,
