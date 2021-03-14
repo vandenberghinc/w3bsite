@@ -24,9 +24,9 @@ class Utils(Object):
 		elif isinstance(new, (OutputObject, ResponseObject)):
 			new = new.dict()
 		if not isinstance(new, (dict)):
-			raise Exceptions.InvalidUsage(f"<website.utils.template>: Parameter [new] requires to be a [dict] not [{new.__class__.__name__}] ({new}).")
+			raise dev0s.exceptions.InvalidUsage(f"<website.utils.template>: Parameter [new] requires to be a [dict] not [{new.__class__.__name__}] ({new}).")
 		if not isinstance(old, (dict, Dictionary)):
-			raise Exceptions.InvalidUsage(f"<website.utils.template>: Parameter [old] requires to be a [dict, Dictionary] not [{new.__class__.__name__}] ({new}).")
+			raise dev0s.exceptions.InvalidUsage(f"<website.utils.template>: Parameter [old] requires to be a [dict, Dictionary] not [{new.__class__.__name__}] ({new}).")
 		if isinstance(old, (Dictionary)):
 			l_template_data = dict(old.dictionary)
 		else:
