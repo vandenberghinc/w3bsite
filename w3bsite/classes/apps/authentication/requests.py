@@ -102,9 +102,9 @@ class Requests(_defaults_.Defaults):
 				response = self.rate_limit.verify(ip=utils.get_client_ip(request), mode="daily", limit=1000, reset_minutes=3600*24, increment=True)
 				if not response.success: return self.response(response)
 
-				# check signup rate limit.
-				#response = self.rate_limit.verify(ip=utils.get_client_ip(request), mode="signin", limit=5, reset_minutes=10, increment=True)
-				#if not response.success: return self.response(response)
+				# check signin rate limit.
+				response = self.rate_limit.verify(ip=utils.get_client_ip(request), mode="signin", limit=10, reset_minutes=5, increment=True)
+				if not response.success: return self.response(response)
 
 				# retrieve params.
 				parameters, response = self.parameters.get(request, [
@@ -319,10 +319,14 @@ class Requests(_defaults_.Defaults):
 				if not response.success: return self.response(response)
 
 				# handler.
+				try:
+					email = request.user.email
+				except AttributeError:
+					email = None
 				return self.response("Successfully checked if the user is authenticated.", {
 					"authenticated":request.user.username != None and request.user.is_authenticated == True,
 					"username":request.user.username,
-					"email":request.user.email,
+					"email":email,
 				})
 
 			# catch error.
