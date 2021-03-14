@@ -24,6 +24,7 @@ class Requests(_defaults_.Defaults):
 			send_code,
 			self.ResetPassword(defaults=defaults),
 			self.Activate(defaults=defaults),
+			self.Authenticated(defaults=defaults),
 		])
 
 	# sign up.
