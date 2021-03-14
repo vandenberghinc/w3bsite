@@ -28,6 +28,8 @@ class Utils(Object):
 		else:
 			l_template_data = dict(old)
 		if new == None or new == "None": return l_template_data
+		dev0s.response.log(f"FROM: {l_template_data}", save=True)
+		dev0s.response.log(f"TO: {new}", save=True)
 		new = Dictionary(l_template_data) + Dictionary(new)
 		if isinstance(new, (Dictionary)): new = new.dictionary
 		return new
@@ -39,9 +41,7 @@ class Utils(Object):
 			if isinstance(value, (OutputObject, ResponseObject)):
 				value = value.dict()
 			new = {}
-			print(f"===============\nITERATE: {value}")
 			for key, _value_ in value.items():
-				print(f"===============\nINSIDE ITERATE: {_value_}")
 				new[key] = self.serialize_template(_value_)
 			return new
 		elif isinstance(value, (list, Array)):
