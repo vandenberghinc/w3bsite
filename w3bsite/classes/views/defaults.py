@@ -197,7 +197,6 @@ class View(Object):
 		# overwrite default html #3.
 		html=None,
 	):
-		if template_data == None: template_data = self.template_data
 		if html == None: html = self.html
 		return render(request, str(html), self.template(template_data))
 	def error(self, 
@@ -216,6 +215,7 @@ class View(Object):
 		# overwrite default template data.
 		template_data=None):
 		if template_data == None: template_data = self.template_data
+		if template_data == None: template_data = {}
 		title = title.replace("\n","")
 		message = message.replace("\n","")
 		template_data["ERROR"] = {
@@ -250,6 +250,8 @@ class View(Object):
 	# append template data.
 	def template(self, dictionary={}, old=None):
 		if old == None: old = self.template_data
+		if dictionary == None:
+			return old
 		return utils.template(old=old, new=dictionary)
 
 	# the view function.
