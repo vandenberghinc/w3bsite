@@ -94,7 +94,7 @@ class Request(Object):
 			return response
 		else:
 			try:
-				return JsonResponse(response.dict(), safe=False)
+				return JsonResponse(response.dict(safe=True))
 			except AttributeError:
 				return JsonResponse(response)
 

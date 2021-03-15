@@ -31,11 +31,11 @@ class Requests(_defaults_.Defaults):
 		def request(self, request):
 
 			# check root permissions.
-			response = website.users.authenticated(request)
+			response = self.users.authenticated(request)
 			if not response.success: return response
 
 			# check root permissions.
-			response = website.users.root_permission(request)
+			response = self.users.root_permission(request)
 			if not response.success: return response
 
 			# make request.
@@ -52,11 +52,11 @@ class Requests(_defaults_.Defaults):
 		def request(self, request):
 
 			# check root permissions.
-			response = website.users.authenticated(request)
+			response = self.users.authenticated(request)
 			if not response.success: return response
 
 			# check root permissions.
-			response = website.users.root_permission(request)
+			response = self.users.root_permission(request)
 			if not response.success: return response
 
 			# make request.
