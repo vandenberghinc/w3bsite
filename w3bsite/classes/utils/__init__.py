@@ -32,7 +32,8 @@ class Utils(Object):
 			raise dev0s.exceptions.InvalidUsage(f"<website.utils.template>: Parameter [new] requires to be a [dict] not [{new.__class__.__name__}] ({new}).")
 		if not isinstance(old, (dict, Dictionary)):
 			raise dev0s.exceptions.InvalidUsage(f"<website.utils.template>: Parameter [old] requires to be a [dict, Dictionary] not [{new.__class__.__name__}] ({new}).")
-		new = Dictionary(old) + Dictionary(new)
+		if new != old:
+			new = Dictionary(old) + Dictionary(new)
 		if isinstance(new, (Dictionary)): new = new.dictionary
 		if safe:
 			return self.serialize_template(new)
