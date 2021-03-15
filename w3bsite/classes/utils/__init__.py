@@ -17,12 +17,13 @@ class Utils(Object):
 
 		#
 
-	# create tempalte data.
+	# create template data.
 	def template(self, old={}, new={}, safe=False):
 		if isinstance(old, (Dictionary)):
 			old = dict(old.dictionary)
 		else:
 			old = dict(old)
+		if old == None or old == "None": old = {}
 		if new == None or new == "None": return old
 		if isinstance(new, (Dictionary)):
 			new = new.dictionary
@@ -39,7 +40,6 @@ class Utils(Object):
 			return self.serialize_template(new)
 		else:
 			return new
-		
 
 	# serialize dictionary to template safe dict.
 	def serialize_template(self, value={}):
