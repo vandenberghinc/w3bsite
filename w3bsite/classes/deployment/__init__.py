@@ -71,7 +71,12 @@ class Deployment(Object):
 
 		#
 	# live functions.
-	def start(self):
+	def start(self, log_level=dev0s.defaults.options.log_level):
+
+		# loader.
+		loader = None
+		if log_level >= 0:
+			loader = Loader(f"Starting {self.name}")
 
 		# execute.
 		command = ""
@@ -79,15 +84,24 @@ class Deployment(Object):
 			command += f"sudo systemctl start {i} &&"
 		command = command[:-3]
 		response = dev0s.code.execute(command)
-		if not response.success: return response
+		if not response.success: 
+			if loader != None: loader.stop(success=False)
+			return response
 		output = response.output
 		if output in ["", "\n"]:
+			if loader != None: loader.stop()
 			return dev0s.response.success(f"Successfully started {self.name}")
 		else:
+			if loader != None: loader.stop(success=False)
 			return dev0s.response.error(f"Failed to started {self.name};\n{output}")
 
 		#
-	def stop(self):
+	def stop(self, log_level=dev0s.defaults.options.log_level):
+
+		# loader.
+		loader = None
+		if log_level >= 0:
+			loader = Loader(f"Stopping {self.name}")
 
 		# execute.
 		command = ""
@@ -95,15 +109,24 @@ class Deployment(Object):
 			command += f"sudo systemctl stop {i} &&"
 		command = command[:-3]
 		response = dev0s.code.execute(command)
-		if not response.success: return response
+		if not response.success: 
+			if loader != None: loader.stop(success=False)
+			return response
 		output = response.output
 		if output in ["", "\n"]:
+			if loader != None: loader.stop()
 			return dev0s.response.success(f"Successfully stopped {self.name}")
 		else:
+			if loader != None: loader.stop(success=False)
 			return dev0s.response.error(f"Failed to stopped {self.name};\n{output}")
 
 		#
-	def restart(self):
+	def restart(self, log_level=dev0s.defaults.options.log_level):
+
+		# loader.
+		loader = None
+		if log_level >= 0:
+			loader = Loader(f"Restarting {self.name}")
 
 		# execute.
 		command = ""
@@ -111,7 +134,9 @@ class Deployment(Object):
 			command += f"sudo systemctl restart {i} &&"
 		command = command[:-3]
 		response = dev0s.code.execute(command)
-		if not response.success: return response
+		if not response.success: 
+			if loader != None: loader.stop(success=False)
+			return response
 		output = response.output
 		if output in ["", "\n"]:
 			return dev0s.response.success(f"Successfully restarted {self.name}")
@@ -119,24 +144,38 @@ class Deployment(Object):
 			return dev0s.response.error(f"Failed to restarted {self.name};\n{output}")
 
 		#
-	def status(self):
+	def status(self, log_level=dev0s.defaults.options.log_level):
+
+		# loader.
+		loader = None
+		if log_level >= 0:
+			loader = Loader(f"Retrieving the status of {self.name}")
 
 		# execute.
 		response = dev0s.code.execute("sudo systemctl status gunicorn > /tmp/status && cat /tmp/status && rm -fr /tmp/status")
-		if not response.success: return response
+		if not response.success: 
+			if loader != None: loader.stop(success=False)
+			return response
 		status = response.output
+		if loader != None: loader.stop()
 		return dev0s.response.success(f"Successfully parsed the status of {self.name}.", {
 			"status":status,
 		})
 
 		#
-	def reset_logs(self):
+	def reset_logs(self, log_level=dev0s.defaults.options.log_level):
+
+		# loader.
+		loader = None
+		if log_level >= 0:
+			loader = Loader(f"Resetting the logs of {self.name}")
 
 		# execute.
 		Files.save(f"{self.database}/logs/logs", "")
 		Files.save(f"{self.database}/logs/errors", "")
 		Files.save(f"{self.database}/logs/nginx", "")
 		Files.save(f"{self.database}/logs/nginx.debug", "")
+		if loader != None: loader.stop(success=False)
 		return dev0s.response.success("Successfully resetted the logs.")
 
 		#
