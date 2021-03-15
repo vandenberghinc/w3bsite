@@ -66,8 +66,7 @@ class Stripe(_defaults_.Defaults):
 			publishable_key=self.publishable_key,
 			products=self._subscriptions_,
 			domain=self.domain,
-			stripe=self.stripe,
-			logging=self.logging,)
+			stripe=self.stripe,)
 
 		# objects.
 		self.customers = self.Customers(defaults=self.stripe_defaults)
@@ -250,8 +249,6 @@ class Stripe(_defaults_.Defaults):
 			domain=None,
 			# stripe object.
 			stripe=None,
-			# logging object.
-			logging=None,
 		):
 
 			# custom defaults.
@@ -263,8 +260,6 @@ class Stripe(_defaults_.Defaults):
 			self._subscriptions_ = products
 			self.domain = domain
 			self.stripe = stripe
-			self.logging = logging
-
 			#
 
 	# the customers object.

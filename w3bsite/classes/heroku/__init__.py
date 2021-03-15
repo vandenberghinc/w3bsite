@@ -27,7 +27,6 @@ class Heroku(object):
 		name=None,
 		# passed objects.
 		namecheap=None,
-		logging=None,
 	):
 
 		# docs.
@@ -42,7 +41,6 @@ class Heroku(object):
 		self.sub_domain = sub_domain
 		self.name = name
 		self.namecheap = namecheap
-		self.logging = logging
 		response = self.check_logged_in()
 		if response.error != None: raise RuntimeError(response.error)
 

@@ -3,7 +3,7 @@
 
 # imports.
 from w3bsite.classes.config import *
-from w3bsite.classes import security, heroku, namecheap, utils, git, stripe, logging, rate_limit, deployment, vps, defaults, apps, views
+from w3bsite.classes import security, heroku, namecheap, utils, git, stripe, rate_limit, deployment, vps, defaults, apps, views
 from w3bsite.classes import database as _database_
 import django as pypi_django
 
@@ -443,10 +443,6 @@ class Website(dev0s.cli.CLI,Traceback):
 		}))
 
 		# defaults objects.
-		self.logging = logging.Logging(
-			name=self.name,
-			root=self.root,
-			database=self.database,)
 		self.aes = dev0s.encryption.AsymmetricAES(
 			private_key=f"{self.database}/keys/{ALIAS}/private_key",
 			public_key=f"{self.database}/keys/{ALIAS}/public_key",
@@ -478,8 +474,7 @@ class Website(dev0s.cli.CLI,Traceback):
 			"users_subpath":self.users_subpath,
 			"template_data":self.template_data,
 			"id_by_username":self.id_by_username,
-			"aes":self.aes,
-			"logging":self.logging,	})
+			"aes":self.aes, })
 		self.template = self.defaults.template
 		self.utils = utils.Utils(attributes=self.defaults.attributes())
 
@@ -570,8 +565,7 @@ class Website(dev0s.cli.CLI,Traceback):
 				root=self.root,
 				domain=self.doman,
 				name=self.name,
-				namecheap=self.namecheap,
-				logging=self.logging,)
+				namecheap=self.namecheap,)
 		elif self.remote != None:
 			raise dev0s.response.error(f"Selected an invalid remote [{self.remote}], options: [local, vps, heroku]")
 		self.apps = apps.Apps(

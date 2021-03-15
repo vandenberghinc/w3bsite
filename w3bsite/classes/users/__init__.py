@@ -29,7 +29,6 @@ class Users(_defaults_.Defaults):
 		firestore=None, 
 		stripe=None, 
 		django=None,
-		logging=None, 
 		# defaults.
 		defaults=None,
 	):	
@@ -55,7 +54,6 @@ class Users(_defaults_.Defaults):
 		# objects.
 		self.db = db
 		self.firestore = firestore
-		self.logging = logging
 		self.stripe = stripe
 		self.django = django
 
