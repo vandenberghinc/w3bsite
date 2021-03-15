@@ -196,9 +196,11 @@ class View(Object):
 		template_data=None,
 		# overwrite default html #3.
 		html=None,
+		# the response's status code.
+		status=200,
 	):
 		if html == None: html = self.html
-		return render(request, str(html), self.template(template_data))
+		return render(request, str(html), self.template(template_data), status=status)
 	def error(self, 
 		# the django request parameter.
 		request, 
@@ -229,11 +231,11 @@ class View(Object):
 
 	# default renders.
 	def maintenance(self, request, template_data=None):
-		return self.render(request=request, template_data=template_data, html=f"w3bsite/classes/apps/defaults/html/maintenance.html")
+		return self.render(request=request, template_data=template_data, status=503, html=f"w3bsite/classes/apps/defaults/html/maintenance.html")
 	def permission_denied(self, request, template_data=None):
-		return self.render(request=request, template_data=template_data, html=f"w3bsite/classes/apps/defaults/html/permission_denied.html")
+		return self.render(request=request, template_data=template_data, status=403, html=f"w3bsite/classes/apps/defaults/html/permission_denied.html")
 	def _404(self, request, template_data=None):
-		return self.render(request=request, template_data=template_data, html=f"w3bsite/classes/apps/defaults/html/404.html")
+		return self.render(request=request, template_data=template_data, status=404, html=f"w3bsite/classes/apps/defaults/html/404.html")
 	def _500(self, request, template_data=None, error=None):
 		if template_data == None: template_data = self.template_data
 		if template_data == None: template_data = {}
@@ -242,7 +244,7 @@ class View(Object):
 		if not dev0s.env.get("PRODUCTION", format=bool, default=True) or dev0s.env.get("DEBUG", format=bool, default=False):
 			debug = True
 			traceback = info["traceback"]
-		return self.render(request=request, html=f"w3bsite/classes/apps/defaults/html/500.html", template_data=self.template(old=template_data, new={
+		return self.render(request=request, html=f"w3bsite/classes/apps/defaults/html/500.html", status=500, template_data=self.template(old=template_data, new={
 			"ERROR_ID":str(info["id"]),
 			"DEBUG":str(debug),
 			"TRACEBACK":str(traceback),
