@@ -570,7 +570,7 @@ class Users(_defaults_.Defaults):
 		try: 
 			date = Date()
 			decreased = date.decrease(date.timestamp, format=date.timestamp_format, minutes=5)
-			outdated = Date(timestamp=self.__verification_codes__[mode][user.email]["stamp"], format=date.timestamp_format) <= Date(timestamp=decreased, format=date.timestamp_format)
+			outdated = Date(self.__verification_codes__[mode][user.email]["stamp"]) <= Date(decreased)
 			success = not outdated and self.__verification_codes__[mode][user.email]["attempts"] > 0 and str(self.__verification_codes__[mode][user.email]["code"]) == str(code)
 		except KeyError: fail = True
 		# handle.
@@ -1130,7 +1130,7 @@ class Users(_defaults_.Defaults):
 		if not refresh:
 			date = Date()
 			decreased = date.decrease(date.timestamp, format=date.timestamp_format, hours=24)
-			if self.__timestamps__[mode] <= Date(timestamp=decreased, format=date.timestamp_format):
+			if self.__timestamps__[mode] <= Date(decreased):
 				refresh = True
 
 		# get cache.
@@ -1166,7 +1166,7 @@ class Users(_defaults_.Defaults):
 		if not refresh:
 			date = Date()
 			decreased = date.decrease(date.timestamp, format=date.timestamp_format, hours=24)
-			if self.__timestamps__[mode] <= Date(timestamp=decreased, format=date.timestamp_format):
+			if self.__timestamps__[mode] <= Date(decreased):
 				refresh = True
 
 		# get cache.
