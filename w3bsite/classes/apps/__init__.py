@@ -5,7 +5,7 @@
 from w3bsite.classes.config import *
 from w3bsite.classes import utils
 from w3bsite.classes import defaults as _defaults_
-from w3bsite.classes.apps import payments, authentication
+from w3bsite.classes.apps import payments, authentication, logging
 
 # django imports.
 from django.shortcuts import render
@@ -31,6 +31,7 @@ class Apps(_defaults_.Defaults):
 
 		# apps.
 		self.exceptions = self.Exceptions(defaults=defaults)
+		self.logging = self.Logging(defaults=defaults)
 		self.authentication = self.Authentication(defaults=defaults)
 		self.payments = self.Payments(defaults=defaults, stripe=stripe)
 
@@ -43,6 +44,13 @@ class Apps(_defaults_.Defaults):
 			return render(request, 'w3bsite/classes/apps/defaults/html/404.html', self.template(self.template_data))
 		def _500(self, request, *args, **argv):
 			return render(request, 'w3bsite/classes/apps/defaults/html/500.html', self.template(self.template_data))
+
+	# the logging app.
+	class Logging(_defaults_.Defaults):
+		def __init__(self, defaults=None):
+			_defaults_.Defaults.__init__(self)
+			self.assign(defaults.dict())
+			self.requests = logging.requests.Requests(defaults=defaults,)
 
 	# the authentication app.
 	class Authentication(_defaults_.Defaults):
