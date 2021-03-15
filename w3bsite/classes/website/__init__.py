@@ -415,9 +415,9 @@ class Website(dev0s.cli.CLI,Traceback):
 		for key,value in self.styling.items(): d[key.upper()] = value
 		styling = Dictionary(d).check(default={
 			# styling options.
-			"LEFTBAR_WIDTH":280, # px
-			"RIGHTBARBAR_WIDTH":280, # px
-			"TOPBAR_HEIGHT":50 #px
+			"LEFTBAR_WIDTH":"280px",
+			"RIGHTBAR_WIDTH":"280px",
+			"TOPBAR_HEIGHT":"50px" ,
 			})
 		self.template_data = Dictionary(utils.__append_dict__(new=self.template_data, overwrite=True,  old=styling))
 
@@ -438,7 +438,7 @@ class Website(dev0s.cli.CLI,Traceback):
 			"2FA":self._2fa,
 			# styling options.
 			"LEFTBAR_WIDTH":280, # px
-			"RIGHTBARBAR_WIDTH":280, # px
+			"RIGHTBAR_WIDTH":280, # px
 			"TOPBAR_HEIGHT":50 #px
 		}))
 

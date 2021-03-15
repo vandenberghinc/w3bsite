@@ -311,7 +311,7 @@
 		
 		// hide & show the left bar.
 		var LEFTBAR_OPEN = true
-		function toggle_left_bar(mode="toggle", options=["toggle", "show", "hide"]) {
+		function toggle_leftbar(mode="toggle", options=["toggle", "show", "hide"]) {
 			var leftbar = document.getElementById("leftbar")
 			var content = document.getElementById("content")
 			if (mode == "show") {
@@ -324,17 +324,17 @@
 				LEFTBAR_OPEN = false
 			} else if (mode == "toggle") {
 				if (LEFTBAR_OPEN == true) {
-					toggle_left_bar("hide")
+					toggle_leftbar("hide")
 				} else {
-					toggle_left_bar("show")
+					toggle_leftbar("show")
 				}
 			}
 		}
 
 		// hide & show the top bar.
 		var TOPBAR_OPEN = true
-		function toggle_top_bar(mode="toggle", options=["toggle", "show", "hide"]) {
-			var topbar = document.getElementById("top_bar")
+		function toggle_topbar(mode="toggle", options=["toggle", "show", "hide"]) {
+			var topbar = document.getElementById("topbar")
 			var content = document.getElementById("content")
 			var leftbar = document.getElementById("leftbar")
 			if (mode == "show") {
@@ -349,9 +349,9 @@
 				TOPBAR_OPEN = false
 			} else if (mode == "toggle") {
 				if (TOPBAR_OPEN == true) {
-					toggle_top_bar("hide")
+					toggle_topbar("hide")
 				} else {
-					toggle_top_bar("show")
+					toggle_topbar("show")
 				}
 			}
 		}
@@ -472,7 +472,7 @@
 		<div id="root-content" style="min-width: 250px; width: 100vw; height: 100vh; background-color: #24292E; position: absolute; top: 0px; left: 0px;"> 
 
 			<!-- HEADER -->
-			<div id="top_bar" class="widget" style="position: fixed; top: 25px; left: 15px; right: 15px; height: 50px; padding: 0px 0px 0px 0px; z-index: 10;"> <!-- box-shadow: 0px 0px 3px #55555550; -->
+			<div id="topbar" class="widget" style="position: fixed; top: 25px; left: 15px; right: 15px; height: 50px; padding: 0px 0px 0px 0px; z-index: 10;"> <!-- box-shadow: 0px 0px 3px #55555550; -->
 				
 				<!-- SEARCH BAR -->
 				<div style="display: flex;">
@@ -496,13 +496,13 @@
 								</div>
 							</a>
 						</div>
-						<a href="#" id="top_bar.menu_button" style="text-decoration: none; display: block;">
-							<img onclick="toggle_left_bar('toggle')" src="{% static 'media/icons/menu-2.png' %}" alt="VanDenBerghInc" width="16" style="margin-top: 16.5px; margin-right: 15px;" />
+						<a href="#" id="topbar.menu_button" style="text-decoration: none; display: block;">
+							<img onclick="toggle_leftbar('toggle')" src="{% static 'media/icons/menu-2.png' %}" alt="VanDenBerghInc" width="16" style="margin-top: 16.5px; margin-right: 15px;" />
 						</a>
-						<a href="#" id="top_bar.search_button" onclick="toggle_searchbar_menu()" style="text-decoration: none; display: block;">
-							<img onclick="toggle_left_bar('toggle')" src="{% static 'media/icons/search.png' %}" alt="VanDenBerghInc" width="16" style="margin-top: 16.5px; margin-right: 15px;" />
+						<a href="#" id="topbar.search_button" onclick="toggle_searchbar_menu()" style="text-decoration: none; display: block;">
+							<img onclick="toggle_leftbar('toggle')" src="{% static 'media/icons/search.png' %}" alt="VanDenBerghInc" width="16" style="margin-top: 16.5px; margin-right: 15px;" />
 						</a>
-						<a href="#" id="top_bar.filter_button" style="text-decoration: none; display: none;">
+						<a href="#" id="topbar.filter_button" style="text-decoration: none; display: none;">
 							<img onclick="toggle_filterbar_menu()" src="{% static 'media/icons/filter.png' %}" alt="VanDenBerghInc" width="16" style="margin-top: 16.5px; margin-right: 15px;" />
 						</a>
 						<a href="/account/membership" style="text-decoration: none;">

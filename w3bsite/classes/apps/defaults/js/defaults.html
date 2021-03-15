@@ -193,8 +193,12 @@ function set_background_color(color) {
 	var topbar = document.getElementById("topbar")
 	var content = document.getElementById("content")
 	var body = document.getElementById("body")
-	if (content == null || topbar == null || body == null) {
-		console.log("Error: unable the default [content, topbar, body] elements.")
+	if (content == null) {
+		console.log("Error: unable the default [content] element.")
+	} else if (topbar == null) {
+		console.log("Error: unable the default [topbar] element.")
+	} else if (body == null) {
+		console.log("Error: unable the default [body] element.")
 	}
 	if (body != null) {
 		body.style.background = color;
@@ -245,15 +249,17 @@ function toggle_full_screen(mode="toggle", options=["toggle", "show", "hide"]) {
 }
 
 // hide & show the left bar.
-function toggle_left_bar(mode="toggle", options=["toggle", "show", "hide"]) {
+function toggle_leftbar(mode="toggle", options=["toggle", "show", "hide"]) {
 	var leftbar = document.getElementById("leftbar")
 	var content = document.getElementById("content")
-	if (content == null || leftbar == null) {
-		console.log("Error: unable the default [content, leftbar] elements.")
+	if (content == null) {
+		console.log("Error: unable the default [content] element.")
+	} else if (leftbar == null) {
+		console.log("Error: unable the default [leftbar] element.")
 	}
 	if (mode == "show") {
 		leftbar.style.display = "block"
-		content.style.left = "{{LEFTBAR_WIDTH}}px"
+		content.style.left = "{{LEFTBAR_WIDTH}}"
 		leftbar.setAttribute("open", "true")
 	} else if (mode == "hide") {
 		leftbar.style.display = "none"
@@ -261,50 +267,61 @@ function toggle_left_bar(mode="toggle", options=["toggle", "show", "hide"]) {
 		leftbar.setAttribute("open", "false")
 	} else if (mode == "toggle") {
 		if (leftbar.getAttribute("open") == "true") {
-			toggle_left_bar("hide")
+			toggle_leftbar("hide")
 		} else {
-			toggle_left_bar("show")
+			toggle_leftbar("show")
 		}
 	}
 }
 
 // hide & show the right bar.
-function toggle_right_bar(mode="toggle", options=["toggle", "show", "hide"]) {
+function toggle_rightbar(mode="toggle", options=["toggle", "show", "hide"]) {
 	var rightbar = document.getElementById("rightbar")
 	var content = document.getElementById("content")
-	if (content == null || rightbar == null) {
-		console.log("Error: unable the default [content, rightbar] elements.")
+	if (content == null) {
+		console.log("Error: unable the default [content] element.")
+	} else if (rightbar == null) {
+		console.log("Error: unable the default [rightbar] element.")
 	}
 	if (mode == "show") {
 		rightbar.style.display = "block"
-		content.style.right = "{{RIGHTBAR_WIDTH}}px"
+		content.style.right = "{{RIGHTBAR_WIDTH}}"
 		rightbar.setAttribute("open", "true")
+		console.log("Showed the rightbar ("+rightbar.style.display+") ({{RIGHTBAR_WIDTH}}).")
 	} else if (mode == "hide") {
 		rightbar.style.display = "none"
 		content.style.right = "0px"
 		rightbar.setAttribute("open", "false")
+		console.log("Hided the rightbar ("+rightbar.style.display+") ({{RIGHTBAR_WIDTH}}).")
 	} else if (mode == "toggle") {
 		if (rightbar.getAttribute("open") == "true") {
-			toggle_left_bar("hide")
+			toggle_leftbar("hide")
 		} else {
-			toggle_left_bar("show")
+			toggle_leftbar("show")
 		}
 	}
 }
 
 // hide & show the top bar.
-function toggle_top_bar(mode="toggle", options=["toggle", "show", "hide"]) {
+function toggle_topbar(mode="toggle", options=["toggle", "show", "hide"]) {
 	var topbar = document.getElementById("topbar")
 	var content = document.getElementById("content")
 	var leftbar = document.getElementById("leftbar")
 	var rightbar = document.getElementById("rightbar")
-	if (topbar == null || content == null || leftbar == null || rightbar == null) {
-		console.log("Error: unable the default [topbar, content, leftbar, rightbar] elements.")
+	if (topbar == null) {
+		console.log("Error: unable the default [topbar] element.")
+	} else if (content == null) {
+		console.log("Error: unable the default [content] element.")
+	} else if (leftbar == null) {
+		console.log("Error: unable the default [leftbar] element.")
+	} else if (rightbar == null) {
+		console.log("Error: unable the default [rightbar] element.")
 	}
 	if (mode == "show") {
 		topbar.style.display = "block"
-		content.style.top = "{{TOPBAR_HEIGHT}}px"
-		leftbar.style.top = "{{TOPBAR_HEIGHT}}px"
+		content.style.top = "{{TOPBAR_HEIGHT}}"
+		leftbar.style.top = "{{TOPBAR_HEIGHT}}"
+		rightbar.style.top = "{{TOPBAR_HEIGHT}}"
 		topbar.setAttribute("open", "true")
 	} else if (mode == "hide") {
 		topbar.style.display = "none"
@@ -314,9 +331,9 @@ function toggle_top_bar(mode="toggle", options=["toggle", "show", "hide"]) {
 		topbar.setAttribute("open", "false")
 	} else if (mode == "toggle") {
 		if (topbar.getAttribute("open") == "true") {
-			toggle_top_bar("hide")
+			toggle_topbar("hide")
 		} else {
-			toggle_top_bar("show")
+			toggle_topbar("show")
 		}
 	}
 }
@@ -473,8 +490,10 @@ function toggle_darkmode(mode="toggle") {
 		]
 		classes.forEach(function(item) {
 			Array.from(document.getElementsByClassName(item)).forEach(function(item) {
-				item.style.background = "{{COLORS.widgets_darkmode}}"
-				item.style.backgroundColor = "{{COLORS.widgets_darkmode}}"
+				if (item.getAttribute("darkmode") != "false") {
+					item.style.background = "{{COLORS.widgets_darkmode}}"
+					item.style.backgroundColor = "{{COLORS.widgets_darkmode}}"
+				}
 			})
 		})
 		var classes = [
@@ -483,7 +502,9 @@ function toggle_darkmode(mode="toggle") {
 		]
 		classes.forEach(function(item) {
 			Array.from(document.getElementsByClassName(item)).forEach(function(item) {
-				item.style.background = "{{COLORS.widgets}}"
+				if (item.getAttribute("darkmode") != "false") {
+					item.style.background = "{{COLORS.widgets}}"
+				}
 			})
 		})
 		var classes = [
@@ -501,8 +522,10 @@ function toggle_darkmode(mode="toggle") {
 		]
 		classes.forEach(function(item) {
 			Array.from(document.getElementsByClassName(item)).forEach(function(item) {
-				if (item.style.color != "{{COLORS.red}}") {
-					item.style.color = "{{COLORS.text_darkmode}}"	
+				if (item.getAttribute("darkmode") != "false") {
+					if (item.style.color != "{{COLORS.red}}") {
+						item.style.color = "{{COLORS.text_darkmode}}"	
+					}
 				}
 			})
 		})
@@ -528,8 +551,10 @@ function toggle_darkmode(mode="toggle") {
 		]
 		classes.forEach(function(item) {
 			Array.from(document.getElementsByClassName(item)).forEach(function(item) {
-				item.style.background = "{{COLORS.widgets}}"
-				item.style.backgroundColor = "{{COLORS.widgets}}"
+				if (item.getAttribute("darkmode") != "false") {
+					item.style.background = "{{COLORS.widgets}}"
+					item.style.backgroundColor = "{{COLORS.widgets}}"
+				}
 			})
 		})
 		var classes = [
@@ -538,7 +563,9 @@ function toggle_darkmode(mode="toggle") {
 		]
 		classes.forEach(function(item) {
 			Array.from(document.getElementsByClassName(item)).forEach(function(item) {
-				item.style.background = "{{COLORS.grey}}"
+				if (item.getAttribute("darkmode") != "false") {
+					item.style.background = "{{COLORS.grey}}"
+				}
 			})
 		})
 		var classes = [
@@ -556,8 +583,10 @@ function toggle_darkmode(mode="toggle") {
 		]
 		classes.forEach(function(item) {
 			Array.from(document.getElementsByClassName(item)).forEach(function(item) {
-				if (item.style.color != "{{COLORS.red}}") {
-					item.style.color = "{{COLORS.text}}"
+				if (item.getAttribute("darkmode") != "false") {
+					if (item.style.color != "{{COLORS.red}}") {
+						item.style.color = "{{COLORS.text}}"
+					}
 				}
 			})
 		})

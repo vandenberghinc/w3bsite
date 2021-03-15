@@ -24,10 +24,13 @@
 	<body id="body" style="background: {{COLORS.background}}">
 		<div id="root-content" style="min-width: 250px; red; position: absolute; top: 0px; left: 0px; right: 0px; bottom: 0px; position: relative;"> 
 
-			<!-- BASE BLOCK -->
+			<!-- PRE BASE BLOCK -->
 			{% block pre_base %}
 			{% endblock %}
 
+			<!-- PRE STYLING BLOCK -->
+			{% block pre_styling %}
+			{% endblock %}
 
 			<!-- TOPBAR -->
 			<!-- include "w3bsite/classes/apps/defaults/html/topbar.html"  -->
@@ -39,7 +42,7 @@
 			{% endif %}
 			
 			<!-- LEFT BAR -->
-			<div id="leftbar" class="widget" style="position: fixed; top: 0px; left: 15px; width: 250px; bottom: 0px; margin-top: 0px;  display: none; ">
+			<div id="leftbar" style="position: fixed; top: 0px; left: 0px; width: {{LEFTBAR_WIDTH}}; bottom: 0px; margin-top: 0px;  display: none; ">
 				<div id="leftbar_child" style="position: absolute; top: 0px; bottom: 35px; right: 15px; left: 15px; overflow: visible;">
 					<div style="overflow: scroll; position: relative; width: 100%; height: 100%;">
 						{% block leftbar %}
@@ -49,7 +52,7 @@
 			</div>
 
 			<!-- RIGHT BAR -->
-			<div id="rightbar" class="widget" style="position: fixed; top: 0px; right: 15px; width: 250px; bottom: 0px; margin-top: 0px; display: none;">
+			<div id="rightbar" style="position: fixed; top: 0px; right: 0px; width: {{RIGHTBAR_WIDTH}}; bottom: 0px; margin-top: 0px; display: none;">
 				<div id="rightbar_child" style="position: absolute; top: 0px; bottom: 35px; right: 15px; left: 15px; overflow: visible;">
 					<div style="overflow: scroll; position: relative; width: 100%; height: 100%;">
 						{% block rightbar %}
@@ -61,7 +64,7 @@
 			<!-- BLOCKS -->
 			<div id="content" style="z-index: 7; position: fixed; top: 0px; bottom: 0px; right: 0px; left: 0px; margin-top: 0px; overflow: visible; border-radius: 0px;">
 				<!-- <div id="content_child" style="position: absolute; top: 0px; bottom: 35px; right: 15px; left: 15px; overflow: visible;"> -->
-				<div style="display: inherit; position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px; padding: 15px 15px 15px 15px; overflow: scroll;">
+				<div id="content.containter" style="display: inherit; position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px; padding: 0px 15px 15px 15px; overflow: scroll;">
 			
 					<!-- error pop up -->
 					<div class="full_window_centered" id="error.popup" style="padding-top: 25px; display: none;">
@@ -162,8 +165,7 @@
 					
 					<!-- content blocks -->
 					<div id="content_blocks" style="">
-						{% block content %}
-						{% endblock %}
+						{% block content %}{% endblock %}
 					</div>
 
 					<!-- ...include footer.. 
@@ -173,9 +175,8 @@
 					-->
 
 				</div>
-
 			</div>
-
+			
 			<!-- DARK MODE CONTROL BAR -->
 			<div id="darkmode_control_bar" class="widget" style="position: fixed; right: 15px; bottom: 15px;  margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px; z-index: 12;">
 				<div class="text" style="display: flex; font-size: 12px;">
@@ -198,8 +199,12 @@
 		</div>
 		{% csrf_token %}
 	</body>
+	
+	<!-- POST STYLING BLOCK -->
+	{% block post_styling %}
+	{% endblock %}
 
-	<!-- BASPOST E BLOCK -->
+	<!-- POST BASE BLOCK -->
 	{% block post_base %}
 	{% endblock %}
 

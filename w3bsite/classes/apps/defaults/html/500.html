@@ -4,7 +4,7 @@
 
 <!-- CHECK INSTALLATION -->
 <script type="text/javascript">
-	toggle_top_bar("hide")
+	toggle_topbar("hide")
 	set_background_color("{{COLORS.widgets_reversed}}")
 	set_header_path("500/")
 </script>
@@ -24,7 +24,7 @@
 			<p class="text">
 				Encoutered an internal server error, contact your server administrator.
 			</p>
-			{% if TRACEBACK != "None" and if TRACEBACK != "" %}
+			{% if TRACEBACK != "None" and TRACEBACK != "" %}
 				<div class="divider"></div>
 				<h2 class="subtitle" style="text-align: center; padding-bottom: 15px;">
 					Traceback

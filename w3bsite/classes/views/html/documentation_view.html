@@ -718,7 +718,7 @@
 
 		// hide & show the left bar.
 		var LEFTBAR_OPEN = true
-		function toggle_left_bar(mode="toggle", options=["toggle", "show", "hide"]) {
+		function toggle_leftbar(mode="toggle", options=["toggle", "show", "hide"]) {
 			var leftbar = document.getElementById("leftbar")
 			var content = document.getElementById("content")
 			if (mode == "show") {
@@ -731,15 +731,15 @@
 				LEFTBAR_OPEN = false
 			} else if (mode == "toggle") {
 				if (LEFTBAR_OPEN == true) {
-					toggle_left_bar("hide")
+					toggle_leftbar("hide")
 				} else {
-					toggle_left_bar("show")
+					toggle_leftbar("show")
 				}
 			}
 		}
 		// hide & show the top bar.
 		var TOPBAR_OPEN = true
-		function toggle_top_bar(mode="toggle", options=["toggle", "show", "hide"]) {
+		function toggle_topbar(mode="toggle", options=["toggle", "show", "hide"]) {
 			var topbar = document.getElementById("topbar")
 			var content = document.getElementById("content")
 			var leftbar = document.getElementById("leftbar")
@@ -755,9 +755,9 @@
 				TOPBAR_OPEN = false
 			} else if (mode == "toggle") {
 				if (TOPBAR_OPEN == true) {
-					toggle_top_bar("hide")
+					toggle_topbar("hide")
 				} else {
-					toggle_top_bar("show")
+					toggle_topbar("show")
 				}
 			}
 		}
@@ -902,8 +902,8 @@
 						SECTIONS_RIGHT[chapter_id][section_id].style.maxWidth = "500px"
 					})
 				})
-				toggle_top_bar("hide")
-				toggle_left_bar("show")
+				toggle_topbar("hide")
+				toggle_leftbar("show")
 				SECTIONS_FLEX_LARGE = true
 			} else if (forced == "small" || (window.innerWidth <= 1000 && SECTIONS_FLEX_LARGE == true)) {
 				Object.entries(SECTIONS).forEach(function([chapter_id, sections]) {
@@ -915,8 +915,8 @@
 						SECTIONS_RIGHT[chapter_id][section_id].style.maxWidth = "none"
 					})
 				})
-				toggle_top_bar("show")
-				toggle_left_bar("hide")
+				toggle_topbar("show")
+				toggle_leftbar("hide")
 				SECTIONS_FLEX_LARGE = false
 			}
 		}
@@ -1477,8 +1477,8 @@
 		window.addEventListener("resize", __set_elements_by_width__);
 	</script>
 	<script type="text/javascript">
-		//toggle_left_bar("hide")
-		// toggle_top_bar("hide")
+		//toggle_leftbar("hide")
+		// toggle_topbar("hide")
 	</script>
 
 </html>
