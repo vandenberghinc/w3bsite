@@ -302,9 +302,8 @@ class Users(_defaults_.Defaults):
 			user = authenticate(username=username, password=password)
 			if user is not None: a=1
 			else:
-				response["error"] = f"Invalid verification."
 				dev0s.response.log(f"Invalid verification attempt for user [{username}].")
-				return response
+				return dev0s.response.error(f"Invalid verification.")
 
 			# success.
 			if login:
