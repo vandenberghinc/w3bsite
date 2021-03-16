@@ -1,0 +1,154 @@
+{% load static %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+<script type="text/javascript">
+	
+	// the metrics object class.
+	class Metrics {
+
+		// init.
+		constructor() {
+			this.url = "/requests/metrics/"
+		}
+
+		// set graph.
+		create_graph(args={}, handler=null) {
+			args = Response.parameters.defaults(args, {
+				"id":null,
+				"data":{},
+				"format":"",
+				"min_y":null,
+				"max_y":null,
+				"type":"line",
+			})
+			let _chart_ = document.getElementById(args.id);
+			let _no_chart_ = document.getElementById(args.id+".no_data");
+			if (_chart_ == null) {
+				console.log("Error: unable to find graph element ["+args.id+"]")
+				return null
+			}
+			if (_no_chart_ == null) {
+				console.log("Error: unable to find graph element ["+args.id+".no_data]")
+				return null
+			}
+			if (len(args.data.datasets) == 0) {
+				_chart_.style.display = "none"
+				_no_chart_.style.display = "block"
+			} else {
+				_chart_.style.display = "block"
+				_no_chart_.style.display = "none"
+				new Chart(_chart_, {
+			        type: args.type,
+			        data: args.data,
+			        options: {
+			        	scales: {
+					        yAxes: [{
+					            display: true,
+					            ticks: {
+					            	callback: function(value, index, values) {
+				                        return value + args.format;
+				                    },
+					            	//callback: function(value, index, values) {
+				                    //    return value+"%";
+				                    //}
+					            	// range.
+					                suggestedMin: args.min_y,    // minimum will be 0, unless there is a lower value.
+					                suggestedMax: args.max_y,    // minimum will be 0, unless there is a lower value.
+					            }
+					        }]
+					    }
+			        }
+			    })
+			}
+			if (handler != null) {handler()}
+		}
+
+		// disk space.
+		disk_space(args={}, handler=null) {
+			args = Response.parameters.defaults(args, {
+				"chart":null,
+			})
+			if (args.chart == null) {
+				Response.log("Error: define parameter: args.chart (str).")
+				return null
+			}
+			var create_graph = this.create_graph
+			request(this.url+"disk_space/", {
+				response:args["response"],
+				loader:args["loader"],
+			// handler.
+			}, function(response) {
+				create_graph({
+					"id":args["chart"],
+					"data":response["graph"],
+					"type":"doughnut",
+				}, handler)
+			})
+		}
+
+		// requests.
+		requests(args={}, handler=null) {
+			args = Response.parameters.defaults(args, {
+				"chart":null,
+			})
+			if (args.chart == null) {
+				Response.log("Error: define parameter: args.chart (str).")
+				return null
+			}
+			var create_graph = this.create_graph
+			request(this.url+"requests/", {
+				response:args["response"],
+				loader:args["loader"],
+			// handler.
+			}, function(response) {
+				create_graph({
+					"id":args["chart"],
+					"data":response["graph"],
+					"type":"line",
+				}, handler)
+			})
+		}
+
+		// authentication requests.
+		auth_requests(args={}, handler=null) {
+			args = Response.parameters.defaults(args, {
+				"chart":null,
+			})
+			if (args.chart == null) {
+				Response.log("Error: define parameter: args.chart (str).")
+				return null
+			}
+			var create_graph = this.create_graph
+			request(this.url+"auth_requests/", {
+				response:args["response"],
+				loader:args["loader"],
+			// handler.
+			}, function(response) {
+				create_graph({
+					"id":args["chart"],
+					"data":response["graph"],
+					"type":"line",
+				}, handler)
+			})
+		}
+
+	}
+
+	// initialize class.
+	const metrics = new Metrics();
+
+</script>
+
+
+<!-- 
+CHART HTML EXAMPLE:
+<div class="widget nopadding" style="min-width: 200px; padding-bottom: 25px; float: left; margin: 10px 10px 10px 10px; padding: 0px 0px 0px 0px;">
+	<h4 class="subtitle" darkmode="false" style="color: {{COLORS.button_txt}}; background: {{COLORS.button_bg}}; border-radius: 10px 10px 0px 0px; padding: 2.5px 0px 2.5px 0px; margin: 0px 0px 0px 0px; font-size: 14px; font-weight: 600;">
+		Connections
+	</h4>
+	<div class="nomargin" style="position: relative; width: 100%; height: 100%; max-width: 350px; max-height: 300px; padding: 5px 10px 10px 5px;"> 
+		<canvas id="connections_metrics" style="font-family: 'Avenir Next'; font-size: 8px; width: 100%;"></canvas>
+		<h2 	id="connections_metrics.no_data" class="subtitle" style="font-weight: 200; display: none; ">No Data Available</h2>
+	</div>
+</div>
+-->
+

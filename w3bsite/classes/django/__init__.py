@@ -154,7 +154,7 @@ class Django(_defaults_.Defaults):
 		return dev0s.response.success(f"Successfully created app [{name}].")
 	def migrations(self, forced=False, log_level=dev0s.defaults.options.log_level):
 		if not Files.exists(f"{self.database}/data/"): os.mkdir(f"{self.database}/data/")
-		if forced or not Files.exists(f"{self.database}/data/db.sqlite3"):
+		if not Files.exists(f"{self.database}/data/db.sqlite3") or forced:
 			dev0s.response.log(f"Applying {ALIAS} webserver migrations.")
 			dev0s.env.export(export="__defaults__/env/json", env={"MIGRATIONS": True,})
 			os.chdir(self.root)
@@ -162,7 +162,10 @@ class Django(_defaults_.Defaults):
 			#old_argv = list(sys.argv)
 			#sys.argv = [f"{self.root}/manage.py", "migrate"]
 			#manage.main()
-			os.system(f"cd {self.root} && python3 ./manage.py migrate")
+			#os.system(f"cd {self.root} && python3 ./manage.py migrate")
+			response = dev0s.code.execute(f"cd {self.root} && {dev0s.defaults.vars.executable} ./manage.py migrate")
+			print(response.output)
+			if not response.success: return response
 			dev0s.env.export(export="__defaults__/env/json", env={"MIGRATIONS": False,})
 			#sys.argv = old_argv
 		return dev0s.response.success(f"Successfully checked the migrations.")

@@ -14,6 +14,8 @@ from django.utils.decorators import method_decorator
 
 # include apps from website/urls.py.
 def include_apps(apps=[], auto_include=False):
+	if dev0s.system.env.get("MIGRATIONS", format=bool, default=False):
+		return []
 	if auto_include:
 		apps = []
 		for _name_ in os.listdir(f"apps/"):
@@ -41,15 +43,26 @@ def include_apps(apps=[], auto_include=False):
 
 # build url patterns.
 def build_urls(views=[]):
+	if dev0s.system.env.get("MIGRATIONS", format=bool, default=False):
+		return []
 	urls, landing_page = [], False
 	for view in views:
 		if view.type.lower() in ["view", "documentationview"] and not landing_page and view.landing_page:
 			landing_page = True
-			urls.append(path("", view.__view__))
-			urls.append(path("/", view.__view__))
-		urls.append(
-			path(gfp.clean(view.url, remove_first_slash=True, remove_last_slash=True)+"/", view.__view__),
-		)
+			if view.auth_required:
+				urls.append(path("", view.__auth_view__))
+				urls.append(path("/", view.__auth_view__))
+			else:
+				urls.append(path("", view.__view__))
+				urls.append(path("/", view.__view__))
+		if view.auth_required:
+			urls.append(
+				path(gfp.clean(view.url, remove_first_slash=True, remove_last_slash=True)+"/", view.__auth_view__),
+			)
+		else:
+			urls.append(
+				path(gfp.clean(view.url, remove_first_slash=True, remove_last_slash=True)+"/", view.__view__),
+			)
 	return urls
 	
 # the django request object class.
@@ -62,8 +75,12 @@ class Request(Object):
 		id=None, 
 		# the url path (optional).
 		url=None,
-		# template data (optional).
-		template_data={},
+		# the w3bsite.Website object (required).
+		website=None,
+		# authentication required.
+		auth_required=False,
+		# root permission required.
+		root_required=False,
 	):
 
 		# defaultss.
@@ -81,8 +98,14 @@ class Request(Object):
 			self.base = gfp.clean(FilePath(self.url).base(back=1), remove_last_slash=True)+"/"
 		self.url = gfp.clean(self.url, remove_first_slash=True).replace(".html", "")
 		self.base = gfp.clean(self.base, remove_first_slash=True)
-		self.type = "request"
-		self.template_data = template_data
+		self.type = "Request"
+		self.website = website
+		self.auth_required = auth_required
+		self.root_required = root_required
+
+		# checks.
+		if self.website.__class__.__name__ not in ["Website"]:
+			raise dev0s.exceptions.InvalidUsage(f"You forgot to pass the initialized w3bsite.Website object as the [website] parameter ({self.url}).")
 
 	# response functions.
 	def success(self, message, arguments={}):
@@ -99,22 +122,57 @@ class Request(Object):
 				return JsonResponse(response, safe=False)
 
 	# default responses.
-	def maintenance(self):
-		return self.error(f"Domain is under maintenance [503] ({self.url}).")
-	def permission_denied(self, request=None):
+	def _403(self, request=None):
 		return self.error(f"Permission denied [403] ({self.url}).")
 	def _404(self, request=None, error=None):
 		return self.error(f"Page not found [404] ({self.url}).")
 	def _500(self, request=None, error=None):
 		info = utils.catch_error(error)
 		return self.error(f"Server error [500] ({self.url}).")
+	def _503(self, request=None):
+		return self.error(f"Domain is under maintenance [503] ({self.url}).")
+	def permission_denied(self, request=None):
+		return self._403(request=request)
+	def maintenance(self, request=None):
+		return self._503(request=request)
 
 	# the view function.
-	def __view__(self, request):
+	def __view__(self, request, count=True):
+
+		# count request.
+		if count:
+			self.website.metrics.count_api_request(request, data={
+				"url":self.url,
+			})
+
+		# make request.
 		try: 
 			response = self.request(request)
 		except Exception as e: return self._500(request, error=e)
 		return self.response(response)
+
+		#
+	#@method_decorator(login_required)
+	def __auth_view__(self, request, count=True):
+		
+		# count request.
+		if count:
+			self.website.metrics.count_api_request(request, data={
+				"url":self.url,
+			})
+
+		# check authenticated.
+		if self.auth_required:
+			response = self.website.users.authenticated(request)
+			if not response.success: return self.response(response)
+
+		# check root permissions.
+		if self.root_required:
+			response = self.website.users.root_permission(request)
+			if not response.success: return self.response(response)
+
+		# default __view__.
+		return self.__view__(request, count=False)
 
 	#
 
@@ -130,10 +188,14 @@ class View(Object):
 		url=None,
 		# the html path (optional).
 		html=None,
+		# the w3bsite.Website object (required).
+		website=None,
 		# enable if this view is the [/] landing page.
 		landing_page=False,
-		# the template data (required).
-		template_data={},
+		# authentication required.
+		auth_required=False,
+		# root permission required.
+		root_required=False,
 		# the object type (do not edit).
 		type="View",
 	):
@@ -145,7 +207,7 @@ class View(Object):
 		# vars.
 		self.base = base
 		self.id = id
-		self.template_data = template_data
+		self.website = website
 		self.landing_page = landing_page
 		self.type = type
 		if url == None:
@@ -169,6 +231,8 @@ class View(Object):
 		self.url = gfp.clean(self.url.replace(".html", ""), remove_first_slash=True, remove_last_slash=True)+"/"
 		self.html = gfp.clean(self.html)
 		self.type = type
+		self.auth_required = auth_required
+		self.root_required = root_required
 
 		# check html.
 		if self.type.lower() in ["view"] and "w3bsite/" not in self.html:
@@ -184,6 +248,10 @@ class View(Object):
 					base = FilePath(path).base(back=1)
 					if not Files.exists(base): Files.create(base, directory=True)
 					os.system(f"cp {SOURCE_PATH}/example/view.html {path}")
+
+		# checks.
+		if self.website.__class__.__name__ not in ["Website"]:
+			raise dev0s.exceptions.InvalidUsage(f"You forgot to pass the initialized w3bsite.Website object as the [website] parameter ({self.url}).")
 
 		#
 	#@w3bsite.views.method_decorator(w3bsite.views.login_required)
@@ -216,7 +284,7 @@ class View(Object):
 		redirect="/dashboard/home/",
 		# overwrite default template data.
 		template_data=None):
-		if template_data == None: template_data = self.template_data
+		if template_data == None: template_data = self.website.template_data
 		if template_data == None: template_data = {}
 		title = title.replace("\n","")
 		message = message.replace("\n","")
@@ -230,14 +298,12 @@ class View(Object):
 		return self.render(request=request, template_data=template_data, html=f"w3bsite/classes/apps/defaults/html/error.html")
 
 	# default renders.
-	def maintenance(self, request, template_data=None):
-		return self.render(request=request, template_data=template_data, status=503, html=f"w3bsite/classes/apps/defaults/html/maintenance.html")
-	def permission_denied(self, request, template_data=None):
+	def _403(self, request, template_data=None):
 		return self.render(request=request, template_data=template_data, status=403, html=f"w3bsite/classes/apps/defaults/html/permission_denied.html")
 	def _404(self, request, template_data=None):
 		return self.render(request=request, template_data=template_data, status=404, html=f"w3bsite/classes/apps/defaults/html/404.html")
 	def _500(self, request, template_data=None, error=None):
-		if template_data == None: template_data = self.template_data
+		if template_data == None: template_data = self.website.template_data
 		if template_data == None: template_data = {}
 		info = utils.catch_error(error)
 		traceback, debug = None, False
@@ -250,20 +316,56 @@ class View(Object):
 			"TRACEBACK":str(traceback),
 			"URL":self.url,
 		}))
+	def _503(self, request, template_data=None):
+		return self.render(request=request, template_data=template_data, status=503, html=f"w3bsite/classes/apps/defaults/html/maintenance.html")
+	def permission_denied(self, request, template_data=None):
+		return self._403(request, template_data=template_data)
+	def maintenance(self, request, template_data=None):
+		return self._503(request, template_data=template_data)
 
 	# append template data.
 	def template(self, new={}, old=None, safe=False):
-		if old == None: old = self.template_data
+		if old == None: old = self.website.template_data
 		return utils.template(old=old, new=new, safe=safe)
 
 	# the view function.
-	def __view__(self, request):
+	def __view__(self, request, count=True):
+
+		# count request.
+		if count:
+			self.website.metrics.count_web_request(request, data={
+				"url":self.url,
+			})
+
+		# default view.
 		try: 
 			return self.view(request)
 		except Exception as e: return self._500(request, error=e)
 		return self.render(request=request)
 
+		#
+	@method_decorator(login_required)
+	def __auth_view__(self, request, count=True):
 
+		# count request.
+		if count:
+			self.website.metrics.count_web_request(request, data={
+				"url":self.url,
+			})
+
+		# check root permission.
+		if self.root_required:
+			response = self.website.users.root_permission(request)
+			if not response.success: return self._404(request)
+
+		# return __view__.
+		return self.__view__(request, count=False)
+
+		#
+
+	#
+
+#
 
 
 

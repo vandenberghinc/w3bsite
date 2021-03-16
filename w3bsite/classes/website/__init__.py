@@ -5,6 +5,7 @@
 from w3bsite.classes.config import *
 from w3bsite.classes import security, heroku, namecheap, utils, git, stripe, rate_limit, deployment, vps, defaults, apps, views
 from w3bsite.classes import database as _database_
+from w3bsite.classes.apps.metrics import metrics
 import django as pypi_django
 
 # the main website class.
@@ -129,7 +130,7 @@ class Website(dev0s.cli.CLI,Traceback):
 		#
 		#
 		# Smtp Email
-		# 	sending emails [https://gmail.com > Security > Enable Unsafe 3th party applications].
+		# 	sending emails [https://gmail.com > Security > Enable Unsafe 3th party applications / generate an app password (advised)].
 		email_enabled=True,
 		email_address=None,
 		email_password=None,
@@ -479,6 +480,7 @@ class Website(dev0s.cli.CLI,Traceback):
 		self.utils = utils.Utils(attributes=self.defaults.attributes())
 
 		# objects.
+		self.metrics = metrics.Metrics(database=self.database)
 		self.security = security.Security(
 			defaults=self.defaults,)
 		if self.firebase_enabled and dev0s.defaults.vars.os not in ["macos"]:
@@ -491,7 +493,7 @@ class Website(dev0s.cli.CLI,Traceback):
 			self.db = _database_.Database(
 				firestore=self.firebase.firestore,
 				path=self.database,
-				live=self.live,)
+				live=self.live, )
 		else:
 			self.firebase = None
 			self.firestore = None
@@ -502,7 +504,7 @@ class Website(dev0s.cli.CLI,Traceback):
 				publishable_key=self.stripe_publishable_key,
 				subscriptions=self.stripe_subscriptions,
 				products=self.stripe_products,
-				defaults=self.defaults)
+				defaults=self.defaults, )
 		else: self.stripe = None
 		self.rate_limit = rate_limit.RateLimit(
 			db=self.db,
@@ -568,6 +570,7 @@ class Website(dev0s.cli.CLI,Traceback):
 				namecheap=self.namecheap,)
 		elif self.remote != None:
 			raise dev0s.response.error(f"Selected an invalid remote [{self.remote}], options: [local, vps, heroku]")
+		self.defaults.website = self
 		self.apps = apps.Apps(
 			template_data=self.template_data,
 			rate_limit=self.rate_limit,

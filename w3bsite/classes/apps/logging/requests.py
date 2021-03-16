@@ -17,15 +17,18 @@ class Requests(_defaults_.Defaults):
 		self.assign(defaults.dict())
 
 		# urlpatterns.
-		self.urls = views.build_urls([
-			self.Load(defaults=defaults),
-			self.Reset(defaults=defaults),
-		])
+		if dev0s.system.env.get("MIGRATIONS", format=bool, default=False):
+			self.urls = []
+		else:
+			self.urls = views.build_urls([
+				self.Load(defaults=defaults),
+				self.Reset(defaults=defaults),
+			])
 
 	# load the logs.
 	class Load(views.Request):
 		def __init__(self, defaults=None):
-			views.Request.__init__(self, "requests/logs/", "load")
+			views.Request.__init__(self, "requests/logs/", "load", website=defaults.website)
 			self.assign(defaults.dict())
 		@views.method_decorator(views.login_required)
 		def request(self, request):
@@ -46,7 +49,7 @@ class Requests(_defaults_.Defaults):
 	# reset logs.
 	class Reset(views.Request):
 		def __init__(self, defaults=None):
-			views.Request.__init__(self, "requests/logs/", "reset")
+			views.Request.__init__(self, "requests/logs/", "reset", website=defaults.website)
 			self.assign(defaults.dict())
 		@views.method_decorator(views.login_required)
 		def request(self, request):

@@ -5,7 +5,7 @@
 from w3bsite.classes.config import *
 from w3bsite.classes import utils
 from w3bsite.classes import defaults as _defaults_
-from w3bsite.classes.apps import payments, authentication, logging
+from w3bsite.classes.apps import payments, authentication, logging, metrics
 
 # django imports.
 from django.shortcuts import render
@@ -32,6 +32,7 @@ class Apps(_defaults_.Defaults):
 		# apps.
 		self.exceptions = self.Exceptions(defaults=defaults)
 		self.logging = self.Logging(defaults=defaults)
+		self.metrics = self.Metrics(defaults=defaults)
 		self.authentication = self.Authentication(defaults=defaults)
 		self.payments = self.Payments(defaults=defaults, stripe=stripe)
 
@@ -51,6 +52,14 @@ class Apps(_defaults_.Defaults):
 			_defaults_.Defaults.__init__(self)
 			self.assign(defaults.dict())
 			self.requests = logging.requests.Requests(defaults=defaults,)
+
+	# the metrics app.
+	class Metrics(_defaults_.Defaults):
+		def __init__(self, defaults=None):
+			_defaults_.Defaults.__init__(self)
+			self.assign(defaults.dict())
+			self.requests = metrics.requests.Requests(defaults=defaults,)
+			#self.views = metrics.views.Views(defaults=defaults,)
 
 	# the authentication app.
 	class Authentication(_defaults_.Defaults):

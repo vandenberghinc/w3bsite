@@ -19,25 +19,28 @@ class Requests(_defaults_.Defaults):
 		self.assign(defaults.dict())
 		
 		# urlpatterns.
-		self.urls = views.build_urls([
-			self.subscriptions.Purchase(defaults=defaults),
-			self.subscriptions.Create(defaults=defaults),
-			self.subscriptions.Delete(defaults=defaults),
-			self.subscriptions.List(defaults=defaults),
-			self.methods.Create(defaults=defaults),
-			self.methods.Delete(defaults=defaults),
-			self.methods.List(defaults=defaults),
-		])
+		if dev0s.system.env.get("MIGRATIONS", format=bool, default=False):
+			self.urls = []
+		else:
+			self.urls = views.build_urls([
+				self.Subscriptions.Purchase(defaults=defaults),
+				self.Subscriptions.Create(defaults=defaults),
+				self.Subscriptions.Delete(defaults=defaults),
+				self.Subscriptions.List(defaults=defaults),
+				self.Methods.Create(defaults=defaults),
+				self.Methods.Delete(defaults=defaults),
+				self.Methods.List(defaults=defaults),
+			])
 
 	# the subscriptions.
-	class subscriptions:
+	class Subscriptions:
 
 		# all-in-one purchase request.
 		class Purchase(views.Request):
 			def __init__(self, defaults=None,):
+				views.Request.__init__(self, "requests/payments/subscriptions/", "purchase", website=defaults.website)
 				_defaults_.Defaults.__init__(self)
 				self.assign(defaults.dict())
-				views.Request.__init__(self, "requests/payments/subscriptions/", "purchase")
 			def request(self, request):
 
 				# check overall rate limit.
@@ -77,9 +80,9 @@ class Requests(_defaults_.Defaults):
 		# create subscription.
 		class Create(views.Request):
 			def __init__(self, defaults=None,):
+				views.Request.__init__(self, "requests/payments/subscriptions/", "create", website=defaults.website)
 				_defaults_.Defaults.__init__(self)
 				self.assign(defaults.dict())
-				views.Request.__init__(self, "requests/payments/subscriptions/", "create")
 			def request(self, request):
 
 				# check overall rate limit.
@@ -110,9 +113,9 @@ class Requests(_defaults_.Defaults):
 		# delete subscription.
 		class Delete(views.Request):
 			def __init__(self, defaults=None,):
+				views.Request.__init__(self, "requests/payments/subscriptions/", "delete", website=defaults.website)
 				_defaults_.Defaults.__init__(self)
 				self.assign(defaults.dict())
-				views.Request.__init__(self, "requests/payments/subscriptions/", "delete")
 			def request(self, request):
 
 				# check overall rate limit.
@@ -160,9 +163,9 @@ class Requests(_defaults_.Defaults):
 		# list methods.
 		class List(views.Request):
 			def __init__(self, defaults=None,):
+				views.Request.__init__(self, "requests/payments/subscriptions/", "list", website=defaults.website)
 				_defaults_.Defaults.__init__(self)
 				self.assign(defaults.dict())
-				views.Request.__init__(self, "requests/payments/subscriptions/", "list")
 			def request(self, request):
 
 				# check overall rate limit.
@@ -204,14 +207,14 @@ class Requests(_defaults_.Defaults):
 				})
 
 	# the payment methods.
-	class methods:
+	class Methods:
 
 		# create method.
 		class Create(views.Request):
 			def __init__(self, defaults=None,):
+				views.Request.__init__(self, "requests/payments/methods/", "create", website=defaults.website)
 				_defaults_.Defaults.__init__(self)
 				self.assign(defaults.dict())
-				views.Request.__init__(self, "requests/payments/methods/", "create")
 			def request(self, request):
 
 				# check overall rate limit.
@@ -247,9 +250,9 @@ class Requests(_defaults_.Defaults):
 		# delete method.
 		class Delete(views.Request):
 			def __init__(self, defaults=None,):
+				views.Request.__init__(self, "requests/payments/methods/", "delete", website=defaults.website)
 				_defaults_.Defaults.__init__(self)
 				self.assign(defaults.dict())
-				views.Request.__init__(self, "requests/payments/methods/", "delete")
 			def request(self, request):
 
 				# check overall rate limit.
@@ -274,9 +277,9 @@ class Requests(_defaults_.Defaults):
 		# list methods.
 		class List(views.Request):
 			def __init__(self, defaults=None,):
+				views.Request.__init__(self, "requests/payments/methods/", "list", website=defaults.website)
 				_defaults_.Defaults.__init__(self)
 				self.assign(defaults.dict())
-				views.Request.__init__(self, "requests/payments/methods/", "list")
 			def request(self, request):
 
 				# check overall rate limit.
