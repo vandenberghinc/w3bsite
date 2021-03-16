@@ -128,8 +128,6 @@ class VPS(_defaults_.Defaults):
 			return dev0s.response.error(f"Required requirements file {self.root}/requirements/requirements.pip does not exist.", log_level=log_level)
 		data = Files.load(f"{self.root}/requirements/installer")
 		installed_alias = data.split('alias="')[1].split('"')[0]
-		#installed_location = data.split('package="')[1].split('"')[0].replace("$alias", installed_alias)
-		installed_location = self.library
 
 		# check connection.
 		if log_level >= 0: loader.mark(new_message=f"Attempting to connect with vps {self.ip}")
@@ -137,7 +135,7 @@ class VPS(_defaults_.Defaults):
 		if "Permission denied (publickey)" in output:
 			if log_level >= 0:  loader.stop(success=False)
 			data = Files.load(f'{self.root}/__defaults__/ssh/public_key').replace('\n','')
-			return dev0s.response.error(f"Unable to connect with {self.domain} over ssh (permission denied). Did you install public key {data} into the vps server?", log_level=log_level)
+			return dev0s.response.error(f"Unable to connect with {self.domain} over ssh (permission denied). Did you install public key [{data}] into the vps server?", log_level=log_level)
 		elif "Hello World" not in output:
 			if log_level >= 0:  loader.stop(success=False)
 			return dev0s.response.error(f"Unable to connect with {self.domain} over ssh, ssh output: \n{output}.", log_level=log_level)
@@ -150,47 +148,43 @@ class VPS(_defaults_.Defaults):
 		# copy current source to vps & installer script.		
 		if log_level >= 0: loader.mark(new_message=f"Installing source code of website {self.domain} on vps {self.ip}")
 		package_name = gfp.name(path=self.root)
-		if code_update:
-			tmp = self.library
-		else:
-			tmp = f"/tmp/{package_name}/"
 		response = ssht00ls.ssync.push(
 			alias=self.domain,
 			path=self.root,
-			remote=tmp,
+			remote=self.library,
 			checks=False,
 			directory=True,
-			delete=True,
+			delete=not code_update,
 			check_base=False,)
 		if not response.success: 
 			if log_level >= 0: loader.stop(success=False)
 			return dev0s.response.error(f"Failed to deploy website {self.domain} on vps {self.ip}, error (#1): {response.error}.", log_level=log_level)
-		#dev0s.response.log(f"&ORANGE&Do not forget&END& to remove the [{tmp}/website.py] file.")
+		#dev0s.response.log(f"&ORANGE&Do not forget&END& to remove the [{self.library}/website.py] file.")
 		#response = ssht00ls.ssh.command(
 		#	alias=self.domain,
-		#	command=f"rm -fr {tmp}/website.py",
+		#	command=f"rm -fr {self.library}/website.py",
 		#	log_level=-1,)
 		#if not response.success: return response
 
 		# install new requirements
-		path = gfp.clean(f"{tmp}/requirements/requirements.pip")
+		path = gfp.clean(f"{self.library}/requirements/requirements.pip")
 		if log_level >= 0: loader.mark(new_message=f"Installing requirements {path} on vps {self.ip}")
 		response = ssht00ls.ssh.command(
 			alias=self.domain,
-			command=f'''python3 -m pip install -r {path} --user {self.username}\nif [[ -d "/www-data/venv/" ]] ; then\n    /www-data/venv/bin/pip3 install -r {path}\nfi''',
+			command=f'''python3 -m pip install -r {path} --user {self.username}\n#if [[ -d "/www-data/venv/" ]] ; then\n#    /www-data/venv/bin/pip3 install -r {path}\n#fi''',
 			log_level=-1,)
 		if not response.success: 
 			if log_level >= 0: loader.stop(success=False)
 			return dev0s.response.error(f"Failed to deploy website {self.domain} on vps {self.ip}, error (#2): {response.error}.", log_level=log_level)
-
 
 		# execute installer script.
 		if not code_update:
 			if log_level >= 0: loader.mark(new_message=f"Executing installer script of website {self.domain} on vps {self.ip}")
 			response = ssht00ls.ssh.command(
 				alias=self.domain,
-				command=f"chmod +x {tmp}/requirements/installer && bash {tmp}/requirements/installer{installer_arguments}",
-				log_level=-1,)
+				command=f"chmod +x {self.library}/requirements/installer && bash {self.library}/requirements/installer{installer_arguments}",
+				#log_level=-1,
+			)
 			if not response.success: 
 				if log_level >= 0: loader.stop(success=False)
 				return dev0s.response.error(f"Failed to deploy website {self.domain} on vps {self.ip}, error (#2): {response.error}.", log_level=log_level)
@@ -199,8 +193,9 @@ class VPS(_defaults_.Defaults):
 			if log_level >= 0: loader.mark(new_message=f"Deploying domain {self.domain} on vps {self.ip}")
 			response = ssht00ls.ssh.command(
 				alias=self.domain,
-				command=f"python3 {installed_location}/website.py --deploy{installer_arguments} --non-interactive",
-				log_level=-1,)
+				command=f"python3 {self.library}/website.py --deploy{installer_arguments} --non-interactive",
+				#log_level=-1,
+			)
 			if not response.success:
 				if log_level >= 0: loader.stop(success=False)
 				return dev0s.response.error(response.error, log_level=log_level)
@@ -210,11 +205,16 @@ class VPS(_defaults_.Defaults):
 
 		# code update restart.
 		else:
+			if log_level >= 0: loader.mark(new_message=f"Restarting website {self.domain} on vps {self.ip}")
 			response = ssht00ls.ssh.command(
 				alias=self.domain,
 				command=f"python3 {self.library}/website.py --restart --non-interactive",
-				log_level=-1,)
-			if not response.success: return response
+				log_level=1,
+				#log_level=-1,
+			)
+			if not response.success: 
+				if log_level >= 0: loader.stop(success=False)
+				return response
 
 		# handler.
 		if log_level >= 0: loader.stop()

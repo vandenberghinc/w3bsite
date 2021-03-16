@@ -100,14 +100,14 @@ class Request(Object):
 
 	# default responses.
 	def maintenance(self):
-		return self.error("Domain is under maintenance.")
+		return self.error(f"Domain is under maintenance [503] ({self.url}).")
 	def permission_denied(self, request=None):
-		return self.error("Permission denied.")
+		return self.error(f"Permission denied [403] ({self.url}).")
 	def _404(self, request=None, error=None):
-		return self.error("Page not found [404].")
+		return self.error(f"Page not found [404] ({self.url}).")
 	def _500(self, request=None, error=None):
 		info = utils.catch_error(error)
-		return self.error("Server error [500].")
+		return self.error(f"Server error [500] ({self.url}).")
 
 	# the view function.
 	def __view__(self, request):
@@ -248,6 +248,7 @@ class View(Object):
 			"ERROR_ID":str(info["id"]),
 			"DEBUG":str(debug),
 			"TRACEBACK":str(traceback),
+			"URL":self.url,
 		}))
 
 	# append template data.
