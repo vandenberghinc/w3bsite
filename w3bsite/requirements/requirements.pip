@@ -15,6 +15,6 @@ xmltodict
 stripe
 
 # inc packages.
-dev0s>=3.21.4
+dev0s>=3.21.5
 ssht00ls>=3.28.2
 
