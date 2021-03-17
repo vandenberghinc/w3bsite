@@ -11,7 +11,7 @@ class Documentations(View):
 		# the chapter title.
 		title="Chapter Title",
 		# the chapter's sections.
-		sections={},
+		sections=[],
 		# whether the chapter is folded in the leftbar or not.
 		folded=True,
 	):
@@ -25,11 +25,12 @@ class Documentations(View):
 	def section(self,
 		title="Section Title",
 		description=None,
-		attributes={},
-		parameters={},
-		code_areas={},
+		attributes=[],
+		parameters=[],
+		code_areas=[],
 	):
-
+		if isinstance(description, (list, Array)):
+			description = Array(description).string(joiner="\n")
 		description = self.__color_description__(description)
 		return {
 			"title":title,
@@ -55,6 +56,8 @@ class Documentations(View):
 		# whether the parameter is folded by default or not.
 		folded=False,
 	):
+		if isinstance(description, (list, Array)):
+			description = Array(description).string(joiner="\n")
 		return self.__parameter_attribute__(
 			id=id,
 			format=format,
@@ -71,6 +74,8 @@ class Documentations(View):
 		# whether the attribute is folded by default or not.
 		folded=False,
 	):
+		if isinstance(description, (list, Array)):
+			description = Array(description).string(joiner="\n")
 		return self.__parameter_attribute__(
 			id=id,
 			format=format,
@@ -85,7 +90,7 @@ class Documentations(View):
 		content={
 			"json":{},
 			"python":"",
-			# use your own. Unknown types are just non colored strings.
+			# Unknown types are just non colored strings.
 		},
 		# the content css style with python_like or jsLike keys.
 		styles={
@@ -742,6 +747,8 @@ class Documentations(View):
 			"default":default,
 			"element_id":self.__generate_element_id__(),
 		}
+		#
+
 	# system functions.
 	def __parameter_attribute__(self,
 		id="my_variable",
@@ -750,6 +757,8 @@ class Documentations(View):
 		required=False,
 		folded=None,
 	):
+		if isinstance(description, (list, Array)):
+			description = Array(description).string(joiner="\n")
 		if isinstance(format, str):
 			format = [format]
 		elif not isinstance(format, list):
@@ -765,6 +774,7 @@ class Documentations(View):
 		}
 	def __generate_element_id__(self, joiner=""):
 		return joiner+String("").generate(length=32, digits=True, capitalize=True)
+		#
 	def __create_word__(self, color=None, italic=False, type=None, word="", linecount=None, joiner="", language=None, styles={}):
 		colors = {
 			"red":"#FF0071",
@@ -793,6 +803,8 @@ class Documentations(View):
 				if " " in tag: tag = tag.replace(" ", "")
 				else: break
 			return tag
+		if isinstance(description, (list, Array)):
+			description = Array(description).string(joiner="\n")
 		words, c, open, closing, chars, max = [], 0, False, False, "", len(description)
 		while c < max:
 			add_char = True
@@ -867,6 +879,9 @@ class Documentations(View):
 			variable = dictionary
 		else: raise ValueError(f"Unknown variable format: {variable}")
 		return variable
+		#
+
+	#
 
 # the documentation view.
 class DocumentationView(View):
@@ -882,8 +897,6 @@ class DocumentationView(View):
 		html=None,
 		# enable if this view is the [/] landing page.
 		landing_page=False,
-		# the template data (required).
-		template_data={},
 		# the default chapter library.
 		chapters=None,
 		# insert specific colors (insert mode).
@@ -898,7 +911,7 @@ class DocumentationView(View):
 			url=url,
 			html=html,
 			landing_page=landing_page,
-			template_data=template_data,
+			website=website,
 			# the view type.
 			type="DocumentationView",)
 		self.website = website
@@ -953,21 +966,14 @@ class DocumentationView(View):
 			# custom colors.
 			# ...
 		}
-		for key, value in colors.items():self.colors[key] = value
-		self.template_data["COLORS"] = self.colors
-		try:
-			self.template_data["CHAPTERS"] = {}
-		except KeyError:
-			self.template_data["CHAPTERS"] = {}
-		self.template_data["leftbar_width"] = "250px"
+		for key, value in colors.items(): self.colors[key] = value
+		self.website.template_data = self.website.template({
+			"COLORS":self.colors,
+			"LEFTBAR_WIDTH":"250px",
+		})
 
-		# arguments.
-		if chapters != None:
-			while True:
-				if len(chapters) > 0 and chapters[0] == "/": chapters = chapters[1:]
-				elif len(chapters) > 0 and chapters[len(chapters)-1] == "/": chapters = chapters[:-1]
-				else: break
-			self.include_chapters(chapters)
+		# chapters.
+		self.include_chapters(chapters)
 
 		#
 	def view(self, request):
@@ -976,33 +982,66 @@ class DocumentationView(View):
 		if response.success:
 			response = self.website.users.get_api_key(email=response.email)
 			if response.success: api_key = response.api_key
-		template_data = dict(self.template_data)
-		template_data["api_key"] = api_key
-		template_data["URL"] = self.url
-		template_data["CHAPTERS"] = self.chapters
 		if self.website.maintenance: return self.maintenance(request)
-		return render(request, f"{ALIAS}/classes/views/html/documentation_view.html", template_data)
-	def include_chapters(self, chapters_library):
-		if not Files.exists(chapters_library):
-			raise ValueError(f"Specified DocumentationView chapters library {chapters_library} does not exist.")
-		self.chapters = {}
-		if os.path.isdir(chapters_library):
-			chapters_library += "/"
-			replaced = chapters_library.replace('/','.').replace(".py", "")
-			for path in Files.Directory(chapters_library).paths():
+		return self.render(request=request, html=f"w3bsite/classes/views/html/documentation_view.html", template_data={
+			"API_KEY":api_key,
+			"URL":self.url,
+			"CHAPTERS":self.chapters,
+		})
+	def include_chapters(self, chapters, reset=True):
+		if isinstance(chapters, (str, String, FilePath)):
+			chapters = str(chapters)
+			while True:
+				if len(chapters) > 0 and chapters[0] == "/": chachapterspters = chapters[1:]
+				elif len(chapters) > 0 and chapters[len(chapters)-1] == "/": chapters = chapters[:-1]
+				else: break
+			if not Files.exists(chapters):
+				raise dev0s.exceptions.InvalidUsage(f"Specified DocumentationView chapters library {chapters} does not exist ({self.url}).")
+			if reset: self.chapters = {}
+			if os.path.isdir(chapters):
+				replaced = (gfp.clean(chapters, remove_first_slash=True, remove_last_slash=True)+"/").replace('/','.').replace(".py", "")
+				for path in Files.Directory(chapters).paths():
+					id = self.__generate_element_id__("chapt_")
+					name = FilePath(path).name().replace(".py", "")
+					if ".py" in path:
+						module = importlib.import_module(f"{replaced}{name}")
+					module_chapters = module.chapters
+					if isinstance(module_chapters, (list, Array)): # multiple chapters.
+						return self.include_chapters(module_chapters, reset=False)
+					elif isinstance(module_chapters, (dict, Dictionary)): # single chapter.
+						self.chapters[id] = module_chapters
+					else:
+						raise dev0s.exceptions.InvalidUsage(f"<dev0s.views.docs.DocumentationView.include_chapters> Imported module chapters from [{chapters}] must be a (Dictionary, Array) not [{module_chapters.__class__.__name__}] ({self.url}).")
+			else:
+				replaced = gfp.clean(chapters, remove_first_slash=True, remove_last_slash=True).replace('/','.').replace(".py", "")
+				name = FilePath(chapters).name().replace(".py", "")
+				module = importlib.import_module(f"{replaced}")
 				id = self.__generate_element_id__("chapt_")
-				name = FilePath(path).name().replace(".py", "")
-				if ".py" in path:
-					module = importlib.import_module(f"{replaced}{name}")
-					self.chapters[id] = module.chapter
+				module_chapters = module.chapters
+				if isinstance(module_chapters, (list, Array)): # multiple chapters.
+					return self.include_chapters(module_chapters, reset=False)
+				elif isinstance(module_chapters, (dict, Dictionary)): # single chapter.
+					self.chapters[id] = module_chapters
+				else:
+					raise dev0s.exceptions.InvalidUsage(f"<dev0s.views.docs.DocumentationView.include_chapters> Imported module chapters from [{chapters}] must be a (Dictionary, Array) not [{module_chapters.__class__.__name__}] ({self.url}).")
+		elif isinstance(chapters, (list, Array)):
+			if reset: self.chapters = {}
+			for item in chapters:
+				self.chapters[item["element_id"]] = item
+		elif isinstance(chapters, dict):
+			if reset: 
+				self.chapters = chapters
+			else:
+				self.chapters = Dictionary(self.chapters) + chapters
+		elif isinstance(chapters, Dictionary):
+			if reset: 
+				self.chapters = chapters.dictionary
+			else:
+				self.chapters = Dictionary(self.chapters) + chapters.dictionary
 		else:
-			replaced = chapters_library.replace('/','.').replace(".py", "")
-			name = FilePath(chapters_library).name().replace(".py", "")
-			module = importlib.import_module(f"{replaced}")
-			id = self.__generate_element_id__("chapt_")
-			self.chapters[id] = module.chapter
+			raise dev0s.exceptions.InvalidUsage(f"<dev0s.views.docs.DocumentationView.include_chapters> Parameter [chapters] must be a (String, FilePath, Dictionary, Array) not [{chapters.__class__.__name__}] ({self.url}).")
 	def __generate_element_id__(self, joiner=""):
-		return joiner+String("").generate(length=32, digits=True, capitalize=True)
+		return joiner+String().generate(length=32, digits=True, capitalize=True)
 	
 
 # initialized docs.

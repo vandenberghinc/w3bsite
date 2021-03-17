@@ -5,6 +5,7 @@
 	<!-- HEADER -->
 	<head>
 		<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+		{% include "dev0s/lib/js/dev0s.html" %}
 	</head>
 	
 	<!-- JAVASCRIPT -->
@@ -80,7 +81,7 @@
 			box-shadow: 0px 0px 15px #00000050;
 			/*border-right: 1px solid #79797925;*/
 			border-right: 1px solid {{COLORS.white}}35;
-			width: {{leftbar_width}}; 
+			width: {{LEFTBAR_WIDTH}}; 
 			/*border-right: 1px solid #42424225;*/
 		}
 		.leftbar_chapter_container {
@@ -604,6 +605,7 @@
 	</script>
 	{% for chapter_id, chapter in CHAPTERS.items %}
 		<script type="text/javascript">
+			console.log("CHAPTER ID: {{chapter_id}}")
 			DOCS["chapters"]["{{chapter_id}}"] = {}
 		</script>
 		{% for key, value in chapter.items %}
@@ -723,7 +725,7 @@
 			var content = document.getElementById("content")
 			if (mode == "show") {
 				leftbar.style.display = "block"
-				content.style.left = "{{leftbar_width}}"
+				content.style.left = "{{LEFTBAR_WIDTH}}"
 				LEFTBAR_OPEN = true
 			} else if (mode == "hide") {
 				leftbar.style.display = "none"
@@ -1394,7 +1396,7 @@
 																var html = ""
 																var language = "{{language}}".toLowerCase()
 																code_area.setAttribute(language, "true")
-																LANGUAGES.push_if_not_included(language)
+																LANGUAGES.append_if_not_included(language)
 															</script>
 															<!-- words -->
 															{% for word in words %}
