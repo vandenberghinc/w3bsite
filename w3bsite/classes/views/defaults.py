@@ -283,7 +283,18 @@ class View(Object):
 		# the redirect url.
 		redirect="/dashboard/home/",
 		# overwrite default template data.
-		template_data=None):
+		template_data=None,
+		# pass arguments by dict.
+		serialized={},
+	):
+		if serialized != None:
+			title, message, icon, redirect_button, redirect = Dictionary(serialized).unpack({
+				"title":"Warning!",
+				"message":"Some error occured.",
+				"icon":"media/icons/warning.png",
+				"redirect_button":"Ok",
+				"redirect":"/dashboard/home/",
+			})
 		if template_data == None: template_data = self.website.template_data
 		if template_data == None: template_data = {}
 		title = title.replace("\n","")
