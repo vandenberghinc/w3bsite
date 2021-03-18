@@ -151,7 +151,7 @@ class Users(_defaults_.Defaults):
 		# save new user data.
 		data["timestamps"]["created"] = Date().date
 		data["keys"]["api_key"] = String().generate(length=48, capitalize=True, digits=True)
-		_response_ = self.encryption.encrypt(password)
+		_response_ = self.aes.encrypt(password)
 		if not _response_.success: return _response_
 		try:data["account"]
 		except: data["account"] = {}
@@ -902,7 +902,7 @@ class Users(_defaults_.Defaults):
 		response = self.load_data(email=email, username=username)
 		if not response.success: return response
 		data = response.data
-		_response_ = self.encryption.decrypt(data["account"]["password"])
+		_response_ = self.aes.decrypt(data["account"]["password"])
 		if not _response_.success: return _response_
 		password = _response_["decrypted"].decode()
 		return dev0s.response.success(f"Successfully retrieved the password of user {email}.",{
@@ -922,7 +922,7 @@ class Users(_defaults_.Defaults):
 		response = self.load_data(email=email, username=username)
 		if not response.success: return response
 		data = response.data
-		_response_ = self.encryption.encrypt(password)
+		_response_ = self.aes.encrypt(password)
 		if not _response_.success: _response_
 		try:data["account"]
 		except: data["account"] = {}

@@ -1,1 +1,1 @@
-from w3bsite.classes.apps.logging import requests
+from w3bsite.classes.apps.logging import requests, logging

@@ -43,19 +43,37 @@ class Django(_defaults_.Defaults):
 
 		#
 	def start(self, host="127.0.0.1", port="8000", production=False):
-
+		dev0s.response.log("&RED&START RUNNING&END&")
+		# check secret key.
+		os.chdir(self.root)
+		try:
+			add_secret_key = Files.load("__defaults__/env/json", format="json")["DJANGO_SECRET_KEY"] in ["False","True","None","","null",None,False,True]
+		except:
+			add_secret_key = True
 		# import main.
-		dev0s.env.export(export="__defaults__/env/json", env={
+		dev0s.env.export(export=["__defaults__/env/json"], env={
 			"PRODUCTION": str(production),
 			"INTERACTIVE":False,
 		})
+		if add_secret_key:
+			dev0s.env.export(export=["__defaults__/env/json"], env={
+				"DJANGO_SECRET_KEY":String().generate(capitalize=True, digits=True, length=128),
+			})
 		self.migrations()
+		"""
+		if not Files.exists("__defaults__/django/start"):
+			Files.copy(f"{SOURCE_PATH}/examples/__defaults__/django/start", "__defaults__/django/start")
+			Files.chmod("__defaults__/django/start", "+x")
+		os.system(f"__defaults__/django/start {dev0s.defaults.vars.executable} {host}:{port}")
+		"""
+		""" """
+		dev0s.response.log("&RED&START RUNNING&END&")
 		if dev0s.defaults.options.log_level >= 1:
 			dev0s.response.log(f"Starting {self.name}.", save=True)
-		os.chdir(self.root)
-		import manage
 		sys.argv = [f"{self.root}/manage.py", "runserver", f"{host}:{port}"]
+		import manage
 		manage.main()
+		
 
 		### OLD
 		'''
@@ -153,6 +171,7 @@ class Django(_defaults_.Defaults):
 		# handlers.
 		return dev0s.response.success(f"Successfully created app [{name}].")
 	def migrations(self, forced=False, log_level=dev0s.defaults.options.log_level):
+		dev0s.response.log("&RED&Starting migrations&END&")
 		if not Files.exists(f"{self.database}/data/"): os.mkdir(f"{self.database}/data/")
 		if not Files.exists(f"{self.database}/data/db.sqlite3") or forced:
 			dev0s.response.log(f"Applying {ALIAS} webserver migrations.")
@@ -168,8 +187,10 @@ class Django(_defaults_.Defaults):
 			if not response.success: return response
 			dev0s.env.export(export="__defaults__/env/json", env={"MIGRATIONS": False,})
 			#sys.argv = old_argv
+		dev0s.response.log("&GREEN&Done&END&")
 		return dev0s.response.success(f"Successfully checked the migrations.")
 	def collect_static(self, log_level=dev0s.defaults.options.log_level):
+		dev0s.response.log("&RED&Collecting static&END&")
 		if log_level >= 1:
 			dev0s.response.log(f"Checking the {ALIAS} webserver migrations.")
 		if not Files.exists(f"{self.database}/data/"): os.mkdir(f"{self.database}/data/")
@@ -180,6 +201,7 @@ class Django(_defaults_.Defaults):
 		dev0s.env.export(export="__defaults__/env/json", env={
 			"MIGRATIONS": str(False),
 		})
+		dev0s.response.log("&GREEN&Done&END&")
 		return dev0s.response.success(f"Successfully checked the static files.")
 
 # the django database users.

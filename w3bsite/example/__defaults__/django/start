@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+base=$(dirname $(dirname $0))
+executable=$1
+address=$2
+if [[ "$3" == "true" || "$3" == "True" ]] ; then
+	export LIVE="True"
+else
+	export LIVE="False"
+fi
+if [[ "$OSTYPE" =~ "darwin" ]] ; then
+	source $base/__defaults__/env/bash
+	$executable $base/manage.py runserver $address
+else
+	. $base/__defaults__/env/bash
+	$executable $base/manage.py runserver $address
+fi

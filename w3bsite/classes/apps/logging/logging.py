@@ -7,9 +7,12 @@ from w3bsite.classes.utils import utils
 import shutil, math, time
 
 # the system control class.
-class Logging(object):
+class Logging(Object):
 	def __init__(self, database=None):
 
+		# defaults.
+		Object.__init__(self)
+		
 		# attributes.
 		self.database = database
 		if isinstance(self.database, (str,String,FilePath)):

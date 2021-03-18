@@ -6,6 +6,7 @@ from w3bsite.classes.config import *
 from w3bsite.classes import security, heroku, namecheap, utils, git, stripe, rate_limit, deployment, vps, defaults, apps, views
 from w3bsite.classes import database as _database_
 from w3bsite.classes.apps.metrics import metrics
+from w3bsite.classes.apps.logging import logging
 import django as pypi_django
 
 # the main website class.
@@ -452,6 +453,7 @@ class Website(dev0s.cli.CLI,Traceback):
 			response = self.aes.generate_keys()
 			if not response.success:
 				return response
+		self.logging = logging.Logging(database=self.database)
 		self.defaults = defaults.Defaults({
 			"root":self.root,
 			"library":self.library,
@@ -475,7 +477,8 @@ class Website(dev0s.cli.CLI,Traceback):
 			"users_subpath":self.users_subpath,
 			"template_data":self.template_data,
 			"id_by_username":self.id_by_username,
-			"aes":self.aes, })
+			"aes":self.aes, 
+			"logging":self.logging,})
 		self.template = self.defaults.template
 		self.utils = utils.Utils(attributes=self.defaults.attributes())
 
@@ -511,9 +514,14 @@ class Website(dev0s.cli.CLI,Traceback):
 			defaults=self.defaults,)
 		if not os.path.exists("__defaults__/django/settings.py"): raise ImportError(f"Invalid website hierarchy, unable to find: __defaults__.django.settings, required location: {self.root}/__defaults__/django/settings.py")
 		os.environ.setdefault('DJANGO_SETTINGS_MODULE', f'__defaults__.django.settings')
+		dev0s.system.env.import_(env="__defaults__/env/json")
+		dev0s.response.log("&RED&IMPORTING SETTINGS&END&")
 		from __defaults__.django import settings
-		try:pypi_django.setup()
-		except: a=1
+		dev0s.response.log("&RED&ATTEMPT DJANGO SETUP&END&")
+		pypi_django.setup()
+		#try:pypi_django.setup()
+		#except: a=1
+		dev0s.response.log("&GREEN&DONE&END&")
 		from w3bsite.classes import django, users
 		self.django = django.Django(
 			security=self.security,
@@ -578,6 +586,7 @@ class Website(dev0s.cli.CLI,Traceback):
 			stripe=self.stripe,
 			utils=self.utils,
 			defaults=self.defaults,)
+		self.metrics = metrics.Metrics(database=self.database)
 
 		# defaults.
 		dev0s.cli.CLI.__init__(self,
