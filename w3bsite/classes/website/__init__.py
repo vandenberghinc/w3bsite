@@ -515,13 +515,13 @@ class Website(dev0s.cli.CLI,Traceback):
 		if not os.path.exists("__defaults__/django/settings.py"): raise ImportError(f"Invalid website hierarchy, unable to find: __defaults__.django.settings, required location: {self.root}/__defaults__/django/settings.py")
 		os.environ.setdefault('DJANGO_SETTINGS_MODULE', f'__defaults__.django.settings')
 		dev0s.system.env.import_(env="__defaults__/env/json")
-		dev0s.response.log("&RED&IMPORTING SETTINGS&END&")
+		#dev0s.response.log("&RED&IMPORTING SETTINGS&END&")
 		from __defaults__.django import settings
-		dev0s.response.log("&RED&ATTEMPT DJANGO SETUP&END&")
+		#dev0s.response.log("&RED&ATTEMPT DJANGO SETUP&END&")
 		pypi_django.setup()
 		#try:pypi_django.setup()
 		#except: a=1
-		dev0s.response.log("&GREEN&DONE&END&")
+		#dev0s.response.log("&GREEN&DONE&END&")
 		from w3bsite.classes import django, users
 		self.django = django.Django(
 			security=self.security,
