@@ -23,11 +23,19 @@ class Documentations(View):
 			"element_id":self.__generate_element_id__(),
 		}
 	def section(self,
+		# the title (str, list) (required).
 		title="Section Title",
+		# the description (str, list) (required).
 		description=None,
+		# the attributes (list) (required).
 		attributes=[],
+		# the parameters (list) (required).
 		parameters=[],
+		# the code areas (list) (required).
 		code_areas=[],
+		# system variables.
+		# the section type (str) (required).
+		type="section",
 	):
 		if isinstance(description, (list, Array)):
 			description = Array(description).string(joiner="\n")
@@ -43,7 +51,28 @@ class Documentations(View):
 			"code_areas":self.__assign_element_ids__(code_areas, key="element_id"),
 			"code_areas_count":len(code_areas),
 			"element_id":self.__generate_element_id__(),
+			"type":type,
 		}
+	def subsection(self,
+		# the title (str, list) (required).
+		title="Sub Section Title",
+		# the description (str, list) (required).
+		description=None,
+		# the attributes (list) (required).
+		attributes=[],
+		# the parameters (list) (required).
+		parameters=[],
+		# the code areas (list) (required).
+		code_areas=[],
+	):
+		return self.section(
+			title=title,
+			description=description,
+			attributes=attributes,
+			parameters=parameters,
+			code_areas=code_areas,
+			type="subsection",
+		)
 	def parameter(self,
 		# the parameters id.
 		id="my_variable",
@@ -63,7 +92,8 @@ class Documentations(View):
 			format=format,
 			description=self.__color_description__(description),
 			required=required,
-			folded=folded,)
+			folded=folded,
+			type="parameter",)
 	def attribute(self,
 		# the attributes id.
 		id="my_variable",
@@ -80,7 +110,8 @@ class Documentations(View):
 			id=id,
 			format=format,
 			description=self.__color_description__(description),
-			folded=folded,)
+			folded=folded,
+			type="attribute",)
 	def code_area(self,
 		# the header title.
 		title="my_variable",
@@ -534,8 +565,22 @@ class Documentations(View):
 											break
 									if nointeger in [True, None]: break
 								"""
-								if last[str(len(i)+1)] not in [f" {int_chars}",f"\n{int_chars}",f"\r{int_chars}",f"({int_chars}",f"={int_chars}",f"+{int_chars}",f"-{int_chars}","{"+f"{int_chars}"]:
-								#if lastchar not in [" ","\n","\r","(","=","+","-","{"]:
+								#print(i)
+								no_integer = False
+								for i in [
+									f" {int_chars}",
+									f"\n{int_chars}",
+									f"\r{int_chars}",
+									f"({int_chars}",
+									f"={int_chars}",
+									f"+{int_chars}",
+									f"-{int_chars}",
+									"{"+f"{int_chars}",
+								]:
+
+									if last[str(len(i)+1)] in i:
+										no_integer = True
+								if no_integer:
 									int_chars = ""
 								else:
 									words.append(self.__create_word__(word=_chars_[:-len(int_chars)], joiner="", language=language))
@@ -756,9 +801,8 @@ class Documentations(View):
 		description=None,
 		required=False,
 		folded=None,
+		type=None,
 	):
-		if isinstance(description, (list, Array)):
-			description = Array(description).string(joiner="\n")
 		if isinstance(format, str):
 			format = [format]
 		elif not isinstance(format, list):
@@ -771,6 +815,7 @@ class Documentations(View):
 			"folded":folded,
 			"required":required,
 			"element_id":self.__generate_element_id__(),
+			"type":type,
 		}
 	def __generate_element_id__(self, joiner=""):
 		return joiner+String("").generate(length=32, digits=True, capitalize=True)

@@ -76,7 +76,7 @@
 			left: 0px;
 			bottom: 0px; 
 			margin: 0px 0px 0px 0px; 
-			padding: 0px 0px 0px 0px; 
+			padding: 0px 0px 100px 0px; 
 			display: block; 
 			box-shadow: 0px 0px 15px #00000050;
 			/*border-right: 1px solid #79797925;*/
@@ -84,13 +84,20 @@
 			width: {{LEFTBAR_WIDTH}}; 
 			/*border-right: 1px solid #42424225;*/
 		}
+		.leftbar_content {
+			overflow: scroll; 
+			position: relative; 
+			width: 100%; 
+			height: 100%; 
+			/*padding-bottom: 150px;*/
+		}
 		.leftbar_chapter_container {
 			margin: 0px 0px 0px 0px;
 			padding: 0px 15px 10px 15px;
 		}
 		.leftbar_chapter_title {
 			font-family: Avenir Next;
-			font-weight: 600;
+			font-weight: 500;
 			margin-top: 0px; 
 			font-size: 16px;
 			margin: 12px 0px 00px 0px;
@@ -324,9 +331,10 @@
 		.parameter_description {
 			font-family: Avenir Next;
 			text-align: left;
-			font-size: 16px;
-			margin-top: 5px;
-			color: {{ COLORS.white }}; 
+			font-size: 14px;
+			font-weight: 200;
+			margin-top: 7.5px;
+			color: {{ COLORS.white }}99; 
 		}
 		.parameter_divider {
 			margin: 0px 0px 0px 0px;
@@ -622,7 +630,10 @@
 						DOCS["chapters"]["{{chapter_id}}"]["sections"]["{{section_id}}"] = {}
 					</script>
 					{% for key, value in section.items %}
-						{% if key != "parameters" and key != "attributes" and key != "code_areas" %}
+						{% if key == "parameters" and key == "attributes" and key == "code_areas" and key == "styling" and key == "colors" %}
+							<script type="text/javascript">
+								DOCS["chapters"]["{{chapter_id}}"]["sections"]["{{section_id}}"]["{{key}}"] = {}
+							</script>
 							{% for key_, value_ in value.items %}
 								<script type="text/javascript">
 									DOCS["chapters"]["{{chapter_id}}"]["sections"]["{{section_id}}"]["{{key}}"]["{{key_}}"] = `{{value_}}`
@@ -1002,7 +1013,7 @@
 		    document.body.appendChild(p)
 		    setTimeout(function() {
 		    	document.body.removeChild(p)
-		    }, 200)
+		    }, 500)
 		}
 
 		// select leftbar section.
@@ -1035,28 +1046,33 @@
 				var html = ""
 				Object.entries(sections).forEach(function([section_id, section]) {
 
-					// add topbar dropdown selector.
-					var option = document.createElement("option")
-					option.title = CHAPTER_TITLES[chapter_id]
-					// option.innerHTML = CHAPTER_TITLES[chapter_id]
-					option.innerHTML = option.value = SECTION_TITLES[chapter_id][section_id]
-					//option.value = option.innerHTML = SECTION_TITLES[chapter_id][section_id]
-					//option.value = option.innerHTML = SECTION_TITLES[chapter_id][section_id]
-					option.setAttribute("chapter_id", chapter_id)
-					option.setAttribute("section_id", section_id)
-					optgroup.appendChild(option)
+					// skip subsections.
+					console.log("section type: "+JSON.stringify(DOCS["chapters"][chapter_id]["sections"][section_id]))
+					if (DOCS["chapters"][chapter_id]["sections"][section_id]["type"] == "section") {
 
-					// add leftbar sections.
-					html += `
-						<div class="leftbar_section_container">
-							<div class="leftbar_section_divider"></div>
-							<a href="#" class="empty inherit" onclick="select_section_handler('${section_id}')">
-								<h1 selected="false" section_id="${section_id}" class="leftbar_section_title" onmouseover="this.style.color='{{COLORS.white}}'" onmouseout="if (this.getAttribute('selected') == 'false') this.style.color='{{COLORS.white}}95 '">
-									`+SECTION_TITLES[chapter_id][section_id]+`
-								</h1>
-							</a>	
-						</div>	
-					 `
+						// add topbar dropdown selector.
+						var option = document.createElement("option")
+						option.title = CHAPTER_TITLES[chapter_id]
+						// option.innerHTML = CHAPTER_TITLES[chapter_id]
+						option.innerHTML = option.value = SECTION_TITLES[chapter_id][section_id]
+						//option.value = option.innerHTML = SECTION_TITLES[chapter_id][section_id]
+						//option.value = option.innerHTML = SECTION_TITLES[chapter_id][section_id]
+						option.setAttribute("chapter_id", chapter_id)
+						option.setAttribute("section_id", section_id)
+						optgroup.appendChild(option)
+
+						// add leftbar sections.
+						html += `
+							<div class="leftbar_section_container">
+								<div class="leftbar_section_divider"></div>
+								<a href="#" class="empty inherit" onclick="select_section_handler('${section_id}')">
+									<h1 selected="false" section_id="${section_id}" class="leftbar_section_title" onmouseover="this.style.color='{{COLORS.white}}'" onmouseout="if (this.getAttribute('selected') == 'false') this.style.color='{{COLORS.white}}95 '">
+										`+SECTION_TITLES[chapter_id][section_id]+`
+									</h1>
+								</a>	
+							</div>	
+						`
+					}
 
 				})
 
@@ -1064,9 +1080,7 @@
 				topbar_select.appendChild(optgroup)
 
 				// add leftbar chapter.
-
 				leftbar_content.innerHTML += `
-					<div class="leftbar_chapter_divider"></div>
 					<div class="leftbar_chapter_container">
 						<a href="#" class="empty inherit nomargin nopadding wrapper" onclick="fold_leftbar_chapter('${chapter_id}', 'toggle')">
 							<h1 class="leftbar_chapter_title" style="flex: 1; width: 100%;">
@@ -1078,6 +1092,7 @@
 							${html}
 						</div>
 					</div>
+					<div class="leftbar_chapter_divider"></div>
 				`
 				if (DOCS["chapters"][chapter_id]["folded"] == true) {
 					fold_leftbar_chapter(`${chapter_id}`, 'fold')
@@ -1124,10 +1139,10 @@
 				<div style="width: 100%; padding: 10px 0px 10px 0px;">
 					<div class="wrapper" style=" width: 190px;">
 						<a href="/" class="empty_a nomargin nopadding" style="margin-top: 12.5px; margin-left: 15px;">
-							<img src="{% static 'favicon.png' %}" width="15px" height="15px" style="">
+							<img src="{% static 'favicon.png' %}" width="20px" height="20px" style="">
 						</a>
-						<h1 class="title nopadding nomargin" style="font-weight: 500; font-size: 12px; margin-top: 13px; margin-left: 10px; color: {{COLORS.white}}95;">
-							VANDENBERGHINC
+						<h1 class="title nopadding nomargin" style="font-weight: 500; font-size: 14px; margin-top: 13px; margin-left: 10px; color: {{COLORS.white}}95;">
+							VanDenBerghInc
 						</h1>
 					</div>
 					<!--
@@ -1136,7 +1151,8 @@
 					</div>
 					-->
 				</div>
-				<div id="leftbar.content" style="overflow: scroll; position: relative; width: 100%; height: 100%;">
+				<div class="leftbar_chapter_divider"></div>
+				<div id="leftbar.content" class="leftbar_content">
 					<!-- example. -->
 					<div class="leftbar_chapter_divider"></div>
 					<div class="leftbar_chapter_container">
@@ -1204,9 +1220,15 @@
 												SECTIONS_LEFT["{{chapter_id}}"]["{{section_id}}"] = document.getElementById("{{section.element_id}}.left")
 											</script>
 											{% if section.title != None %}
-												<h1 class="title">
-													{{ section.title }}
-												</h1>
+												{% if section.type == "section" %}
+													<h1 class="title">
+														{{ section.title }}
+													</h1>
+												{% else %}
+													<h1 class="subtitle">
+														{{ section.title }}
+													</h1>
+												{% endif %}
 											{% endif %}
 											{% if section.description_count > 0 %}
 												<h1 id="{{section_id}}.description" class="description">
@@ -1227,63 +1249,6 @@
 													element.appendChild(div)
 												</script>
 											{% endif %}
-
-											<!-- ITERATE ATTRIBUTES -->
-											{% if section.attributes_count > 0 %}
-												<h1 class="parameter_title">
-													Attributes	
-												</h1>
-											{% endif %}
-											{% for id, info in section.attributes.items %}
-												<div class="parameter_divider"></div>
-												<div id="{{info.element_id}}" class="parameter_container">
-													<script type="text/javascript">
-														ATTRIBUTES["{{chapter_id}}"]["{{section_id}}"]["{{info.element_id}}"] = document.getElementById("{{info.element_id}}")
-													</script>
-													<div id="{{info.element_id}}.fold" class="parameter_fold_button" onclick="fold_description('{{info.element_id}}', 'toggle')" style="position: absolute; top: -15px; right: 0px; z-index: 11;">
-														<a href="#" class="empty_a">
-															<img src="{% static 'media/docs/white/arrow.transparent.png' %}" width="15px" height="15px" class="chapter_img" style="">
-														</a>
-													</div>
-													<div class="parameter_name_container">
-														<h1 class="parameter_name">
-															{{info.id}}
-														</h1>
-														{% for format in info.format %}
-															<h1 class="parameter_instance">
-																{{format}}
-															</h1>
-														{% endfor %}
-													</div>
-													{% if info.description_count > 0 %}
-														<p id="{{info.element_id}}.description" class="parameter_description">
-														</p>
-														<script type="text/javascript">
-															var description = ""
-														</script>
-														{% for word in info.description %}
-															<script type="text/javascript">var styles={}</script>{% for key, value in word.styles.items %}<script type="text/javascript">styles["{{key}}"]="{{value}}"</script>{% endfor %}
-															<script type="text/javascript">
-																description += process_word(`{{word.value}}`, "{{word.color}}", "{{word.italic}}", "{{word.joiner}}", styles).replace("\n","<br>")
-															</script>
-														{% endfor %}
-														<script type="text/javascript">
-															var element = document.getElementById("{{info.element_id}}.description")
-															var div = document.createElement("div")
-															div.innerHTML = description
-															element.appendChild(div)
-														</script>
-													{% endif %}
-												</div>
-												<script type="text/javascript">
-													var id = "{{info.element_id}}"
-													var fold_button = document.getElementById(id+".fold")
-													var folded = parse_data("{{info.folded}}", "boolean")
-													if (folded == true || "{{info.description}}" == "None") { 
-														fold_description(id, "fold")
-													}
-												</script>
-											{% endfor %}
 
 											<!-- ITERATE PARAMETERS -->
 											{% if section.parameters_count > 0 %}
@@ -1341,11 +1306,69 @@
 													var id = "{{info.element_id}}"
 													var fold_button = document.getElementById(id+".fold")
 													var folded = parse_data("{{info.folded}}", "boolean")
-													if (folded == true || "{{info.description}}" == "None") { 
+													if ("{{info.description_count}}" != "0" && (folded == true || "{{info.description}}" == "None")) { 
 														fold_description(id, "fold")
 													}
 												</script>
 											{% endfor %}
+
+											<!-- ITERATE ATTRIBUTES -->
+											{% if section.attributes_count > 0 %}
+												<h1 class="parameter_title">
+													Attributes	
+												</h1>
+											{% endif %}
+											{% for id, info in section.attributes.items %}
+												<div class="parameter_divider"></div>
+												<div id="{{info.element_id}}" class="parameter_container">
+													<script type="text/javascript">
+														ATTRIBUTES["{{chapter_id}}"]["{{section_id}}"]["{{info.element_id}}"] = document.getElementById("{{info.element_id}}")
+													</script>
+													<div id="{{info.element_id}}.fold" class="parameter_fold_button" onclick="fold_description('{{info.element_id}}', 'toggle')" style="position: absolute; top: -15px; right: 0px; z-index: 11;">
+														<a href="#" class="empty_a">
+															<img src="{% static 'media/docs/white/arrow.transparent.png' %}" width="15px" height="15px" class="chapter_img" style="">
+														</a>
+													</div>
+													<div class="parameter_name_container">
+														<h1 class="parameter_name">
+															{{info.id}}
+														</h1>
+														{% for format in info.format %}
+															<h1 class="parameter_instance">
+																{{format}}
+															</h1>
+														{% endfor %}
+													</div>
+													{% if info.description_count > 0 %}
+														<p id="{{info.element_id}}.description" class="parameter_description">
+														</p>
+														<script type="text/javascript">
+															var description = ""
+														</script>
+														{% for word in info.description %}
+															<script type="text/javascript">var styles={}</script>{% for key, value in word.styles.items %}<script type="text/javascript">styles["{{key}}"]="{{value}}"</script>{% endfor %}
+															<script type="text/javascript">
+																description += process_word(`{{word.value}}`, "{{word.color}}", "{{word.italic}}", "{{word.joiner}}", styles).replace("\n","<br>")
+															</script>
+														{% endfor %}
+														<script type="text/javascript">
+															var element = document.getElementById("{{info.element_id}}.description")
+															var div = document.createElement("div")
+															div.innerHTML = description
+															element.appendChild(div)
+														</script>
+													{% endif %}
+												</div>
+												<script type="text/javascript">
+													var id = "{{info.element_id}}"
+													var fold_button = document.getElementById(id+".fold")
+													var folded = parse_data("{{info.folded}}", "boolean")
+													if ("{{info.description_count}}" != "0" && (folded == true || "{{info.description}}" == "None")) { 
+														fold_description(id, "fold")
+													}
+												</script>
+											{% endfor %}
+
 										</div>
 										<div id="{{section.element_id}}.right"class="section_right" >
 											<script type="text/javascript">
@@ -1415,7 +1438,9 @@
 																			if (char == "\n") {
 																				linecount += 1
 																				if (linecount == 1) {
-																					new_html += `<span class="code_linenumber">${linecount-1}:  </span>`
+																					new_html += `<span class="code_linenumber">${linecount-1}:   </span>`
+																				} else if (linecount <= 10) {
+																					new_html += `<br><span class="code_linenumber">${linecount-1}:   </span>`	
 																				} else {
 																					new_html += `<br><span class="code_linenumber">${linecount-1}:  </span>`	
 																				}
@@ -1451,6 +1476,9 @@
 								{% endfor %}
 							</div>
 						{% endfor %}
+						<p class="text" style="text-align: center; font-size: 6px; color: #FAFAFA; font-family: 'Avenir Next'; padding-top: 10px; font-weight: 300; padding-bottom: 10px;">
+							Copyright: © Daan van den Bergh 2020. All rights reserved.
+						</p>
 					</div>
 					
 
