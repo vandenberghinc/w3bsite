@@ -81,7 +81,17 @@ class Request(Object):
 		auth_required=False,
 		# root permission required.
 		root_required=False,
+		# overwrite default maintenance (bool) (leave None to use website.maintenance).
+		maintenance=None,
 	):
+
+
+		# docs.
+		DOCS = {
+			"module":"website.views.Request", 
+			"initialized":False,
+			"description":[], 
+			"chapter": "Views", }
 
 		# defaultss.
 		Object.__init__(self)
@@ -102,6 +112,8 @@ class Request(Object):
 		self.website = website
 		self.auth_required = auth_required
 		self.root_required = root_required
+		self.maintenance_ = maintenance
+		if self.maintenance_ == None: self.maintenance_ = self.website.maintenance
 
 		# checks.
 		if self.website.__class__.__name__ not in ["Website"]:
@@ -136,7 +148,12 @@ class Request(Object):
 	def maintenance(self, request=None):
 		return self._503(request=request)
 
-	# the view function.
+	"""
+	the view functions.
+	 - the request() function must be overwritten.
+	 - the __auth_view__ & __view__ are called before and should not be overwritten. """
+	def request(self, request):
+		return self.error(f"You did not define a default request() function for request [{self.url}].")
 	def __view__(self, request, count=True):
 
 		# count request.
@@ -145,6 +162,10 @@ class Request(Object):
 				"url":self.url,
 			})
 
+		# maintenance.
+		if self.maintenance_:
+			return self.maintenance(request=request)
+
 		# make request.
 		try: 
 			response = self.request(request)
@@ -152,7 +173,6 @@ class Request(Object):
 		return self.response(response)
 
 		#
-	#@method_decorator(login_required)
 	def __auth_view__(self, request, count=True):
 		
 		# count request.
@@ -196,9 +216,18 @@ class View(Object):
 		auth_required=False,
 		# root permission required.
 		root_required=False,
+		# overwrite default maintenance (bool) (leave None to use website.maintenance).
+		maintenance=None,
 		# the object type (do not edit).
 		type="View",
 	):
+
+		# docs.
+		DOCS = {
+			"module":"website.views.View", 
+			"initialized":False,
+			"description":[], 
+			"chapter": "Views", }
 
 		# defaults.
 		Object.__init__(self)
@@ -233,6 +262,8 @@ class View(Object):
 		self.type = type
 		self.auth_required = auth_required
 		self.root_required = root_required
+		self.maintenance_ = maintenance
+		if self.maintenance_ == None: self.maintenance_ = self.website.maintenance
 
 		# check html.
 		if self.type.lower() in ["view"] and "w3bsite/" not in self.html:
@@ -254,7 +285,6 @@ class View(Object):
 			raise dev0s.exceptions.InvalidUsage(f"You forgot to pass the initialized w3bsite.Website object as the [website] parameter ({self.url}).")
 
 		#
-	#@w3bsite.views.method_decorator(w3bsite.views.login_required)
 
 	# render functions.
 	def render(self, 
@@ -339,7 +369,11 @@ class View(Object):
 		if old == None: old = self.website.template_data
 		return utils.template(old=old, new=new, safe=safe)
 
-	# the view function.
+	# the view functions.
+	# the view() function can be overwritten.
+	# the __auth_view__ & __view__ are called before and should not be overwritten.
+	def view(self, request):
+		return self.render(request)
 	def __view__(self, request, count=True):
 
 		# count request.
@@ -347,6 +381,10 @@ class View(Object):
 			self.website.metrics.count_web_request(request, data={
 				"url":self.url,
 			})
+
+		# maintenance.
+		if self.maintenance_:
+			return self.maintenance(request=request)
 
 		# default view.
 		try: 

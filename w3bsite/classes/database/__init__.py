@@ -13,7 +13,8 @@ class Database(Traceback):
 		DOCS = {
 			"module":"website.db", 
 			"initialized":True,
-			"description":[], }
+			"description":[], 
+			"chapter": "Database", }
 
 		# traceback.
 		Traceback.__init__(self, traceback="w3bsite.Website.db")

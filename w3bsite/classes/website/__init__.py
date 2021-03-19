@@ -171,6 +171,12 @@ class Website(dev0s.cli.CLI,Traceback):
 		# optionally initizialize from a serialized dict (for config.py) (still requires parameters: root).
 		serialized=None,
 	):	
+		# docs.
+		DOCS = {
+			"module":"w3bsite.Website", 
+			"initialized":False,
+			"description":[], 
+			"chapter": "Website", }
 
 		# defaults.
 		Traceback.__init__(self, traceback="w3bsite.Website",)

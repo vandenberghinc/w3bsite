@@ -34,7 +34,11 @@ class Stripe(_defaults_.Defaults):
 		DOCS = {
 			"module":"website.stripe", 
 			"initialized":True,
-			"description":[], }
+			"description":[
+				"The <attribute>website.stripe</attribute> object class.",
+				"Used for managing the website's payments.",
+			], 
+			"chapter": "Payments", }
 
 		# defaults.
 		_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.stripe")
@@ -270,7 +274,8 @@ class Stripe(_defaults_.Defaults):
 			DOCS = {
 				"module":"website.stripe.customers", 
 				"initialized":True,
-				"description":[], }
+				"description":[], 
+				"chapter": "Payments", }
 
 			# defaults.
 			Object.__init__(self, traceback="w3bsite.Website.stripe.customers")
@@ -595,7 +600,8 @@ class Stripe(_defaults_.Defaults):
 			DOCS = {
 				"module":"website.stripe.subscriptions", 
 				"initialized":True,
-				"description":[], }
+				"description":[], 
+				"chapter": "Payments", }
 
 			# defaults.
 			Object.__init__(self, traceback="w3bsite.Website.stripe.subscriptions")
@@ -769,7 +775,8 @@ class Stripe(_defaults_.Defaults):
 			DOCS = {
 				"module":"website.stripe.plans", 
 				"initialized":True,
-				"description":[], }
+				"description":[], 
+				"chapter": "Payments", }
 
 			# defaults.
 			Object.__init__(self, traceback="w3bsite.Website.stripe.plans")
@@ -896,7 +903,8 @@ class Stripe(_defaults_.Defaults):
 			DOCS = {
 				"module":"website.stripe.products", 
 				"initialized":True,
-				"description":[], }
+				"description":[], 
+				"chapter": "Payments", }
 
 			# defaults.
 			Object.__init__(self, traceback="w3bsite.Website.stripe.products")

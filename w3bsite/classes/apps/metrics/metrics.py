@@ -10,6 +10,13 @@ import shutil, math, time
 class Metrics(object):
 	def __init__(self, database=None):
 
+		# docs.
+		DOCS = {
+			"module":"website.metrics", 
+			"initialized":True,
+			"description":[], 
+			"chapter": "Website", }
+
 		# history.
 		self.history = 7 # in days.
 

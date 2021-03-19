@@ -10,6 +10,13 @@ import shutil, math, time
 class Logging(Object):
 	def __init__(self, database=None):
 
+		# docs.
+		DOCS = {
+			"module":"website.logging", 
+			"initialized":True,
+			"description":[], 
+			"chapter": "Logging", }
+
 		# defaults.
 		Object.__init__(self)
 		
@@ -73,6 +80,13 @@ class Logging(Object):
 	# the alerts object class.
 	class Alerts(Object):
 		def __init__(self, attributes={}):
+
+			# docs.
+			DOCS = {
+				"module":"website.logging.alerts", 
+				"initialized":True,
+				"description":[], 
+				"chapter": "Logging", }
 
 			# defaults.
 			Object.__init__(self)

@@ -17,7 +17,8 @@ class Git(_defaults_.Defaults):
 		DOCS = {
 			"module":"website.git", 
 			"initialized":True,
-			"description":[], }
+			"description":[], 
+			"chapter": "Deployment", }
 
 		# defaults.
 		_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.git",)

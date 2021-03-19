@@ -20,6 +20,14 @@ class Products(View):
 		# the w3bsite.Website object.
 		website=None,
 	):
+
+		# docs.
+		DOCS = {
+			"module":"website.views.Products", 
+			"initialized":False,
+			"description":[], 
+			"chapter": "Views", }
+
 		# defaults.
 		View.__init__(self,
 			base=base,
@@ -53,6 +61,13 @@ class Product(View):
 		# the w3bsite.Website object.
 		website=None,
 	):
+		# docs.
+		DOCS = {
+			"module":"website.views.Product", 
+			"initialized":False,
+			"description":[], 
+			"chapter": "Views", }
+
 		# defaults.
 		View.__init__(self,
 			base=base,

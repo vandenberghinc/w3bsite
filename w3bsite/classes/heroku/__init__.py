@@ -33,7 +33,8 @@ class Heroku(object):
 		DOCS = {
 			"module":"website.heroku", 
 			"initialized":True,
-			"description":[], }
+			"description":[], 
+			"chapter": "Deployment", }
 
 		# arguments.
 		self.root = root

@@ -43,7 +43,8 @@ class Firebase(_defaults_.Defaults):
 		DOCS = {
 			"module":"website.firebase", 
 			"initialized":True,
-			"description":[], }
+			"description":[], 
+			"chapter": "Firebase", }
 		
 		# defaults.
 		_defaults_.Defaults.__init__(self)
@@ -87,7 +88,8 @@ class FireStore(object):
 		DOCS = {
 			"module":"website.firebase.firestore", 
 			"initialized":True,
-			"description":[], }
+			"description":[], 
+			"chapter": "Firebase", }
 
 		# initialize firestore.
 		self.db = firestore.client()
@@ -182,7 +184,8 @@ class Users(_defaults_.Defaults):
 		DOCS = {
 			"module":"website.firebase.users", 
 			"initialized":True,
-			"description":[], }
+			"description":[], 
+			"chapter": "Firebase", }
 
 		# defaults.
 		_defaults_.Defaults.__init__(self)

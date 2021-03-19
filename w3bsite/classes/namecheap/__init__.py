@@ -29,7 +29,8 @@ class Namecheap(Object):
 		DOCS = {
 			"module":"website.namecheap", 
 			"initialized":True,
-			"description":[], }
+			"description":[], 
+			"chapter": "Deployment", }
 
 		# defaults.
 		Object.__init__(self, traceback="w3bsite.Website.namecheap",)

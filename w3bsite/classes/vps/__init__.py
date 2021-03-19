@@ -25,7 +25,8 @@ class VPS(_defaults_.Defaults):
 		DOCS = {
 			"module":"website.vps", 
 			"initialized":True,
-			"description":[], }
+			"description":[], 
+			"chapter": "Deployment", }
 
 		# defaults.
 		_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.vps",)

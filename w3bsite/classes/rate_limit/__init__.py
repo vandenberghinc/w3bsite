@@ -16,7 +16,11 @@ class RateLimit(_defaults_.Defaults):
 		DOCS = {
 			"module":"website.ratelimit", 
 			"initialized":True,
-			"description":[], }
+			"description":[
+				"The <attribute>website.ratelimit</attribute> object class.",
+				"Used for managing the request limits.",
+			], 
+			"chapter": "Website", }
 
 		# defaults.
 		_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.ratelimit",)

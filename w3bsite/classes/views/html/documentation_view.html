@@ -613,7 +613,6 @@
 	</script>
 	{% for chapter_id, chapter in CHAPTERS.items %}
 		<script type="text/javascript">
-			console.log("CHAPTER ID: {{chapter_id}}")
 			DOCS["chapters"]["{{chapter_id}}"] = {}
 		</script>
 		{% for key, value in chapter.items %}
@@ -706,9 +705,9 @@
 			var sections = document.getElementById(id+".sections")
 			var button = document.getElementById(id+".fold")
 			if (sections == null)
-				console.log(`ERROR: Unable to find sections ${id}.sections`)
+				console.log(`Error: Unable to find sections ${id}.sections`)
 			if (button == null)
-				console.log(`ERROR: Unable to find sections fold button ${id}.fold`)
+				console.log(`Error: Unable to find sections fold button ${id}.fold`)
 			if (mode == "fold") {
 				sections.style.display = "none"
 				button.style.transform = "rotate(180deg)"
@@ -822,7 +821,7 @@
 			Object.entries(ids).forEach(function([old_id, new_id]) {
 				var element = document.getElementById(old_id)
 				if (element == null) {
-					console.log(`ERROR: Unable to find element ${old_id}`)
+					console.log(`Error: Unable to find element ${old_id}`)
 				} else {
 					element.setAttribute("id", new_id)
 				}
@@ -1017,8 +1016,10 @@
 		}
 
 		// select leftbar section.
-		function select_section_handler(section_id) {
-			document.getElementById(section_id).scrollIntoView()	
+		function select_leftbar_section(section_id, scroll=true) {
+			if (scroll == true) {
+				document.getElementById(section_id).scrollIntoView()	
+			}
 			document.querySelectorAll('.leftbar_section_title').forEach(function(element) {
 				if (element.getAttribute("section_id") == section_id) {
 					element.setAttribute("selected", "true")
@@ -1028,6 +1029,34 @@
 					element.style.color = "{{COLORS.white}}95"
 				}
 			});
+		}
+
+		// scroll handler
+		function scroll_handler(scroller) {
+			function is_visible(elem){
+			   return $(elem).offset().top - $(window).scrollTop() < $(elem).height() ;
+			}
+			var selected = false
+			Object.entries(SECTIONS).forEach(function([chapter_id, sections]){
+				Object.entries(sections).forEach(function([section_id, section_element]){
+					if (is_visible(section_element) == true) {
+						if (section_element.getAttribute("type") == "section") {
+							select_leftbar_section(section_id, false)
+							if (SECTION_TITLES[chapter_id][section_id] != null) {
+								Object.entries(CHAPTER_TITLES).forEach(function([l_chapter_id, title]) {
+									if (l_chapter_id == chapter_id) {
+										fold_leftbar_chapter(l_chapter_id, "unfold")
+									} else {
+										fold_leftbar_chapter(l_chapter_id, "fold")
+									}
+								})
+								select_leftbar_section(section_id, false)
+							}
+						}
+						/* */
+					}
+				})
+			})
 		}
 
 		// post html elements render.
@@ -1044,10 +1073,10 @@
 				optgroup.label = CHAPTER_TITLES[chapter_id]//.toUpperCase()
 
 				var html = ""
+				var last_section_id = null
 				Object.entries(sections).forEach(function([section_id, section]) {
 
 					// skip subsections.
-					console.log("section type: "+JSON.stringify(DOCS["chapters"][chapter_id]["sections"][section_id]))
 					if (DOCS["chapters"][chapter_id]["sections"][section_id]["type"] == "section") {
 
 						// add topbar dropdown selector.
@@ -1065,7 +1094,7 @@
 						html += `
 							<div class="leftbar_section_container">
 								<div class="leftbar_section_divider"></div>
-								<a href="#" class="empty inherit" onclick="select_section_handler('${section_id}')">
+								<a href="#" class="empty inherit" onclick="select_leftbar_section('${section_id}', true)">
 									<h1 selected="false" section_id="${section_id}" class="leftbar_section_title" onmouseover="this.style.color='{{COLORS.white}}'" onmouseout="if (this.getAttribute('selected') == 'false') this.style.color='{{COLORS.white}}95 '">
 										`+SECTION_TITLES[chapter_id][section_id]+`
 									</h1>
@@ -1073,6 +1102,7 @@
 							</div>	
 						`
 					}
+					last_section_id = section_id
 
 				})
 
@@ -1094,7 +1124,7 @@
 					</div>
 					<div class="leftbar_chapter_divider"></div>
 				`
-				if (DOCS["chapters"][chapter_id]["folded"] == true) {
+				if (DOCS["chapters"][chapter_id]["folded"] == "True" || DOCS["chapters"][chapter_id]["folded"] == true) {
 					fold_leftbar_chapter(`${chapter_id}`, 'fold')
 				}
 
@@ -1178,7 +1208,7 @@
 
 			<!-- BLOCKS -->
 			<div id="content" style="z-index: 7; position: fixed; top: 50px; bottom: 0px; right: 0px; left: 0px; overflow: visible; border-radius: 10px;">
-				<div style="overflow: scroll; position: relative; width: 100%; height: 100%;">
+				<div style="overflow: scroll; position: relative; width: 100%; height: 100%;" onscroll="scroll_handler(this)">
 					
 					<!-- ITERATE CHAPTERS -->
 					<div id="loading" class="full_window_centered">
@@ -1206,7 +1236,7 @@
 
 								<!-- ITERATE SECTIONS -->
 								{% for section_id, section in chapter.sections.items %}
-									<div id="{{section.element_id}}" class="section">
+									<div id="{{section.element_id}}" type="{{section.type}}" class="section">
 										<script type="text/javascript">
 											SECTIONS["{{chapter_id}}"]["{{section_id}}"] = document.getElementById("{{section.element_id}}")
 											ATTRIBUTES["{{chapter_id}}"]["{{section_id}}"] = {}

@@ -27,7 +27,8 @@ class Email(object):
 		DOCS = {
 			"module":"website.users.email", 
 			"initialized":True,
-			"description":[], }
+			"description":[], 
+			"chapter": "Website", }
 
 		# attributes.
 		self.email = str(email)

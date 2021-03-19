@@ -37,7 +37,11 @@ class Users(_defaults_.Defaults):
 		DOCS = {
 			"module":"website.users", 
 			"initialized":True,
-			"description":[], }
+			"description":[
+				"The <attribute>website.users</attribute> object class.",
+				"Used for managing the website's users.",
+			], 
+			"chapter": "Users", }
 
 		# defaults.
 		_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.users",)

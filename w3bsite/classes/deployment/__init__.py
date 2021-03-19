@@ -41,7 +41,8 @@ class Deployment(Object):
 		DOCS = {
 			"module":"website.deployment", 
 			"initialized":True,
-			"description":[], }
+			"description":[], 
+			"chapter": "Deployment", }
 
 		# defaults.
 		Object.__init__(self, traceback="w3bsite.Website.deployment",)

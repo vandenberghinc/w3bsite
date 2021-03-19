@@ -19,7 +19,8 @@ class Security(_defaults_.Defaults):
 		DOCS = {
 			"module":"website.security", 
 			"initialized":True,
-			"description":[], }
+			"description":[], 
+			"chapter": "Website", }
 
 		# defaults.
 		if defaults != None:

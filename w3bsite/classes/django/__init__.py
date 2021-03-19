@@ -28,7 +28,8 @@ class Django(_defaults_.Defaults):
 		DOCS = {
 			"module":"website.django", 
 			"initialized":True,
-			"description":[], }
+			"description":[], 
+			"chapter": "Django", }
 
 		# defaults.
 		_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.django",)
@@ -215,7 +216,8 @@ class Users(_defaults_.Defaults):
 		DOCS = {
 			"module":"website.django.users", 
 			"initialized":True,
-			"description":[], }
+			"description":[], 
+			"chapter": "Django", }
 
 		# defaults.
 		_defaults_.Defaults.__init__(self, traceback="w3bsite.Website.django.users")
