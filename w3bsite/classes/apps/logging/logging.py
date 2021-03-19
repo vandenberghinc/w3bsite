@@ -8,7 +8,7 @@ import shutil, math, time
 
 # the system control class.
 class Logging(Object):
-	def __init__(self, database=None):
+	def __init__(self, attributes={}):
 
 		# docs.
 		DOCS = {
@@ -19,9 +19,9 @@ class Logging(Object):
 
 		# defaults.
 		Object.__init__(self)
+		self.assign(attributes)
 		
 		# attributes.
-		self.database = database
 		if isinstance(self.database, (str,String,FilePath)):
 			self.database = Directory(str(self.database))
 
@@ -93,7 +93,10 @@ class Logging(Object):
 			self.assign(attributes)
 
 			# attributes.
-			self.alerts = Dictionary({}, path=self.database.join("logs/alerts"), default={})
+			if self.live:
+				self.alerts = Dictionary({}, path=self.database.join("logs/alerts"), default={})
+			else:
+				self.alerts = Dictionary({}, path=self.database.join("logs/alerts"))
 
 			#
 

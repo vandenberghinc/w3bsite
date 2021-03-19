@@ -459,7 +459,10 @@ class Website(dev0s.cli.CLI,Traceback):
 			response = self.aes.generate_keys()
 			if not response.success:
 				return response
-		self.logging = logging.Logging(database=self.database)
+		self.logging = logging.Logging(attributes={
+			"database":self.database,
+			"live":self.live
+		})
 		self.defaults = defaults.Defaults({
 			"root":self.root,
 			"library":self.library,
