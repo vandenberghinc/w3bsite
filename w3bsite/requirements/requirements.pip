@@ -5,7 +5,7 @@ asgiref
 certifi
 chardet
 sqlparse
-urllib3
+urllib3>=1.26.4
 gunicorn
 whitenoise
 psutil
