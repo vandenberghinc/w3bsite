@@ -3,7 +3,7 @@
 
 # imports.
 from w3bsite.classes.config import *
-from w3bsite.classes import security, heroku, namecheap, utils, git, stripe, rate_limit, deployment, vps, defaults, apps, views
+from w3bsite.classes import security, heroku, namecheap, utils, git, stripe, rate_limit, deployment, vps, defaults, apps, views, electron
 from w3bsite.classes import database as _database_
 from w3bsite.classes.apps.metrics import metrics
 from w3bsite.classes.apps.logging import logging
@@ -24,6 +24,8 @@ class Website(dev0s.cli.CLI,Traceback):
 		database=None,
 		# 	the library path (optional).
 		library=None,
+		#	the website's description.
+		description="",
 		#a
 		# Deployment.
 		# 	remote depoyment, options: [local, vps, heroku].
@@ -195,6 +197,7 @@ class Website(dev0s.cli.CLI,Traceback):
 					firebase_admin = f"{root}/{firebase_admin}".replace("//","/").replace("//","/")
 		self.root = gfp.clean(root)
 		self.name = name
+		self.description = description
 		self.author = author
 		self.email = email
 		self.city = city
@@ -451,6 +454,8 @@ class Website(dev0s.cli.CLI,Traceback):
 		}))
 
 		# defaults objects.
+		if not Files.exists(Files.join(self.root, ".version")): Files.create(Files.join(self.root, ".version"), data="1.0.00")
+		self.version = Version(Files.load(Files.join(self.root, ".version")))
 		self.aes = dev0s.encryption.AsymmetricAES(
 			private_key=f"{self.database}/keys/{ALIAS}/private_key",
 			public_key=f"{self.database}/keys/{ALIAS}/public_key",
@@ -467,6 +472,7 @@ class Website(dev0s.cli.CLI,Traceback):
 			"root":self.root,
 			"library":self.library,
 			"database":self.database,
+			"description":self.description,
 			"name":self.name,
 			"author":self.author,
 			"email":self.email,
@@ -487,7 +493,8 @@ class Website(dev0s.cli.CLI,Traceback):
 			"template_data":self.template_data,
 			"id_by_username":self.id_by_username,
 			"aes":self.aes, 
-			"logging":self.logging,})
+			"logging":self.logging,
+			"version":self.version,})
 		self.template = self.defaults.template
 		self.utils = utils.Utils(attributes=self.defaults.attributes())
 
@@ -587,6 +594,7 @@ class Website(dev0s.cli.CLI,Traceback):
 				namecheap=self.namecheap,)
 		elif self.remote != None:
 			raise dev0s.response.error(f"Selected an invalid remote [{self.remote}], options: [local, vps, heroku]")
+		self.electron = electron.Electron(attributes=self.defaults.attributes())
 		self.defaults.website = self
 		self.apps = apps.Apps(
 			template_data=self.template_data,
@@ -615,6 +623,11 @@ class Website(dev0s.cli.CLI,Traceback):
 				"    --activate-tls":"Activate the generated tls certificate.",
 				"    --bundle-tls /path/to/downloaded/cert/":"Bundle the downloaded signed certificate from the CA.",
 				"    --deploy":"Deploy the website.",
+				"Electron":"*chapter*",
+				"    --electron":"Electron app.",
+				"        --build":"Build the electron app.",
+				"        --start":"Start the electron app for development purposes.",
+				"        --deploy":"Deploy the django website into an electron app.",
 				"Logs":"*chapter*",
 				"    --tail [optional: --nginx]":"Tail the (deployed) website.",
 				"Documentation":"*chapter*",
@@ -647,7 +660,7 @@ class Website(dev0s.cli.CLI,Traceback):
 	def cli(self):
 
 		# check args.
-		self.arguments.check(exceptions=["--log-level", "--non-interactive", "--create-alias", "--developer", "--nginx", "--code-update", "--forced", "-f"])
+		self.arguments.check(exceptions=["--log-level", "--non-interactive", "--create-alias", "--developer", "--nginx", "--code-update", "--forced", "-f", "--w3bsite"])
 
 		# activate enc.
 		if self.remote in ["vps"] and not self.vps.live:
@@ -673,14 +686,47 @@ class Website(dev0s.cli.CLI,Traceback):
 
 		# ______________________________________________________________________________________
 		#
+		# Electron
+		#
+
+		# electron.
+		elif self.arguments.present("--electron"):
+
+			# build electron source dode.
+			if self.arguments.present("--build"):
+				response = self.electron.build(
+					build=self.arguments.get("--build", required=False, default=None),
+				)
+				dev0s.response.log(response=response)
+
+			# developer start the electron app.
+			elif self.arguments.present("--start"):
+				response = self.electron.start()
+				dev0s.response.log(response=response)
+
+			# deploy electron.
+			elif self.arguments.present("--deploy"):
+				response = self.electron.deploy()
+				dev0s.response.log(response=response)
+
+			# invalid.
+			else: self.invalid(chapter="electron")
+
+		# ______________________________________________________________________________________
+		#
 		# Development.
 		#
 
 		# developer start.
 		elif self.arguments.present('--start') and self.arguments.present('--developer'):
+			default_host, default_port = "127.0.0.1", 8000
+			if ":" in self.domain:
+				try: 
+					default_host, default_port = self.domain.split(":")
+				except: a=1
 			response = self.django.start(
-				host=self.arguments.get("--host", required=False, default="127.0.0.1"), 
-				port=self.arguments.get("--port", required=False, default=8000),
+				host=self.arguments.get("--host", required=False, default=default_host), 
+				port=self.arguments.get("--port", required=False, default=default_port),
 			)
 			self.stop(response=response)
 
@@ -877,6 +923,7 @@ class Website(dev0s.cli.CLI,Traceback):
 			"root":self.root,
 			"database":self.database,
 			"library":self.library,
+			"description":self.description,
 			"name":self.name,
 			"email":self.email,
 			"city":self.city,
@@ -985,6 +1032,7 @@ class Website(dev0s.cli.CLI,Traceback):
 		#self.root = serialized["root"]
 		self.database = serialized["database"]
 		self.library = serialized["library"]
+		self.description = serialized["description"]
 		self.name = serialized["name"]
 		self.author = serialized["author"]
 		self.email = serialized["email"]

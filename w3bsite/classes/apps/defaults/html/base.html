@@ -20,6 +20,16 @@
 		
 	</script>
 
+	<!-- ELECTRON -->
+	<script type="text/javascript">
+		var electron = get_boolean_url_param("electron");
+		if (electron == true) {
+			localStorage.setItem("ELECTRON", true)
+		}
+		if (bool(localStorage.getItem("ELECTRON"))) {
+		}
+	</script>
+
 	<!-- BODY -->
 	<body id="body" style="background: {{COLORS.background}}">
 		<div id="root-content" style="min-width: 250px; red; position: absolute; top: 0px; left: 0px; right: 0px; bottom: 0px; position: relative;"> 
@@ -207,19 +217,6 @@
 	<!-- POST BASE BLOCK -->
 	{% block post_base %}
 	{% endblock %}
-
-	<!-- ELECTRON -->
-	<script type="text/javascript">
-		var electron = get_boolean_url_param("electron");
-		if (electron == true) {
-			localStorage.setItem("ELECTRON", true)
-		}
-		var electron = localStorage.getItem("ELECTRON")
-		if (electron == true || electron == "true") {
-			topbar = document.getElementById("topbar")
-			topbar.style.top = "20px"
-		}
-	</script>
 	
 	<!-- SET ELEMENTS BY WIDTH -->
 	<script type="text/javascript">

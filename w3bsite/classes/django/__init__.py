@@ -44,13 +44,14 @@ class Django(_defaults_.Defaults):
 
 		#
 	def start(self, host="127.0.0.1", port="8000", production=False):
-		#dev0s.response.log("&RED&START RUNNING&END&")
+
 		# check secret key.
 		os.chdir(self.root)
 		try:
 			add_secret_key = Files.load("__defaults__/env/json", format="json")["DJANGO_SECRET_KEY"] in ["False","True","None","","null",None,False,True]
 		except:
 			add_secret_key = True
+		
 		# import main.
 		dev0s.env.export(export=["__defaults__/env/json"], env={
 			"PRODUCTION": str(production),
@@ -61,59 +62,12 @@ class Django(_defaults_.Defaults):
 				"DJANGO_SECRET_KEY":String().generate(capitalize=True, digits=True, length=128),
 			})
 		self.migrations()
-		"""
-		if not Files.exists("__defaults__/django/start"):
-			Files.copy(f"{SOURCE_PATH}/examples/__defaults__/django/start", "__defaults__/django/start")
-			Files.chmod("__defaults__/django/start", "+x")
-		os.system(f"__defaults__/django/start {dev0s.defaults.vars.executable} {host}:{port}")
-		"""
-		""" """
-		#dev0s.response.log("&RED&START RUNNING&END&")
 		if dev0s.defaults.options.log_level >= 1:
 			dev0s.response.log(f"Starting {self.name}.", save=True)
 		sys.argv = [f"{self.root}/manage.py", "runserver", f"{host}:{port}"]
 		import manage
 		manage.main()
 		
-
-		### OLD
-		'''
-		# check migrations.
-		migrations = ""
-		if not Files.exists(f"{self.database}/data/db.sqlite3"):
-			migrations = "export MIGRATIONS=True && ./manage.py migrate  --non-interactive
-
-		# start django.
-		print(f"Starting website [{self.root}].")
-		file = File('/tmp/django.start.sh')
-		if OS in ["macos"]:
-			file.save(f"""
-				cd {self.root}/
-				source __defaults__/env/bash
-				export PRODUCTION=False
-				export MAINTENANCE=False
-				{migrations}
-				./manage.py runserver
-			""")
-		else:
-			file.save(f"""
-				cd {self.root}/
-				. __defaults__/env/bash
-				export PRODUCTION=False
-				export MAINTENANCE=False
-				{migrations}
-				./manage.py runserver
-			""")
-		file.file_path.permission.set(755)
-		self.django_process = subprocess.Popen(["sh", file.file_path.path])
-		try:
-			self.django_process.wait()
-		except KeyboardInterrupt:
-			self.django_process.terminate()
-			os.system(f"pkill -9 -f {file.file_path.name()}")
-			file.file_path.delete(forced=True)
-		'''
-
 		# handlers.
 		return dev0s.response.success(f"Successfully stopped website [{self.root}].")
 
@@ -123,34 +77,8 @@ class Django(_defaults_.Defaults):
 		# create.
 		if not Files.exists(self.root): os.mkdir(self.root)
 
-		# copy requirements
-		path = f"{self.root}/requirements/"
-		os.system(f"rm -fr {path}")
-		os.system(f"cp -r {SOURCE_PATH}/example/requirements {path}")
-
-		# copy manage.py
-		path = f"{self.root}/manage.py"
-		os.system(f"rm -fr {path}")
-		os.system(f"cp -r {SOURCE_PATH}/example/manage.py {path}")
-
-		# copy classes
-		path = f"{self.root}/classes/"
-		os.system(f"rm -fr {path}")
-		os.system(f"cp -r {SOURCE_PATH}/example/classes {path}")
-
-		# copy apps
-		path = f"{self.root}/apps/"
-		os.system(f"rm -fr {path}")
-		os.system(f"cp -r {SOURCE_PATH}/example/apps {path}")
-
-		# copy __defaults__
-		path = f"{self.root}/__defaults__/"
-		os.system(f"rm -fr {path}")
-		os.system(f"cp -r {SOURCE_PATH}/example/__defaults__ {path}")
-
-		# copy .gitignore
-		path = f"{self.root}/.gitignore"
-		os.system(f"cp {SOURCE_PATH}/example/.gitignore {path}")
+		# copy files.
+		Files.copy(f"{SOURCE_PATH}/classes/django/lib/django/", f"{self.root}/", delete=False)
 
 		# create proc file
 		#path = f"{self.root}/Procfile"
@@ -159,6 +87,8 @@ class Django(_defaults_.Defaults):
 
 		# handlers.
 		return dev0s.response.success(f"Successfully created django website [{self.root}].")
+
+		#
 	def create_app(self, name="home"):
 
 		# checks.
@@ -167,7 +97,7 @@ class Django(_defaults_.Defaults):
 			return dev0s.response.error(f"App [{name}] already exists.")
 
 		# copy.
-		os.system(f"cp -r {SOURCE_PATH}/example/app {path}")
+		Files.copy(f"{SOURCE_PATH}/classes/django/lib/app", path)
 
 		# handlers.
 		return dev0s.response.success(f"Successfully created app [{name}].")
@@ -198,7 +128,7 @@ class Django(_defaults_.Defaults):
 		dev0s.env.export(export="__defaults__/env/json", env={
 			"MIGRATIONS": str(True),
 		})
-		os.system(f"cd {self.root}/ && . __defaults__/env/bash && export MIGRATIONS='true' && ./manage.py collectstatic" )
+		os.system(f"cd {self.root}/ && . __defaults__/env/bash && export MIGRATIONS='true' && {dev0s.defaults.vars.executable} ./manage.py collectstatic" )
 		dev0s.env.export(export="__defaults__/env/json", env={
 			"MIGRATIONS": str(False),
 		})

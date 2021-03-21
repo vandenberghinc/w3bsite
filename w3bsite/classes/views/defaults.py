@@ -278,7 +278,7 @@ class View(Object):
 					dev0s.response.log(f"&ORANGE&Creating&END& default html view [{path}].")
 					base = FilePath(path).base(back=1)
 					if not Files.exists(base): Files.create(base, directory=True)
-					os.system(f"cp {SOURCE_PATH}/example/view.html {path}")
+					Files.copy(f"{SOURCE_PATH}/classes/django/lib/html/view.html", path)
 
 		# checks.
 		if self.website.__class__.__name__ not in ["Website"]:
@@ -305,7 +305,7 @@ class View(Object):
 		# the error title.
 		title="Warning!",
 		# the error title.
-		message="Some error occured.",
+		message="Some error occured (#000000).",
 		# the error icon (the static directory is root).
 		icon="media/icons/warning.png", 
 		# the redirect button text (right button).
@@ -317,10 +317,10 @@ class View(Object):
 		# pass arguments by dict.
 		serialized={},
 	):
-		if serialized != None:
+		if serialized != {}:
 			title, message, icon, redirect_button, redirect = Dictionary(serialized).unpack({
 				"title":"Warning!",
-				"message":"Some error occured.",
+				"message":"Some error occured (#000000).",
 				"icon":"media/icons/warning.png",
 				"redirect_button":"Ok",
 				"redirect":"/dashboard/home/",

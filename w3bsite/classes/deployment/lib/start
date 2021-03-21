@@ -5,7 +5,7 @@ source __defaults__/env/bash
 export INTERACTIVE="false"
 if [ ! -f "***DATABASE***/data/db.sqlite3" ] ; then
 	export MIGRATIONS="true"
-	python3 ***ROOT***/manage.py migrate
+	/www-data/venv/bin/python3 ***ROOT***/manage.py migrate
 fi
 export MIGRATIONS="false"
 export WEBSITE_BASE="***WEBSITE_BASE***/"

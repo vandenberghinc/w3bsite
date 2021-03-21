@@ -102,7 +102,7 @@ class Metrics(object):
 		for timestamp, data in self.__requests__["auth"].items():
 			success, failed = 0, 0 
 			for item in data:
-				if data["response"]["success"]: success += 1
+				if item["response"]["success"]: success += 1
 				else: failed += 1
 			d[timestamp] = {
 				"Successfull":success,
@@ -241,7 +241,7 @@ class Metrics(object):
 	def count_web_request(self, request, data={}):
 		return self.count_request(request, id="web", save=random.randrange(0, 101) <= 10, data=data)
 	def count_auth_request(self, request, data={}):
-		return self.count_request(request, id="auth", save=random.randrange(0, 101) <= 100, data=data)
+		return self.count_request(request, id="auth", save=True, data=data)
 	def count_request(self, request, id=None, data={"url":None}, save=False):
 		if id == None: raise dev0s.exceptions.InvalidUsage("Define parameter: id.")
 		try: username = request.user.username

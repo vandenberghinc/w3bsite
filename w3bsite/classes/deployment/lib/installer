@@ -159,7 +159,7 @@ log "Collecting static files"
 export MIGRATIONS="true"
 source $SOURCE/__defaults__/env/bash
 sudo rm -fr /www-data/static
-python3 $SOURCE/manage.py collectstatic --no-input
+/www-data/venv/bin/python3 $SOURCE/manage.py collectstatic --no-input
 sudo rm -fr /www-data/favicon.ico
 cp $SOURCE/__defaults__/static/favicon.ico /www-data/favicon.ico
 export MIGRATIONS="false"

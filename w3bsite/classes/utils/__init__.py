@@ -77,7 +77,7 @@ class Utils(Object):
 			if not Files.exists(f"{database}/logs"): os.mkdir(f"{database}/logs")
 			dev0s.response.log_file = gfp.clean(f"{database}/logs/errors")
 		trace = traceback.format_exc()
-		dev0s.response.log(message=trace, save=False)
+		print(trace)
 		id = String().generate(length=32, digits=True, capitalize=True)
 		if database != None and Files.exists(database):
 			dev0s.response.log_to_file("\n----------------------------------------------------------\n", raw=True)

@@ -305,11 +305,17 @@ function toggle_rightbar(mode="toggle", options=["toggle", "show", "hide"]) {
 // hide & show the top bar.
 function toggle_topbar(mode="toggle", options=["toggle", "show", "hide"]) {
 	var topbar = document.getElementById("topbar")
+	var topbar_left = document.getElementById("topbar.left")
+	var topbar_right = document.getElementById("topbar.right")
 	var content = document.getElementById("content")
 	var leftbar = document.getElementById("leftbar")
 	var rightbar = document.getElementById("rightbar")
 	if (topbar == null) {
 		console.log("Error: unable the default [topbar] element.")
+	} else if (topbar_left == null) {
+		console.log("Error: unable the default [topbar_left] element.")
+	} else if (topbar_right == null) {
+		console.log("Error: unable the default [topbar_right] element.")
 	} else if (content == null) {
 		console.log("Error: unable the default [content] element.")
 	} else if (leftbar == null) {
@@ -319,15 +325,32 @@ function toggle_topbar(mode="toggle", options=["toggle", "show", "hide"]) {
 	}
 	if (mode == "show") {
 		topbar.style.display = "block"
-		content.style.top = "{{TOPBAR_HEIGHT}}"
-		leftbar.style.top = "{{TOPBAR_HEIGHT}}"
-		rightbar.style.top = "{{TOPBAR_HEIGHT}}"
+		if (bool(localStorage.getItem("ELECTRON")) == true) { 
+			console.log("ELECTRON ENABLED")
+			topbar_left.style.paddingTop = "12.5px"
+			topbar_right.style.paddingTop = "5px"
+			content.style.top = (int(("{{TOPBAR_HEIGHT}}").replaceAll("px",""))+10)+"px"
+			leftbar.style.top = (int(("{{TOPBAR_HEIGHT}}").replaceAll("px",""))+10)+"px"
+			rightbar.style.top = (int(("{{TOPBAR_HEIGHT}}").replaceAll("px",""))+10)+"px"
+			topbar.style.height = (int(("{{TOPBAR_HEIGHT}}").replaceAll("px",""))+10)+"px"
+		} else {
+			console.log("ELECTRON NOT ENABLED")
+			topbar_left.style.paddingTop = "0px"
+			topbar_right.style.paddingTop = "0px"
+			content.style.top = "{{TOPBAR_HEIGHT}}"
+			leftbar.style.top = "{{TOPBAR_HEIGHT}}"
+			rightbar.style.top = "{{TOPBAR_HEIGHT}}"
+			topbar.style.height = "{{TOPBAR_HEIGHT}}"
+		}
 		topbar.setAttribute("open", "true")
 	} else if (mode == "hide") {
 		topbar.style.display = "none"
+		topbar_left.style.paddingTop = "0px"
+		topbar_right.style.paddingTop = "0px"
 		content.style.top = "0px"
 		leftbar.style.top = "0px"
 		rightbar.style.top = "0px"
+		topbar.style.height = "{{TOPBAR_HEIGHT}}"
 		topbar.setAttribute("open", "false")
 	} else if (mode == "toggle") {
 		if (topbar.getAttribute("open") == "true") {

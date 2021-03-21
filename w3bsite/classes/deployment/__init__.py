@@ -245,7 +245,8 @@ class Deployment(Object):
 		if not Files.exists(f"{self.root}/requirements/requirements.pip"): 
 			Files.save(f"{self.root}/requirements/requirements.pip", "wheel\nuwsgi\ngunicorn\nwhitenoise\ndjango\npsycopg2-binary\ndev0s\nw3bsite")
 		if not Files.exists(f"{self.root}/requirements/installer"): 
-			os.system(f"cp {SOURCE_PATH}/example/requirements/installer {self.root}/requirements/installer && chmod +x {self.root}/requirements/installer")
+			Files.copy(f"{SOURCE_PATH}/classes/django/lib/django/requirements/installer", f"{self.root}/requirements/installer")
+			Files.chmod(f"{self.root}/requirements/installer", permission="+x")
 
 		# favicon.
 		if self.live:
