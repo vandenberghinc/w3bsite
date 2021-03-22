@@ -1153,11 +1153,16 @@
 						  <option style="" value="Documentations" selected class="">Documentations</option>
 						</select>
 					</div>
-					<div class="wrapper" style="float: right;">
+					<div id="topbar.right" class="wrapper" style="float: right;">
 						<a href="/" class="empty_a" style="margin-top: 15px; margin-right: 15px;">
 							<img src="{% static 'favicon.png' %}" width="20px" height="20px" style="">
 						</a>
 					</div>
+					<script type="text/javascript">
+						if (RAW == true) {
+							document.getElementById("topbar.right").style.display = "none"
+						}
+					</script>
 				</div>
 			</div> 
 
