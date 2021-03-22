@@ -347,12 +347,16 @@ class Users(_defaults_.Defaults):
 		# success.
 		response = self.django.users.authenticate(username=username, password=password, request=request)
 		if response.success:
-			info_response = self.get_api_key(username=username)
-			if not info_response.success: return info_response
-			response["username"] = response.user.username
-			response["email"] = response.user.email
-			response["name"] = response.user.name
-			response["api_key"] = info_response.api_key
+			_response_ = self.django.users.get(username=username)
+			if not _response_.success: return _response_
+			user = _response_.user
+			_response_ = self.get_api_key(username=username)
+			if not _response_.success: return _response_
+			response["username"] = user.username
+			response["email"] = user.email
+			response["name"] = user.name
+			response["api_key"] = _response_.api_key
+		dev0s.response.log(str(response.dict()), save=True)
 		return response
 
 		#
