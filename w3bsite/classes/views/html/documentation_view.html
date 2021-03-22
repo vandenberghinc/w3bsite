@@ -1160,10 +1160,15 @@
 					</div>
 					<script type="text/javascript">
 						if (RAW == true) {
+							document.getElementById("topbar.divider").style.display = "block"
 							document.getElementById("topbar.right").style.display = "none"
+							var topbar = document.getElementById("topbar")
+							topbar.style.background = "none"
+							topbar.style.borderRadius = "none"
 						}
 					</script>
 				</div>
+				<div id="topbar.divider" style="display: none;"></div>
 			</div> 
 
 			<!-- LEFT BAR -->
@@ -1189,7 +1194,9 @@
 				</div>
 				<script type="text/javascript">
 					if (RAW == true) {
-						document.getElementById("leftbar.top").style.display = "none"
+						var leftbar_top = document.getElementById("leftbar.top")
+						leftbar_top.style.display = "none"
+						leftbar_top.style.paddingTop = "15px"
 					}
 				</script>
 				<div class="leftbar_chapter_divider"></div>
