@@ -140,8 +140,10 @@ class Deployment(Object):
 			return response
 		output = response.output
 		if output in ["", "\n"]:
+			if log_level >= 0: loader.stop()
 			return dev0s.response.success(f"Successfully restarted {self.name}")
 		else:
+			if log_level >= 0: loader.stop(success=False)
 			return dev0s.response.error(f"Failed to restarted {self.name};\n{output}")
 
 		#
