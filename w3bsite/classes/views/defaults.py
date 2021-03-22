@@ -423,7 +423,7 @@ class View(Object):
 		return self.__view__(request, count=False)
 
 		#
-	@xframe_options_exempt
+	@method_decorator(xframe_options_exempt)
 	def __xframe_except_view__(self, request):
 
 		# count request.
@@ -435,7 +435,7 @@ class View(Object):
 		# return __view__.
 		return self.__view__(request, count=False)
 	@method_decorator(login_required)
-	@xframe_options_exempt
+	@method_decorator(xframe_options_exempt)
 	def __auth_xframe_except_view__(self, request):
 
 		# count request.
