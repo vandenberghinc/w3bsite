@@ -11,6 +11,7 @@ from django.http import HttpResponse, HttpResponseNotAllowed, JsonResponse
 from django.urls import path, include
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.views.decorators.clickjacking import xframe_options_exempt
 
 # include apps from website/urls.py.
 def include_apps(apps=[], auto_include=False):
@@ -50,11 +51,19 @@ def build_urls(views=[]):
 		if view.type.lower() in ["view", "documentationview"] and not landing_page and view.landing_page:
 			landing_page = True
 			if view.auth_required:
-				urls.append(path("", view.__auth_view__))
-				urls.append(path("/", view.__auth_view__))
+				if view.except_xframe:
+					urls.append(path("", view.__auth_xframe_except_view__))
+					urls.append(path("/", view.__auth_xframe_except_view__))
+				else:
+					urls.append(path("", view.__auth_view__))
+					urls.append(path("/", view.__auth_view__))
 			else:
-				urls.append(path("", view.__view__))
-				urls.append(path("/", view.__view__))
+				if view.except_xframe:
+					urls.append(path("", view.__xframe_except_view__))
+					urls.append(path("/", view.__xframe_except_view__))
+				else:
+					urls.append(path("", view.__view__))
+					urls.append(path("/", view.__view__))
 		if view.auth_required:
 			urls.append(
 				path(gfp.clean(view.url, remove_first_slash=True, remove_last_slash=True)+"/", view.__auth_view__),
@@ -218,6 +227,8 @@ class View(Object):
 		root_required=False,
 		# overwrite default maintenance (bool) (leave None to use website.maintenance).
 		maintenance=None,
+		# except xframe for the view.
+		except_xframe=False,
 		# the object type (do not edit).
 		type="View",
 	):
@@ -264,6 +275,7 @@ class View(Object):
 		self.root_required = root_required
 		self.maintenance_ = maintenance
 		if self.maintenance_ == None: self.maintenance_ = self.website.maintenance
+		self.except_xframe = except_xframe
 
 		# check html.
 		if self.type.lower() in ["view"] and "w3bsite/" not in self.html:
@@ -411,7 +423,34 @@ class View(Object):
 		return self.__view__(request, count=False)
 
 		#
+	@xframe_options_exempt
+	def __xframe_except_view__(self, request):
 
+		# count request.
+		if count:
+			self.website.metrics.count_web_request(request, data={
+				"url":self.url,
+			})
+
+		# return __view__.
+		return self.__view__(request, count=False)
+	@method_decorator(login_required)
+	@xframe_options_exempt
+	def __auth_xframe_except_view__(self, request):
+
+		# count request.
+		if count:
+			self.website.metrics.count_web_request(request, data={
+				"url":self.url,
+			})
+
+		# check root permission.
+		if self.root_required:
+			response = self.website.users.root_permission(request)
+			if not response.success: return self._404(request)
+
+		# return __view__.
+		return self.__view__(request, count=False)
 	#
 
 #
