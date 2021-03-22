@@ -12,6 +12,7 @@
 	<a href="/" id="base_url" style="display: none;"></a>
 	<script type="text/javascript">
 		var BASE_URL = document.getElementById("base_url").href
+		var RAW = get_boolean_url_param("raw")
 	</script>
 	
 	<!-- CSS -->
@@ -1166,7 +1167,7 @@
 					<img src="{% static 'media/docs/dark/arrow.png' %}" width="10px" height="10px" style="transform: rotate(180deg);  margin-top: 13.5px; margin-left: 1px;">
 				</div>
 				-->
-				<div style="width: 100%; padding: 10px 0px 10px 0px;">
+				<div id="leftbar.top" style="width: 100%; padding: 10px 0px 10px 0px;">
 					<div class="wrapper" style=" width: 190px;">
 						<a href="/" class="empty_a nomargin nopadding" style="margin-top: 12.5px; margin-left: 15px;">
 							<img src="{% static 'favicon.png' %}" width="20px" height="20px" style="">
@@ -1181,6 +1182,11 @@
 					</div>
 					-->
 				</div>
+				<script type="text/javascript">
+					if (RAW == true) {
+						document.getElementById("leftbar.top").style.display = "none"
+					}
+				</script>
 				<div class="leftbar_chapter_divider"></div>
 				<div id="leftbar.content" class="leftbar_content">
 					<!-- example. -->
