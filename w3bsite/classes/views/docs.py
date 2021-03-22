@@ -1449,8 +1449,8 @@ class DocumentationView(View):
 			# the view type.
 			type="DocumentationView",)
 		self.website = website
-		self.maintenance = maintenance
-		if self.maintenance == None: self.maintenance = self.website.maintenance
+		self.maintenance_ = maintenance
+		if self.maintenance_ == None: self.maintenance_ = self.website.maintenance
 
 		# check library.
 		if not Files.exists("__defaults__/static/media"): os.mkdir("__defaults__/static/media")
@@ -1518,7 +1518,7 @@ class DocumentationView(View):
 		if response.success:
 			response = self.website.users.get_api_key(email=response.email)
 			if response.success: api_key = response.api_key
-		if self.maintenance: return self.maintenance(request)
+		if self.maintenance_: return self.maintenance(request)
 		return self.render(request=request, html=f"w3bsite/classes/views/html/documentation_view.html", template_data={
 			"API_KEY":api_key,
 			"URL":self.url,
