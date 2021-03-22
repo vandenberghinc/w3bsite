@@ -215,7 +215,7 @@ class Requests(_defaults_.Defaults):
 				return dev0s.response.error("Selected an invalid mode.")
 
 			# parse html.
-			ip = utils.__get_client_ip__(request)
+			ip = utils.get_client_ip(request)
 			html = Files.load(path)
 
 			# make request.

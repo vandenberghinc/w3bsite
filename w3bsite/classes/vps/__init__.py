@@ -168,15 +168,16 @@ class VPS(_defaults_.Defaults):
 		#if not response.success: return response
 
 		# install new requirements
-		path = gfp.clean(f"{self.library}/requirements/requirements.pip")
-		if log_level >= 0: loader.mark(new_message=f"Installing requirements {path} on vps {self.ip}")
-		response = ssht00ls.ssh.command(
-			alias=self.domain,
-			command=f'''python3 -m pip install -r {path} --user {self.username}\n#if [[ -d "/www-data/venv/" ]] ; then\n#    /www-data/venv/bin/pip3 install -r {path}\n#fi''',
-			log_level=-1,)
-		if not response.success: 
-			if log_level >= 0: loader.stop(success=False)
-			return dev0s.response.error(f"Failed to deploy website {self.domain} on vps {self.ip}, error (#2): {response.error}.", log_level=log_level)
+		if not code_update:
+			path = gfp.clean(f"{self.library}/requirements/requirements.pip")
+			if log_level >= 0: loader.mark(new_message=f"Installing requirements {path} on vps {self.ip}")
+			response = ssht00ls.ssh.command(
+				alias=self.domain,
+				command=f'''python3 -m pip install -r {path} --user {self.username}\n#if [[ -d "/www-data/venv/" ]] ; then\n#    /www-data/venv/bin/pip3 install -r {path}\n#fi''',
+				log_level=-1,)
+			if not response.success: 
+				if log_level >= 0: loader.stop(success=False)
+				return dev0s.response.error(f"Failed to deploy website {self.domain} on vps {self.ip}, error (#2): {response.error}.", log_level=log_level)
 
 		# execute installer script.
 		if not code_update:
@@ -209,7 +210,7 @@ class VPS(_defaults_.Defaults):
 			if log_level >= 0: loader.mark(new_message=f"Restarting website {self.domain} on vps {self.ip}")
 			response = ssht00ls.ssh.command(
 				alias=self.domain,
-				command=f"python3 {self.library}/website.py --restart --non-interactive",
+				command=f"sudo systemctl restart gunicorn",
 				log_level=1,
 				#log_level=-1,
 			)
