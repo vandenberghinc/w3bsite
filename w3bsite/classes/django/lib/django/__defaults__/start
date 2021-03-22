@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+export LIVE="True"
+base=$(dirname $(dirname $0))
+if [[ "$OSTYPE" =~ "darwin" ]] ; then
+	source $base/__defaults__/env/bash
+	/usr/bin/python3 $base/ --start --developer
+else
+	. $base/__defaults__/env/bash
+	python3 $base/ --start --developer
+fi

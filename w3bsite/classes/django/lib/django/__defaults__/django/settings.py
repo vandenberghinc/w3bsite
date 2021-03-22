@@ -10,19 +10,17 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
-import os
+import os, w3bsite
 from dev0s.shortcuts import *
 
 # dev0s.env.
 SOURCE = Directory(gfp.base(__file__, back=3))
+dev0s.system.env.import_(env=SOURCE.join("__defaults__/env/json"))
 DATABASE = Directory(dev0s.env.get("DATABASE", default=str(SOURCE)))
 PRODUCTION = dev0s.env.get("PRODUCTION", default=True, format=bool)
 DOMAIN = dev0s.env.get("DOMAIN", default=None)
 SECRET_KEY = dev0s.env.get("DJANGO_SECRET_KEY", default=String().generate(length=128, capitalize=True, digits=True, special=True))
-#WEBSITE_BASE = dev0s.env.get("WEBSITE_BASE", default=None)
-#if WEBSITE_BASE == None:
-#    raise ValueError("Improperly configured run, env variable [WEBSITE_BASE] is None.")
-    
+
 # Match production,
 if PRODUCTION:
 
@@ -85,8 +83,9 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            SOURCE.join("apps"),
-            str(dev0s.defaults.vars.site_packages),
+            str(SOURCE.join("apps")),
+            str(dev0s.base),
+            str(w3bsite.base),
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -153,5 +152,5 @@ USE_TZ = True
 STATIC_ROOT = f"/www-data/static/"
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    SOURCE.join('__defaults__/static'),
+    SOURCE.join('__defaults__/static/'),
 ]

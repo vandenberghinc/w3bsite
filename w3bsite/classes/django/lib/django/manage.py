@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import os,sys
-from dev0s.shortcuts import *
 def main():
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', '__defaults__.django.settings')
     try:
@@ -13,5 +12,4 @@ def main():
         ) from exc
     execute_from_command_line(sys.argv)
 if __name__ == '__main__':
-    os.chdir(gfp.base(__file__, back=1))
     main()

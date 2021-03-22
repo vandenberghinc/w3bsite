@@ -201,9 +201,6 @@
 						</a>
 					</div>
 				</div>
-				<script type="text/javascript">
-					toggle_darkmode(DARKMODE)
-				</script>
 			</div>
 			
 		</div>
@@ -217,6 +214,13 @@
 	<!-- POST BASE BLOCK -->
 	{% block post_base %}
 	{% endblock %}
+
+	<!-- RENDER DARKMODE -->
+	<script type="text/javascript">
+		if (document.getElementById("darkmode_control_bar").style.display != "none") {
+			toggle_darkmode(DARKMODE)
+		}
+	</script>
 	
 	<!-- SET ELEMENTS BY WIDTH -->
 	<script type="text/javascript">

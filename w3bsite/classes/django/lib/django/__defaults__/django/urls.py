@@ -4,11 +4,8 @@
 from django.contrib import admin
 from django.urls import path, include
 from classes.config import *
-
-# limit migrations
-if  dev0s.env.get("MIGRATIONS", format=bool, default=False): urlpatterns = []
-else:
-	
+urlpatterns = []
+if not dev0s.system.env.get("MIGRATIONS", format=bool, default=False):
 
 	# ______________________________________________________________________________________
 	#
@@ -47,11 +44,32 @@ else:
 
 	# ______________________________________________________________________________________
 	#
-	# dev0s.defaults.
+	# Logging.
 	#
-	urlpatterns = [
-		# uncomment the following line to se the default django admin interface.
-		#path('admin/', admin.site.urls)
-	] + imports
 
-#
+	# import the default logging requests.
+	imports += website.apps.logging.requests.urls 
+
+	# ______________________________________________________________________________________
+	#
+	# Metrics.
+	#
+
+	# import the default metrics requests.
+	imports += website.apps.metrics.requests.urls 
+
+	# ______________________________________________________________________________________
+	#
+	# Defaults.
+	#
+
+	# urlpatterns.
+	urlpatterns = [] + imports
+
+	# default handlers.
+	if not dev0s.system.env.get("MIGRATIONS", format=bool, default=False):
+		handler500 = website.apps.exceptions._500
+		handler404 = website.apps.exceptions._404
+
+	#
+	#

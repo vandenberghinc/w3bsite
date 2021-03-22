@@ -136,16 +136,24 @@ class Users(_defaults_.Defaults):
 			return dev0s.response.error("Passwords do not match.")
 
 		# create django user.
-		response = self.django.users.create(
-			email=email,
-			username=username,
-			password=password,
-			name=name,
-			superuser=superuser,)
-		if not response.success: return response
-		user = response.user
+		if not self.exists(username=username, filter="django"):
+			response = self.django.users.create(
+				email=email,
+				username=username,
+				password=password,
+				name=name,
+				superuser=superuser,)
+			if not response.success: return response
+			user = response.user
+		else:
+			response = self.django.users.get(
+				email=email,
+				username=username,)
+			if not response.success: return response
+			user = response.user
 
 		# try load existing data.
+		print("Loading data...")
 		response = self.load_data(email=email, username=username, create=True)
 		if response.success and response.data != None:
 			data = Dictionary(response.data).check(default=dict(self.default_user_data))
@@ -163,6 +171,7 @@ class Users(_defaults_.Defaults):
 		data["account"]["email"] = email
 		data["account"]["name"] = name
 		data["account"]["password"] = _response_["encrypted"].decode()
+		print("Saving data...")
 		response = self.save_data(email=email, username=username, data=data)
 		if not response.success: return response
 
@@ -336,7 +345,15 @@ class Users(_defaults_.Defaults):
 			return response
 
 		# success.
-		return self.django.users.authenticate(username=username, password=password, request=request)
+		response = self.django.users.authenticate(username=username, password=password, request=request)
+		if response.success:
+			info_response = self.get_api_key(username=username)
+			if not info_response.success: return info_response
+			response["username"] = response.user.username
+			response["email"] = response.user.email
+			response["name"] = response.user.name
+			response["api_key"] = info_response.api_key
+		return response
 
 		#
 	def signout(self,
