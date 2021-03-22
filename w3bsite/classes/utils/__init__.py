@@ -289,8 +289,6 @@ def get_client_ip(request):
 	        ip = request.META.get('REMOTE_ADDR')
 	    return ip
 	except: return "unknown"
-def get_client_ip(request): # depricated.
-	return get_client_ip(request)
 	
 
 # clean url.
