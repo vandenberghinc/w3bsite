@@ -343,29 +343,27 @@ class Users(_defaults_.Defaults):
 		# no 2fa.
 		else:
 			if response.success:
-				_response_ = self.django.users.get(username=username)
-				if not _response_.success: return _response_
-				user = _response_.user
 				_response_ = self.get_api_key(username=username)
 				if not _response_.success: return _response_
-				response["username"] = user.username
-				response["email"] = user.email
-				response["name"] = user.name
 				response["api_key"] = _response_.api_key
+				_response_ = self.load_data(username=username)
+				if not _response_.success: return _response_
+				response["name"] = _response_.data["account"]["name"]
+				response["username"] = _response_.data["account"]["username"]
+				response["email"] = _response_.data["account"]["email"]
 			return response
 
 		# success.
 		response = self.django.users.authenticate(username=username, password=password, request=request)
 		if response.success:
-			_response_ = self.django.users.get(username=username)
-			if not _response_.success: return _response_
-			user = _response_.user
 			_response_ = self.get_api_key(username=username)
 			if not _response_.success: return _response_
-			response["username"] = user.username
-			response["email"] = user.email
-			response["name"] = user.name
 			response["api_key"] = _response_.api_key
+			_response_ = self.load_data(username=username)
+			if not _response_.success: return _response_
+			response["name"] = _response_.data["account"]["name"]
+			response["username"] = _response_.data["account"]["username"]
+			response["email"] = _response_.data["account"]["email"]
 		return response
 
 		#
