@@ -53,7 +53,14 @@ class Database(Traceback):
 		if data == None: return dev0s.response.error(self.__traceback__(function="save")+" Define parameter: [data].")
 		path = gfp.clean(path)
 		if self.mode == "firestore":
-			return self.firestore.save(path, data)
+			if isinstance(data, (dict, Dictionary)):
+				response = self.load(path=path)
+				if response.success:
+					return self.firestore.save(path, Dictionary(response.data).insert(data))
+				else:
+					return self.firestore.save(path, data)
+			else:
+				return self.firestore.save(path, data)
 		elif self.mode == "cache":
 			return self.database.save(path=path, data=data, overwrite=overwrite)
 		else: raise exceptions.InvalidUsage(self.__traceback__(function="save")+f" Unknown mode [{self.mode}].")
