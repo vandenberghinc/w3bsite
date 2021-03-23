@@ -160,6 +160,7 @@ class Users(_defaults_.Defaults):
 		password=None,
 		name=None,
 		superuser=False,
+		activated=True,
 	):
 		# check arguments.
 		response = dev0s.response.parameters.check(
@@ -175,7 +176,8 @@ class Users(_defaults_.Defaults):
 
 			django_user = DjangoUser.objects.create_user(username, email, password)
 			if isinstance(name, str): django_user.last_name = name
-			if isinstance(superuser, bool): django_user.is_superuser = superuser
+			if isinstance(superuser, (bool,Boolean)): django_user.is_superuser = bool(superuser)
+			if isinstance(activated, (bool,Boolean)): django_user.is_active = bool(activated)
 			django_user.save()
 
 			# success.
@@ -195,14 +197,15 @@ class Users(_defaults_.Defaults):
 		password=None,
 		name=None,
 		superuser=None,
+		activated=None,
 	):
 		# check arguments.
 		response = dev0s.response.parameters.check(
 			traceback=self.__traceback__(function="update"),
 			parameters={
 				"username":username,
-				"email":email,
-				"password":password,
+				#"email":email,
+				#"password":password,
 			})
 		if not response.success: return response
 
@@ -218,9 +221,12 @@ class Users(_defaults_.Defaults):
 			if email != None: 
 				edits += 1
 				django_user.email = email
-			if isinstance(superuser, bool): 
+			if isinstance(superuser, (bool, Boolean)): 
 				edits += 1
-				django_user.is_superuser = superuser
+				django_user.is_superuser = bool(superuser)
+			if isinstance(activated, (bool, Boolean)):
+				edits += 1
+				django_user.is_active = bool(activated)
 			if password != None: 
 				edits += 1
 				django_user.set_password(password)
@@ -334,7 +340,7 @@ class Users(_defaults_.Defaults):
 			except Exception as e:  return dev0s.response.error(f"Failed to retrieve django user {identifier}, error: {e}.")
 
 		# invalid.
-		else: return dev0s.response.error(f"Define one of the following parameters: [username, email].")
+		else: return dev0s.response.error(f"{self.__traceback__(function='get')}: Define one of the following parameters: [username, email].")
 
 		# success.
 		return dev0s.response.success(f"Successfully retrieved django user {identifier}.", {
@@ -365,12 +371,12 @@ class Users(_defaults_.Defaults):
 				exists = DjangoUser.objects.filter(username=username).exists()
 
 				# success.
-				return dev0s.response.success(f"Successfully checked the existsance of django user {username}.", {
+				return dev0s.response.success(f"Successfully checked the existance of django user {username}.", {
 					"exists":exists,
 				})
 
 			# error.
-			except Exception as e:  return dev0s.response.error(f"Failed to check the existsance of django user {username}, error: {e}.")
+			except Exception as e:  return dev0s.response.error(f"Failed to check the existance of django user {username}, error: {e}.")
 
 		# by email.
 		elif email != None:
@@ -381,12 +387,12 @@ class Users(_defaults_.Defaults):
 			response = self.get(email=email)
 			if response.error != None and "User matching query does not exist" not in response.error: return response
 			elif response.error != None and "User matching query does not exist" in response.error: exists = False
-			return dev0s.response.success(f"Successfully checked the existsance of django user {identifier}.", {
+			return dev0s.response.success(f"Successfully checked the existance of django user {identifier}.", {
 				"exists":exists,
 			})
 
 		# invalid.
-		else: return dev0s.response.error(f"Define one of the following parameters: [username, email].")
+		else: return dev0s.response.error(f"{self.__traceback__(function='exists')}: Define one of the following parameters: [username, email].")
 
 
 		#

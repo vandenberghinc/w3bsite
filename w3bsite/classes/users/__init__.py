@@ -71,6 +71,7 @@ class Users(_defaults_.Defaults):
 			},
 			# the permissions.
 			"permissions": {
+				"activated":False,
 				"email":True,
 			},
 			# timestamps.
@@ -115,6 +116,7 @@ class Users(_defaults_.Defaults):
 		verify_password=None,
 		name=None,
 		superuser=False,
+		activated=True,
 	):
 
 		# check parameters.
@@ -142,7 +144,8 @@ class Users(_defaults_.Defaults):
 				username=username,
 				password=password,
 				name=name,
-				superuser=superuser,)
+				superuser=superuser,
+				activate=activated,)
 			if not response.success: return response
 			user = response.user
 		else:
@@ -171,6 +174,7 @@ class Users(_defaults_.Defaults):
 		data["account"]["email"] = email
 		data["account"]["name"] = name
 		data["account"]["password"] = _response_["encrypted"].decode()
+		data["permissions"]["activated"] = activated
 		print("Saving data...")
 		response = self.save_data(email=email, username=username, data=data)
 		if not response.success: return response
@@ -193,6 +197,7 @@ class Users(_defaults_.Defaults):
 		#
 	def update(self,
 		# required:
+		username=None,
 		email=None,
 		# optionals:
 		name=None,
@@ -201,11 +206,18 @@ class Users(_defaults_.Defaults):
 		superuser=None,
 		#phone_number=None,
 		#photo_url=None,
-		#email_verified=None,
+		activated=None,
 	):
 
+		# checks.
+		username, email = self.__correct_username_email__(username, email)
+
+		# check parameters.
+		if [username,email] == [None,None]:
+			return dev0s.response.error(self.__traceback__(function="update")+" Define one of the following parameters [email, username].")
+
 		# load.
-		response = self.get(email=email)
+		response = self.get(email=email, username=username)
 		if response.error != None: return response
 		user = response["user"]
 
@@ -227,9 +239,9 @@ class Users(_defaults_.Defaults):
 			username=username,
 			password=password,
 			name=name,
-			superuser=superuser,)
+			superuser=superuser,
+			activated=activated,)
 		if not response.success: return response
-		user = response.user
 
 		# update firestore.
 		response = self.load_data(email=email, username=username)
@@ -241,13 +253,16 @@ class Users(_defaults_.Defaults):
 		if name != None:
 			edits += 1
 			data["account"]["name"] = name
+		if isinstance(activated, (bool, Boolean)):
+			edits += 1
+			data["permissions"]["activated"] = bool(activated)
 		if edits > 0:
 			response = self.save_data(email=email, username=username, data=data)
 			if not response.success: return response
 
 		# save pass.
 		if password != None:
-			response = self.save_password(email=user.email, username=username, password=password)
+			response = self.save_password(email=email, username=username, password=password)
 			if not response.success: return response
 
 		# handle success.
@@ -266,7 +281,7 @@ class Users(_defaults_.Defaults):
 
 		# check parameters.
 		if [username,email] == [None,None]:
-			return dev0s.response.error(self.__traceback__(function="load_data")+" Define one of the following parameters [email, username].")
+			return dev0s.response.error(self.__traceback__(function="delete")+" Define one of the following parameters [email, username].")
 
 		# delete django user.
 		response = self.django.users.delete(username=username, email=email)
@@ -351,6 +366,7 @@ class Users(_defaults_.Defaults):
 				response["name"] = _response_.data["account"]["name"]
 				response["username"] = _response_.data["account"]["username"]
 				response["email"] = _response_.data["account"]["email"]
+				response["activated"] = _response_.data["permissions"]["activated"]
 			return response
 
 		# success.
@@ -364,6 +380,7 @@ class Users(_defaults_.Defaults):
 			response["name"] = _response_.data["account"]["name"]
 			response["username"] = _response_.data["account"]["username"]
 			response["email"] = _response_.data["account"]["email"]
+			response["activated"] = _response_.data["permissions"]["activated"]
 		return response
 
 		#
@@ -450,7 +467,7 @@ class Users(_defaults_.Defaults):
 	):
 		username, email = self.__correct_username_email__(username, email)
 		if [username,email] == [None,None]:
-			return dev0s.response.error(self.__traceback__(function="load_data")+" Define one of the following parameters [email, username].")
+			return dev0s.response.error(self.__traceback__(function="save_data")+" Define one of the following parameters [email, username].")
 		response = self.db.save(path=self.__get_path__(email=email, username=username, create=True), data=data, overwrite=overwrite)
 		if response.error != None: return response
 		return dev0s.response.success(f"Successfully saved the data of user [{email}].")
@@ -926,7 +943,7 @@ class Users(_defaults_.Defaults):
 	def load_password(self, email=None, username=None):
 		username, email = self.__correct_username_email__(username, email)
 		if [username,email] == [None,None]:
-			return dev0s.response.error(self.__traceback__(function="load_data")+" Define one of the following parameters [email, username].")
+			return dev0s.response.error(self.__traceback__(function="load_password")+" Define one of the following parameters [email, username].")
 		response = self.load_data(email=email, username=username)
 		if not response.success: return response
 		data = response.data
@@ -940,7 +957,7 @@ class Users(_defaults_.Defaults):
 	def save_password(self, email=None, username=None, password=None):
 		username, email = self.__correct_username_email__(username, email)
 		if [username,email] == [None,None]:
-			return dev0s.response.error(self.__traceback__(function="load_data")+" Define one of the following parameters [email, username].")
+			return dev0s.response.error(self.__traceback__(function="save_password")+" Define one of the following parameters [email, username].")
 		response = dev0s.response.parameters.check(
 			traceback=self.__traceback__(function="save_password"),
 			parameters={
@@ -1255,6 +1272,8 @@ class Users(_defaults_.Defaults):
 		except Exception as e:
 			raise ValueError(f"Unable retrieve the username of email [{email}], error: {e}.")
 	def __correct_username_email__(self, username, email):
+		if username in ["None", "null", "NaN"]: username = None
+		if email in ["None", "null", "NaN"]: email = None
 		if email in [None, username] and (username != None and "@" in username): 
 			email = username 
 			username = None

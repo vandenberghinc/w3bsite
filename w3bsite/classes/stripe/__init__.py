@@ -307,7 +307,7 @@ class Stripe(_defaults_.Defaults):
 					break
 
 			# handler.
-			return dev0s.response.success(f"Successfully checked the stripe customer existsance of user {email}.", {
+			return dev0s.response.success(f"Successfully checked the stripe customer existance of user {email}.", {
 				"exists":exists,
 				"id":id,
 			})

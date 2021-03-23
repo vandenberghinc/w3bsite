@@ -105,7 +105,10 @@ class Email(object):
 					)
 				part['Content-Disposition'] = 'attachment; filename="%s"' % os.path.basename(f)
 				msg.attach(part)
-			self.smtp.sendmail(self.email, recipients, msg.as_string())
+			try:
+				self.smtp.sendmail(self.email, recipients, msg.as_string())
+			except Exception as e:
+				dev0s.response.error(f"Encoutered an error while sending the email: {e}.")
 
 			# response.
 			return dev0s.response.success(f"Succesfully send the email to {recipients}.")

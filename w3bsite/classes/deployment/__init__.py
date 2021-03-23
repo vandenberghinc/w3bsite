@@ -421,7 +421,7 @@ class Deployment(Object):
 		#
 	def activate_tls(self, log_level=0):
 
-		# check existsance.
+		# check existance.
 		if not Files.exists(f"{self.database}/tls/server.key") or not Files.exists(f"{self.database}/tls/server.crt"):
 			return dev0s.response.error("No generated tls certificate exists.", log_level=log_level)
 
