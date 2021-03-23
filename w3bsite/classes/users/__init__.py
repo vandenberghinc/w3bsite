@@ -809,21 +809,17 @@ class Users(_defaults_.Defaults):
 			customer_id = response.id
 
 		# map user's stripe subscriptions.
-		plan_ids, sub_ids, active_product_subs = [], {}, {}
 		response = self.stripe.subscriptions.get(email=email)
-		if not response.success and "No subscriptions found for user" not in response.error: return response
-		elif not response.success and "No subscriptions found for user" in response.error:
-			plan_ids, sub_ids, active_product_subs = [], {}, {}
-		else:
-			plan_ids, sub_ids, active_product_subs = [], {}, {}
-			for _plan_id_,info in response.subscriptions.items():
-				response = self.stripe.get_product_id_by_plan_id(_plan_id_)
-				if not response.success: return response
-				_product_id_ = response.id
-				if _product_id_ == product_id:
-					active_product_subs[info["plan_id"]] = info["subscription_id"]	
-				plan_ids.append(info["plan_id"])
-				sub_ids[info["plan_id"]] = info["subscription_id"]
+		if not response.success: return response
+		plan_ids, sub_ids, active_product_subs = [], {}, {}
+		for _plan_id_,info in response.subscriptions.items():
+			response = self.stripe.get_product_id_by_plan_id(_plan_id_)
+			if not response.success: return response
+			_product_id_ = response.id
+			if _product_id_ == product_id:
+				active_product_subs[info["plan_id"]] = info["subscription_id"]	
+			plan_ids.append(info["plan_id"])
+			sub_ids[info["plan_id"]] = info["subscription_id"]
 
 		# check already subscribed.
 		if plan_id in plan_ids:

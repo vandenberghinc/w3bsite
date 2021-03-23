@@ -717,7 +717,9 @@ class Stripe(_defaults_.Defaults):
 						"subscriptions":subscriptions[email],
 					})
 				except KeyError:
-					return dev0s.response.error(f"No subscriptions found for user [{email}].")
+					return dev0s.response.success(f"No subscriptions found for user [{email}].", {
+						"subscriptions":{},
+					})
 
 			# error.
 			#except Exception as e:

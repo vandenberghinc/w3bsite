@@ -287,12 +287,12 @@ function toggle_rightbar(mode="toggle", options=["toggle", "show", "hide"]) {
 		rightbar.style.display = "block"
 		content.style.right = "{{RIGHTBAR_WIDTH}}"
 		rightbar.setAttribute("open", "true")
-		console.log("Showed the rightbar ("+rightbar.style.display+") ({{RIGHTBAR_WIDTH}}).")
+		//console.log("Showed the rightbar ("+rightbar.style.display+") ({{RIGHTBAR_WIDTH}}).")
 	} else if (mode == "hide") {
 		rightbar.style.display = "none"
 		content.style.right = "0px"
 		rightbar.setAttribute("open", "false")
-		console.log("Hided the rightbar ("+rightbar.style.display+") ({{RIGHTBAR_WIDTH}}).")
+		//console.log("Hided the rightbar ("+rightbar.style.display+") ({{RIGHTBAR_WIDTH}}).")
 	} else if (mode == "toggle") {
 		if (rightbar.getAttribute("open") == "true") {
 			toggle_leftbar("hide")
@@ -326,7 +326,6 @@ function toggle_topbar(mode="toggle", options=["toggle", "show", "hide"]) {
 	if (mode == "show") {
 		topbar.style.display = "block"
 		if (bool(localStorage.getItem("ELECTRON")) == true) { 
-			console.log("ELECTRON ENABLED")
 			topbar_left.style.paddingTop = "15px"
 			topbar_right.style.paddingTop = "5px"
 			content.style.top = (int(("{{TOPBAR_HEIGHT}}").replaceAll("px",""))+15)+"px"
@@ -334,7 +333,6 @@ function toggle_topbar(mode="toggle", options=["toggle", "show", "hide"]) {
 			rightbar.style.top = (int(("{{TOPBAR_HEIGHT}}").replaceAll("px",""))+15)+"px"
 			topbar.style.height = (int(("{{TOPBAR_HEIGHT}}").replaceAll("px",""))+15)+"px"
 		} else {
-			console.log("ELECTRON NOT ENABLED")
 			topbar_left.style.paddingTop = "0px"
 			topbar_right.style.paddingTop = "0px"
 			content.style.top = "{{TOPBAR_HEIGHT}}"
