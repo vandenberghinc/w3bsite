@@ -327,7 +327,7 @@ function toggle_topbar(mode="toggle", options=["toggle", "show", "hide"]) {
 		topbar.style.display = "block"
 		if (bool(localStorage.getItem("ELECTRON")) == true) { 
 			topbar_left.style.paddingTop = "15px"
-			topbar_right.style.paddingTop = "5px"
+			topbar_right.style.paddingTop = "15px"
 			content.style.top = (int(("{{TOPBAR_HEIGHT}}").replaceAll("px",""))+15)+"px"
 			leftbar.style.top = (int(("{{TOPBAR_HEIGHT}}").replaceAll("px",""))+15)+"px"
 			rightbar.style.top = (int(("{{TOPBAR_HEIGHT}}").replaceAll("px",""))+15)+"px"
