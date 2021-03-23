@@ -327,12 +327,12 @@ function toggle_topbar(mode="toggle", options=["toggle", "show", "hide"]) {
 		topbar.style.display = "block"
 		if (bool(localStorage.getItem("ELECTRON")) == true) { 
 			console.log("ELECTRON ENABLED")
-			topbar_left.style.paddingTop = "12.5px"
+			topbar_left.style.paddingTop = "15px"
 			topbar_right.style.paddingTop = "5px"
-			content.style.top = (int(("{{TOPBAR_HEIGHT}}").replaceAll("px",""))+10)+"px"
-			leftbar.style.top = (int(("{{TOPBAR_HEIGHT}}").replaceAll("px",""))+10)+"px"
-			rightbar.style.top = (int(("{{TOPBAR_HEIGHT}}").replaceAll("px",""))+10)+"px"
-			topbar.style.height = (int(("{{TOPBAR_HEIGHT}}").replaceAll("px",""))+10)+"px"
+			content.style.top = (int(("{{TOPBAR_HEIGHT}}").replaceAll("px",""))+15)+"px"
+			leftbar.style.top = (int(("{{TOPBAR_HEIGHT}}").replaceAll("px",""))+15)+"px"
+			rightbar.style.top = (int(("{{TOPBAR_HEIGHT}}").replaceAll("px",""))+15)+"px"
+			topbar.style.height = (int(("{{TOPBAR_HEIGHT}}").replaceAll("px",""))+15)+"px"
 		} else {
 			console.log("ELECTRON NOT ENABLED")
 			topbar_left.style.paddingTop = "0px"

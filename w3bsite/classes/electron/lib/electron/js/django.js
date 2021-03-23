@@ -15,7 +15,6 @@ class Django {
 		this.name = "***NAME***"
 		this.alias = "***ALIAS***"
 		this.domain = "***DOMAIN***"
-		this.auth_required = true
 
 		// must be set after import.
 		this.win = null
@@ -110,12 +109,14 @@ class Django {
 
 	// check if django is already running.
 	running(handler) {
+		console.log(`curl -s ${this.domain}`)
 		try {
 			var output = utils.execute(`curl -s ${this.domain}`)
+			var success = true
 		} catch(e) {
-			var output = ""
+			var success = false
 		}
-		if (output.includes("Failed to connect to ") || output == "") {
+		if (success == false) {
 			console.log('Django not yet running ...')
 			this.__running__ = false
 			if (handler != null) {handler(false)}
@@ -134,7 +135,7 @@ class Django {
 		} else {
 			var executable =`${utils.home}/.${__django__.alias}/venv/bin/python3`
 		}
-		utils.execute_async(`cd ${this.__base__}/python/django && ${executable} ./__main__.py --start --developer`, function(output, error) {
+		utils.execute_async(`cd ${this.__base__}/python/django && ${executable} ./__main__.py --w3bsite --start --developer`, function(output, error) {
 			if (error != null) {
 				console.log("Encountered an error while starting the webserver: "+error)
 			} else {
@@ -148,11 +149,12 @@ class Django {
 		console.log("Awaiting django ...")
 		var __django__ = this
 		try {
-			var output = utils.execute("curl -s "+__django__.domain)
+			utils.execute(`curl -s ${__django__.domain}`)
+			var success = true
 		} catch(e) {
-			var output = `Error: ${e}`
+			var success = false
 		}
-		if (output == "") {
+		if (success == true) {
 			console.log('Starting django ... done')
 			if (handler != null) {handler(true)}
 		} else {
@@ -175,17 +177,19 @@ class Django {
 		var __django__ = this
 
 		// loop.
-		if (this.auth_required == true) {
-			this.render_url(this.domain+"/accounts/login/?next=/&electron=true")
-		} else {
-			this.render_url(this.domain+"/?electron=true")
+		try {
+			utils.execute(`curl -s ${__django__.domain}/accounts/login/`)
+			var url = `${__django__.domain}/accounts/login/?next=/&electron=true`
+		} catch(e) {
+			var url = `${__django__.domain}/?electron=true`
 		}
+		this.render_url(url)
 
 		// failed to render.
 		this.win.webContents.on('did-fail-load', ()=>{
 			if (reattempt == true) {
 				console.log("Rendering failed ==> reattempting.")
-				__django__.render()
+				__django__.render(false)
 			} else {
 				console.log("Rendering failed == stop rendering.")
 			}

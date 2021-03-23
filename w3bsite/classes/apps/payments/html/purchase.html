@@ -8,12 +8,13 @@
 		Previous
 	</a>
 </button>
-<a href="/" class="empty_a" style="z-index: 12; position: absolute; right: 15px; top: 15px;">
+<a href="" class="empty_a" style="z-index: 12; position: absolute; right: 15px; top: 15px;">
 	<img src="{% static 'favicon.png' %}" width="25px" height="25px" style="">
 </a>
 
 <!-- JAVASCRIPT -->
 <script type="text/javascript">
+	var RAW = get_boolean_url_param("raw")
 	var PRODUCT = get_url_param("product")
 	var PLAN = get_url_param("plan")
 	var PRODUCTS = {}
@@ -221,13 +222,15 @@
 	}
 
 	// check authenticated.
-	if ("{{request.user.username}}" == "") {
+	if ("{{USER.username}}" == "") {
 		location.href = "/authentication/signin/"
 	}
 
 	// retrieve current cards.
 	function get_card() {
-		request("/requests/payments/methods/list/", {}, function(response) {
+		request("/requests/payments/methods/list/", {
+			"api_key": get_url_param("api_key"),
+		}, function(response) {
 			// set loaded.
 			payment_elements.loading.style.display = "none"
 			payment_elements.loaded.style.display = "block"
@@ -280,11 +283,11 @@
 					plan_set = true
 					payment_elements.plans.innerHTML += `
 						<a class="empty_a" href="#" onclick="PLAN='`+plan_name+`';select_plan('`+product+`', '`+plan_name+`')">
-							<div class="wrapper widget_reversed" style="border: 1px solid #00000010; border-radius: 25px; width: 100%; height: 55px;  margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px; background-color: {{COLORS.widgets}}; border: 1px solid {{COLORS.widgets_reversed}}; box-shadow: none;">
+							<div class="wrapper widget_reversed" style="border: 1px solid #00000010; border-radius: 25px; width: 100%; height: 55px;  margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px; background-color: {{COLORS.widgets}}; border: 0px solid {{COLORS.widgets_reversed}}; box-shadow: none;">
 								<img src="`+favicon+`" alt="Poker Stats" width="30" height="30" style="margin: 12.5px 0px 0px 15px;" /> 
 								<div style="width: 100%; margin: 15px 0px 0px 10px;">
 									<h1 id="payments.title" class="subtitle" style="text-align: left; color: {{COLORS.widgets_reversed}}; font-size: 16px; font-weight: 600;  margin: 0px 0px 0px 10px; padding: 0px 0px 0px 0px;">
-										`+String(product).capitalize_scentence().replace("Nas-", "NAS-")+` - `+String(plan_name).capitalize_scentence()+`
+										`+String(product).capitalized_scentence().replace("Nas-", "NAS-")+` - `+String(plan_name).capitalized_scentence()+`
 									</h1>
 								</div>
 								<div style="min-width: 100px; margin: 12.5px 0px 0px 0px;">
@@ -302,11 +305,11 @@
 				} else {
 					payment_elements.plans.innerHTML += `
 						<a class="empty_a" href="#" onclick="PLAN='`+plan_name+`';select_plan('`+product+`', '`+plan_name+`')">
-							<div class="wrapper widget_reversed" style="border: 1px solid #00000010; border-radius: 25px; width: 100%; height: 55px;  margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px; background-color: {{COLORS.widgets}}50; border: 1px solid {{COLORS.widgets_reversed}}; box-shadow: none;">
+							<div class="wrapper widget_reversed" style="border: 1px solid #00000010; border-radius: 25px; width: 100%; height: 55px;  margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px; background-color: {{COLORS.widgets}}50; border: 0px solid {{COLORS.widgets_reversed}}; box-shadow: none;">
 								<img src="`+favicon+`" alt="Poker Stats" width="30" height="30" style="margin: 12.5px 0px 0px 15px;" /> 
 								<div style="width: 100%; margin: 15px 0px 0px 10px;">
 									<h1 id="payments.title" class="subtitle" style="text-align: left; color: {{COLORS.widgets_reversed}}; font-size: 16px; font-weight: 600;  margin: 0px 0px 0px 10px; padding: 0px 0px 0px 0px;">
-										`+String(product).capitalize_scentence().replace("Nas-", "NAS-")+` - `+String(plan_name).capitalize_scentence()+`
+										`+String(product).capitalized_scentence().replace("Nas-", "NAS-")+` - `+String(plan_name).capitalized_scentence()+`
 									</h1>
 								</div>
 								<div style="min-width: 100px; margin: 12.5px 0px 0px 0px;">
@@ -357,6 +360,7 @@
 			card_cvc:payment_elements.cvc.value,
 			response:payment_elements.response,
 			loader:payment_elements.loader,
+			"api_key": get_url_param("api_key"),
 		}, function(response) {
 			if (response.success == true) {
 				setInterval(function() {
@@ -410,7 +414,12 @@
 		}
 	}
 	__set_payments_flex__()
-	
+
 </script>
 
+{% endblock %}
+{% block post_styling %}
+<script type="text/javascript">
+	document.getElementById("darkmode_control_bar").style.display = "none"
+</script>
 {% endblock %}

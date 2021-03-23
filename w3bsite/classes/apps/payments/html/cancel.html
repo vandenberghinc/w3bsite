@@ -8,12 +8,13 @@
 		Previous
 	</a>
 </button>
-<a href="/" class="empty_a" style="z-index: 12; position: absolute; right: 15px; top: 15px;">
+<a href="" class="empty_a" style="z-index: 12; position: absolute; right: 15px; top: 15px;">
 	<img src="{% static 'favicon.png' %}" width="25px" height="25px" style="">
 </a>
 
 <!-- JAVASCRIPT -->
 <script type="text/javascript">
+	var RAW = get_boolean_url_param("raw")
 	var PRODUCT = get_url_param("product")
 	var PLAN = get_url_param("plan")
 	var PRODUCTS = {}
@@ -164,7 +165,7 @@
 	}
 
 	// check authenticated.
-	if ("{{request.user.username}}" == "") {
+	if ("{{USER.username}}" == "") {
 		location.href = "/authentication/signin/"
 	}
 
@@ -172,6 +173,7 @@
 	SUBSCRIPTIONS = {}
 	function add_subscriptions() {
 		request("/requests/payments/subscriptions/list/", {
+			"api_key": get_url_param("api_key"),
 		}, function(response) {
 			payment_elements.loading.style.display = "none"
 			payment_elements.loaded.style.display = "block"
@@ -211,7 +213,7 @@
 										<img src="`+favicon+`" alt="Poker Stats" width="30" height="30" style="margin: 12.5px 0px 0px 15px;" /> 
 										<div style="width: 100%; white-space: nowrap; overflow: scroll; margin: 15px 0px 0px 10px; padding-right: 25px; flex: 1;">
 											<h1 id="payments.title" class="subtitle" style="text-align: left; color: {{COLORS.widgets_reversed}}; font-size: 16px; font-weight: 600;  margin: 0px 0px 0px 10px; padding: 0px 0px 0px 0px;">
-												`+String(product_name).capitalize_scentence().replace("Nas-", "NAS-")+` - `+String(plan_name).capitalize_scentence()+`
+												`+String(product_name).capitalized_scentence().replace("Nas-", "NAS-")+` - `+String(plan_name).capitalized_scentence()+`
 											</h1>
 										</div>
 										<div style="min-width: 100px; margin: 12.5px 0px 0px 0px; flex: 0;">
@@ -290,6 +292,7 @@
 					//product: CANCEL.product,
 					response:payment_elements.response,
 					loader:payment_elements.loader,
+					"api_key": get_url_param("api_key"),
 				}, function(response) {
 					if (response.success == true) {
 						setInterval(function() {
@@ -335,4 +338,9 @@
 	
 </script>
 
+{% endblock %}
+{% block post_styling %}
+<script type="text/javascript">
+	document.getElementById("darkmode_control_bar").style.display = "none"
+</script>
 {% endblock %}

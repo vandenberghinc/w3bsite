@@ -39,12 +39,12 @@
 		margin-top: 2.5px;
 		border-bottom: 2px solid #CC3333;
 		box-shadow: 0 0 10px #00000050;
-		background: {{ COLORS.widgets_reversed }};  
-		color: {{ COLORS.text_reversed }}
+		background: {{ COLORS.button_bg }};  
+		color: {{ COLORS.button_txt }}
 	}
 	.filter_reversed {
-		background: {{ COLORS.text_reversed }};  
-		color: {{ COLORS.widgets_reversed }}	
+		background: {{ COLORS.button_bg_reversed }};  
+		color: {{ COLORS.button_txt_reversed }};
 	}
 
 	/* the buttons */
@@ -76,7 +76,7 @@
 	}
 	.button_bordered {
 		background: #00000000;  
-		border: 1px solid {{ COLORS.grey }};  
+		border: 1px solid {{ COLORS.button_bg }};  
 	}
 	.button_bordered_reversed {
 		background: #00000000;  
@@ -127,10 +127,12 @@
 	}
 	.input_bordered {
 		background: #00000000;  
-		border: 1px solid {{ COLORS.grey }};  
+		color: {{input_bg}} ;
+		border: 1px solid {{ COLORS.input_bg }};  
 	}
 	.input_bordered_reversed {
-		background: #00000000;  
+		background: #00000000;
+		color: {{input_bg_reversed}} ;
 		border: 1px solid {{ COLORS.input_bg_reversed }};  
 	}
 	.textarea, .textarea_reversed, .code_textarea, .code_textarea_reversed, .textarea_bordered, .textarea_bordered_reversed, .code_textarea_bordered, .code_textarea_bordered_reversed {
@@ -489,8 +491,24 @@
 	  }
 	}
 
-	/* call the load with html as:
-	<div class="loader" style="transform: scale(1.0); display: block; margin: 0 auto;"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+	/* 
+
+	CODE EXAMPLES:
+
+	- call the load with html as:
+		<div class="loader" style="transform: scale(1.0); display: block; margin: 0 auto;"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+
+	- create a filter option
+		<select onchange="..." class="filter" id="...">
+			<option value="all">*all*</option>
+			<option value="small_blind">small blind</option>
+			<option value="big_blind">big blind</option>
+			<option value="under_the_gun">under the gun</option>
+			<option value="middle_position">middle position</option>
+			<option value="cut_off">cut off</option>
+			<option value="button">button</option>
+		</select>
+
 	*/
 
 	

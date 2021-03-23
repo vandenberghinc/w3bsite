@@ -14,6 +14,7 @@
 	<script type="text/javascript">
 		var BASE_URL = document.getElementById("base_url").href
 		var RAW = get_boolean_url_param("raw")
+		var PREVIOUS = get_url_param("previous")
 	</script>
 	
 	<!-- CSS -->
@@ -898,7 +899,7 @@
 			} else if (language == "pip") {
 				return "PIP"
 			} else {
-				return String(language).capitalize_scentence()
+				return String(language).capitalized_scentence()
 			}
 		}
 
@@ -1149,6 +1150,11 @@
 			<div id="topbar" class="topbar">
 				<div class="wrapper">
 					<div class="wrapper" style="flex: 1;">
+						<button id="previous.1.container" type="button" class="button_bordered" style="margin-left: 15px; width: 100px; padding-top: 5px; padding-bottom: 5px; display: none; color: {{COLORS.white}}">
+							<a id="previous.1" href="/" class="empty_a" style="text-decoration: none; color: inherit; font-style: inherit; font-size: inherit; font-weight: inherit; color: {{COLORS.white}}">
+								Previous
+							</a>
+						</button>
 						<select style="" id="topbar.select" class="chapter_header select" onchange="dropdown_select_handler(this);">
 						  <option style="" value="Documentations" selected class="">Documentations</option>
 						</select>
@@ -1158,18 +1164,19 @@
 							<img src="{% static 'favicon.png' %}" width="20px" height="20px" style="">
 						</a>
 					</div>
-					<script type="text/javascript">
-						if (RAW == true) {
-							document.getElementById("topbar.divider").style.display = "block"
-							document.getElementById("topbar.right").style.display = "none"
-							var topbar = document.getElementById("topbar")
-							topbar.style.background = "none"
-							topbar.style.borderRadius = "none"
-						}
-					</script>
-				</div>
-				<div id="topbar.divider" style="display: none;"></div>
+				</div> 
 			</div> 
+			<script type="text/javascript">
+				if (RAW == true) {
+					document.getElementById("topbar.right").style.display = "none"
+					//document.getElementById("previous.1.container").style.display = "block"
+					var topbar = document.getElementById("topbar")
+					topbar.style.background = "#00000000"
+					topbar.style.boxShadow = "none"
+					topbar.style.borderBottom = "none"
+
+				}
+			</script>
 
 			<!-- LEFT BAR -->
 			<div id="leftbar" class="leftbar" style="display: none;">
@@ -1178,13 +1185,22 @@
 				</div>
 				-->
 				<div id="leftbar.top" style="width: 100%; padding: 10px 0px 10px 0px;">
-					<div class="wrapper" style=" width: 190px;">
-						<a href="/" class="empty_a nomargin nopadding" style="margin-top: 12.5px; margin-left: 15px;">
-							<img src="{% static 'favicon.png' %}" width="20px" height="20px" style="">
-						</a>
-						<h1 class="title nopadding nomargin" style="font-weight: 500; font-size: 14px; margin-top: 13px; margin-left: 10px; color: {{COLORS.white}}95;">
-							VanDenBerghInc
-						</h1>
+					<div id="leftbar.non_raw">
+						<div class="wrapper" style=" width: 190px;">
+							<a href="/" class="empty_a nomargin nopadding" style="margin-top: 12.5px; margin-left: 15px;">
+								<img src="{% static 'favicon.png' %}" width="20px" height="20px" style="">
+							</a>
+							<h1 class="title nopadding nomargin" style="font-weight: 500; font-size: 14px; margin-top: 13px; margin-left: 10px; color: {{COLORS.white}}95;">
+								VanDenBerghInc
+							</h1>
+						</div>
+					</div>
+					<div style="display: none;" id="leftbar.raw">
+						<button type="button" class="button_bordered" style="margin-left: 15px; margin-top: 5px; width: 100px; z-index: 11; padding-top: 5px; padding-bottom: 5px; color: {{COLORS.white}}">
+							<a id="previous.2" href="/" class="empty_a" style="text-decoration: none; color: inherit; font-style: inherit; font-size: inherit; font-weight: inherit; color: {{COLORS.white}}">
+								Previous
+							</a>
+						</button>
 					</div>
 					<!--
 					<div style="width: auto; padding: 10px 15px 0px 15px; position: relative;">
@@ -1192,15 +1208,7 @@
 					</div>
 					-->
 				</div>
-				<script type="text/javascript">
-					if (RAW == true) {
-						var leftbar_top = document.getElementById("leftbar.top")
-						var leftbar_content = document.getElementById("leftbar.content")
-						leftbar_top.style.display = "none"
-						leftbar_top.style.paddingTop = "15px"
-					}
-				</script>
-				<div class="leftbar_chapter_divider"></div>
+				<div id="first_leftbar_chapter_divider" class="leftbar_chapter_divider"></div>
 				<div id="leftbar.content" class="leftbar_content">
 					<!-- example. -->
 					<div class="leftbar_chapter_divider"></div>
@@ -1223,7 +1231,26 @@
 						</div>	
 					</div>
 				</div>
+				<script type="text/javascript">
+					if (RAW == true) {
+						var leftbar_non_raw = document.getElementById("leftbar.non_raw")
+						var leftbar_raw = document.getElementById("leftbar.raw")
+						var first_leftbar_chapter_divider = document.getElementById("first_leftbar_chapter_divider")
+						leftbar_non_raw.style.display = "none"
+						//leftbar_raw.style.display = "block"
+						//first_leftbar_chapter_divider.style.marginTop = "0px"
+					}
+				</script>
 			</div>
+			<script type="text/javascript">
+				if (PREVIOUS == null) {
+					PREVIOUS = "/"
+				}
+				if (PREVIOUS != null && PREVIOUS != "") {
+					document.getElementById("previous.1").href = PREVIOUS
+					document.getElementById("previous.2").href = PREVIOUS
+				}
+			</script>
 
 			<!-- BLOCKS -->
 			<div id="content" style="z-index: 7; position: fixed; top: 50px; bottom: 0px; right: 0px; left: 0px; overflow: visible; border-radius: 10px;">

@@ -28,19 +28,35 @@ class Views(_defaults_.Defaults):
 	# purchase.
 	class Purchase(views.View):
 		def __init__(self, defaults=None):
-			views.View.__init__(self, "payments/", "purchase", website=defaults.website, html=f"w3bsite/classes/apps/payments/html/purchase.html")
+			views.View.__init__(self, "payments/", "purchase", 
+				website=defaults.website, 
+				html=f"w3bsite/classes/apps/payments/html/purchase.html",
+				auth_required=False,)
 			_defaults_.Defaults.__init__(self)
 			self.assign(defaults.dict())
 		def view(self, request):
-			if self._maintenance_: return self.maintenance(request)
-			return self.render(request)
+			user = {}
+			response = self.website.users.authenticated(request)
+			if response.success: 
+				user = {"email":response.email, "username":response.username, "api_key":response.api_key}
+			return self.render(request, {
+				"USER":user,
+			})
 
 	# cancel.
 	class Cancel(views.View):
 		def __init__(self, defaults=None):
-			views.View.__init__(self, "payments/", "cancel", website=defaults.website, html=f"w3bsite/classes/apps/payments/html/cancel.html")
+			views.View.__init__(self, "payments/", "cancel", 
+				website=defaults.website, 
+				html=f"w3bsite/classes/apps/payments/html/cancel.html",
+				auth_required=False,)
 			_defaults_.Defaults.__init__(self)
 			self.assign(defaults.dict())
 		def view(self, request):
-			if self._maintenance_: return self.maintenance(request)
-			return self.render(request)
+			user = {}
+			response = self.website.users.authenticated(request)
+			if response.success: 
+				user = {"email":response.email, "username":response.username, "api_key":response.api_key}
+			return self.render(request, {
+				"USER":user,
+			})
