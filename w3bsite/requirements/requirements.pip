@@ -9,8 +9,8 @@ urllib3>=1.26.4
 gunicorn
 whitenoise
 psutil
-uwsgi
-#psycopg2-binary # causes errors on macos m1
+#uwsgi # causes install errors on some mac's
+#psycopg2-binary # causes install errors on macos m1
 xmltodict
 stripe
 

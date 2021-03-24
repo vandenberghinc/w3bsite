@@ -25,9 +25,7 @@ Install the package.
 
 # Troubleshooting:
 
-#### Apple Silicon M1:
-
-##### Failed to install grpcio
+##### Failed to install grpcio on MacOS Apple Silicon M1.
 	arch -arch x86_64 /usr/bin/python3 -m pip install firebase-admin
 
 # Setup.
