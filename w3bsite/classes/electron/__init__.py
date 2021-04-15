@@ -21,7 +21,7 @@ class Electron(Object):
 		#
 
 	# initialize electron.
-	def initialize(self):
+	def initialize(self, build=None):
 		
 		# install npm & dependencies.
 		loader = Loader(f"Initializing electron")
@@ -39,9 +39,13 @@ class Electron(Object):
 					exit 1
 				fi
 			fi
-			npm install electron --save -g
-			npm install electron-packager --save -g
-			npm install electron-installer-dmg --save-dev -g
+			build="{build}"
+			if [[ "$build" != "None" ]] ; then
+				cd $build
+			fi
+			npm install electron --save {Boolean(build == None).string(true='-g', false='')}
+			npm install electron-packager --save {Boolean(build == None).string(true='-g', false='')}
+			npm install electron-installer-dmg --save-dev {Boolean(build == None).string(true='-g', false='')}
 		""")
 		if not response.success: 
 			loader.stop(success=False)
@@ -56,6 +60,8 @@ class Electron(Object):
 	def build(self,
 		# the export build path (str, FilePath) (optional).
 		build=None,
+		# install the node modules.
+		node_modules=False,
 	):
 
 		# check initialized.
@@ -74,6 +80,18 @@ class Electron(Object):
 			".gitattributes",
 			".electron",
 		])
+		include = [
+			"html/*",
+            "js/*",
+            "python/*"
+		]
+		root = Directory(self.root)
+		for dir in root.paths(recursive=True, dirs_only=True, banned_names=[".git", ".gitignore", ".gitattributes", ".electron", ".docs", ]):
+			dir = gfp.clean(f"python/django/{root.subpath(dir)}/*")
+			if dev0s.defaults.options.log_level >= 1:
+				dev0s.response.log("Include directory "+dir)
+			include.append(dir)
+		include = json.dumps(include, indent=0, ensure_ascii=False)
 		for path in Directory(build).paths(files_only=True, recursive=True):
 			data, edits = Files.load(path), 0
 			for from_, to_ in {
@@ -83,6 +101,7 @@ class Electron(Object):
 				"***AUTHOR***":self.author,
 				"***DESCRIPTION***":self.description,
 				"***VERSION***":self.version,
+				"***INCLUDE***":include,
 			}.items(): 
 				if from_ in data: 
 					edits += 1
@@ -97,6 +116,11 @@ class Electron(Object):
 			".gitattributes",
 			".electron",
 		])
+
+		# install node modules.
+		if node_modules:
+			response = self.initialize(build=build)
+			if not response.success: return response
 
 		# handler.
 		loader.stop()
@@ -199,7 +223,7 @@ class Electron(Object):
 	):
 
 		# build source code.
-		response = self.build()
+		response = self.build(node_modules=True)
 		if not response.success: return response
 		build = response.build
 
@@ -209,11 +233,11 @@ class Electron(Object):
 		# checks.
 		dirs = [Files.join(self.root, ".electron"),]
 		if "*" in os or "linux" in os:
-			dirs += [Files.join(self.root, ".electron/.linux")]
+			dirs += [Files.join(self.root, ".electron/linux")]
 		if "*" in os or "windows" in os:
-			dirs += [Files.join(self.root, ".electron/.windows")]
+			dirs += [Files.join(self.root, ".electron/windows")]
 		if "*" in os or "macos" in os:
-			dirs += [Files.join(self.root, ".electron/.macos")]
+			dirs += [Files.join(self.root, ".electron/macos")]
 		for dir in dirs:
 			if not Files.exists(dir): Files.create(dir, directory=True)
 
@@ -223,22 +247,67 @@ class Electron(Object):
 		for i in options:
 			if Files.exists(i): img = Image(path=i) ; break
 		if img == None:
+			loader.stop(success=False)
 			return dev0s.response.error(f"No favicon exists at [{options[0]}].")
 		for i in options:
 			if not Files.exists(i): img.convert(i)
 
 		# deploy.
-		if "*" in os or "linux" in os:
-			response = dev0s.code.execute(f"cd {build} && electron-packager . --overwrite --platform=darwin --arch=x64 --icon={img_base}/icon.icns --prune=true --out={self.root}/.electron/linux/")
-			if not response.success: return response
-		if "*" in os or "windows" in os:
-			response = dev0s.code.execute(f"""cd {build} && electron-packager . {self.name} --overwrite --asar --platform=win32 --arch=ia32 --icon={img_base}/icon.ico --prune=true --out={self.root}/.electron/windows/ --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName="""+"""\""""+self.name+"""\" """)
-			if not response.success: return response
+		tmp_build = Directory("/tmp/build/")
 		if "*" in os or "macos" in os:
-			response = dev0s.code.execute(f"cd {build} && electron-packager . {self.name} --overwrite --asar --platform=linux --arch=x64 --icon={img_base}/icon.png --prune=true --out={self.root}/.electron/macos/")
-			if not response.success: return response
-			response = dev0s.code.execute(f"electron-installer-dmg {self.root}/.electron/macos/{self.name}.app {self.name} --out={self.root}/.electron/macos/ --overwrite --icon={img_base}/icon.icns")
-			if not response.success: return response
+			destination = Files.join(self.root, f".electron/macos/{self.name}")
+			img = f"{img_base}/favicon.icns"
+			if not Files.exists(img):
+				loader.stop(success=False)
+				return dev0s.response.error(f"Icon file [{img}] does not exist.")
+			#Files.delete(destination, forced=True)
+			tmp_build.fp.delete(forced=True)
+			tmp_build.fp.create(directory=True)
+			response = dev0s.code.execute(f"cd {build} && electron-packager . --overwrite --platform=darwin --arch=x64 --icon={img} --prune=true --out={tmp_build}")
+			if not response.success: 
+				loader.stop(success=False)
+				return response
+			print(tmp_build.paths()[0])
+			loader.stop()
+			quit()
+			Files.mode(tmp_build.paths()[0], destination)
+			"""
+			response = dev0s.code.execute(f"electron-installer-dmg {self.root}/.electron/macos/{self.name}.app {self.name} --out={tmp_build} --overwrite --icon={img}")
+			if not response.success: 
+				loader.stop(success=False)
+				return response
+			destination = Files.join(self.root, f".electron/macos/{self.name}.dmg")
+			Files.delete(destination, forced=True)
+			Files.move(tmp_build.paths()[0], destination)
+			"""
+		if "*" in os or "windows" in os:
+			destination = Files.join(self.root, f".electron/windows/{self.name}")
+			img = f"{img_base}/favicon.ico"
+			if not Files.exists(img):
+				loader.stop(success=False)
+				return dev0s.response.error(f"Icon file [{img}] does not exist.")
+			Files.delete(destination, forced=True)
+			tmp_build.fp.delete(forced=True)
+			tmp_build.fp.create(directory=True)
+			response = dev0s.code.execute(f"""cd {build} && electron-packager . {self.name} --overwrite --asar --platform=win32 --arch=ia32 --icon={img} --prune=true --out={tmp_build} --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName="""+"""\""""+self.name+"""\" """)
+			if not response.success: 
+				loader.stop(success=False)
+				return response
+			Files.move(tmp_build.paths()[0], destination)
+		if "*" in os or "linux" in os:
+			destination = Files.join(self.root, f".electron/linux/{self.name}")
+			img = f"{img_base}/favicon.png"
+			if not Files.exists(img):
+				loader.stop(success=False)
+				return dev0s.response.error(f"Icon file [{img}] does not exist.")
+			Files.delete(destination, forced=True)
+			tmp_build.fp.delete(forced=True)
+			tmp_build.fp.create(directory=True)
+			response = dev0s.code.execute(f"cd {build} && electron-packager . {self.name} --overwrite --asar --platform=linux --arch=x64 --icon={img} --prune=true --out={tmp_build}")
+			if not response.success: 
+				loader.stop(success=False)
+				return response
+			Files.move(tmp_build.paths()[0], destination)
 
 		# handler.
 		loader.stop()

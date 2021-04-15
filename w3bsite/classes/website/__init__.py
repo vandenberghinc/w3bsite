@@ -643,7 +643,7 @@ class Website(dev0s.cli.CLI,Traceback):
 		)
 
 		# logs.
-		if dev0s.defaults.options.log_level >= 1:
+		if dev0s.defaults.options.log_level >= 2:
 			print(f"Website: {self.name}")
 			print(f" * domain: {self.domain}")
 			print(f" * root: {self.root}")

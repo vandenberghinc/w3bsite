@@ -5,10 +5,6 @@
     "main": "js/main.js",
     "scripts": {
         "start": "electron . ",
-        "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=/Volumes/GitHub/NAS/graphics/icon/icon.icns --prune=true --out=release-builds",
-        "package-win": "electron-packager . ***NAME*** --overwrite --asar --platform=win32 --arch=ia32 --icon=/Volumes/GitHub/NAS/graphics/icon/icon.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"CryptoApp\"",
-        "package-linux": "electron-packager . ***NAME*** --overwrite --asar --platform=linux --arch=x64 --icon=/Volumes/GitHub/NAS/graphics/icon/icon.png --prune=true --out=release-builds",
-        "build-installer-mac": "electron-installer-dmg ./release-builds/***NAME***-darwin-x64/***NAME***.app ***NAME***  --out=release-builds --overwrite --icon=/Volumes/GitHub/NAS/graphics/icon/icon.icns"
     },
     "author": "***AUTHOR***",
     "license": "ISC",
@@ -23,10 +19,6 @@
         "python-shell": "^2.0.3"
     },
     "build": {
-        "files": [
-            "html/*",
-            "js/*",
-            "python/*"
-        ]
+        "files": ***INCLUDE***
     }
 }
