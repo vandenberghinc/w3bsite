@@ -92,6 +92,11 @@ class Logging(Object):
 			Object.__init__(self)
 			self.assign(attributes)
 
+			# check dir.
+			if self.live:
+				if not Files.exists(self.database.join("logs")): 
+					Files.create(self.database.join("logs"), directory=True)
+
 			# attributes.
 			if self.live:
 				self.alerts = Dictionary({}, path=self.database.join("logs/alerts"), default={})

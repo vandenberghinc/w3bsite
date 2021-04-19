@@ -16,5 +16,5 @@ stripe
 
 # inc packages.
 dev0s>=3.28.7
-ssht00ls>=3.29.9
+ssht00ls>=3.30.1
 
