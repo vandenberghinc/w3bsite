@@ -365,8 +365,10 @@ class Users(_defaults_.Defaults):
 				if not _response_.success: return _response_
 				response["name"] = _response_.data["account"]["name"]
 				response["username"] = _response_.data["account"]["username"]
-				response["email"] = _response_.data["account"]["email"]
-				response["activated"] = _response_.data["permissions"]["activated"]
+				try: response["email"] = _response_.data["account"]["email"]
+				except KeyError: response["email"] = None
+				try: response["activated"] = _response_.data["permissions"]["activated"]
+				except KeyError: response["activated"] = None
 			return response
 
 		# success.
@@ -379,8 +381,10 @@ class Users(_defaults_.Defaults):
 			if not _response_.success: return _response_
 			response["name"] = _response_.data["account"]["name"]
 			response["username"] = _response_.data["account"]["username"]
-			response["email"] = _response_.data["account"]["email"]
-			response["activated"] = _response_.data["permissions"]["activated"]
+			try: response["email"] = _response_.data["account"]["email"]
+			except KeyError: response["email"] = None
+			try: response["activated"] = _response_.data["permissions"]["activated"]
+			except KeyError: response["activated"] = None
 		return response
 
 		#
@@ -1028,6 +1032,7 @@ class Users(_defaults_.Defaults):
 				username, email = self.__correct_username_email__(id, id)
 				if username != None: id = username
 				elif email != None: id = email
+				else: raise ValueError(f"Unable to find the username for user id [{id}]].")
 				response = self.load_data(email=email, username=username)
 				if not response.success: 
 					dev0s.response.log(f"Unable to iterate user: [{id}] (#837028) (error: {response.error}).")
@@ -1055,7 +1060,13 @@ class Users(_defaults_.Defaults):
 		# optionally pass emails=[newuser@email.com] to synchronize new users.
 		emails=["*"], 
 		usernames=["*"], 
+		# the log level.
+		log_level=0,
 	):
+
+		# loader.
+		if log_level >= 0:
+			loader = Loader("Synchronizing users")
 
 		# get all ids.
 		_usernames_ = []
@@ -1065,6 +1076,7 @@ class Users(_defaults_.Defaults):
 			for email in emails:
 				response = self.django.users.get(email=email)
 				if not response.success:
+					if log_level >= 0: loader.stop(success=False)
 					return response
 				else:
 					_usernames_.append(response.user.username)
@@ -1075,6 +1087,7 @@ class Users(_defaults_.Defaults):
 			for email in emails:
 				response = self.django.users.get(email=email)
 				if not response.success:
+					if log_level >= 0: loader.stop(success=False)
 					return response
 				else:
 					_usernames_.append(response.user.username)
@@ -1085,7 +1098,9 @@ class Users(_defaults_.Defaults):
 
 			# load data.
 			response = self.load_data(username=username)
-			if not response.success: return response
+			if not response.success: 
+				if log_level >= 0: loader.stop(success=False)
+				return response
 			data, edits = response["data"], 0
 
 			# check user data.
@@ -1099,20 +1114,26 @@ class Users(_defaults_.Defaults):
 			if edits > 0:
 				edits = 0
 				response = self.save_data(username=username, data=data)
-				if not response.success: return response
+				if not response.success: 
+					if log_level >= 0: loader.stop(success=False)
+					return response
 
 			# get.
 			response = self.get(email=None, username=username)
 			if not response.success: 
 				response = self.load_password(email=None, username=username)
-				if not response.success: return response
+				if not response.success: 
+					if log_level >= 0: loader.stop(success=False)
+					return response
 				password = response["password"]
 				response = self.django.users.create(
 					email=data["account"]["email"], 
 					password=password, 
 					username=data["account"]["username"], 
 					name=data["account"]["name"])
-				if not response.success: return response
+				if not response.success: 
+					if log_level >= 0: loader.stop(success=False)
+					return response
 			user = response["user"]
 
 
@@ -1126,7 +1147,9 @@ class Users(_defaults_.Defaults):
 			# edits.
 			if edits > 0:
 				response = self.save_data(email=user.email, username=user.username, data=data)
-				if not response.success: return response
+				if not response.success: 
+					if log_level >= 0: loader.stop(success=False)
+					return response
 
 			# api keys.
 			api_keys[data["keys"]["api_key"]] = {
@@ -1135,6 +1158,7 @@ class Users(_defaults_.Defaults):
 			}
 			
 		# success.
+		if log_level >= 0: loader.stop()
 		return dev0s.response.success(f"Successfully synchronized {len(_usernames_)} user(s).", {
 			"api_keys":api_keys,
 		})
