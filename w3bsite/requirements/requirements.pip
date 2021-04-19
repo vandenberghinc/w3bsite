@@ -13,8 +13,10 @@ psutil
 #psycopg2-binary # causes install errors on macos m1
 xmltodict
 stripe
+django
+django-cors-headers
 
 # inc packages.
-dev0s>=3.28.8
-ssht00ls>=3.30.4
+dev0s>=3.28.9
+ssht00ls>=3.30.5
 
