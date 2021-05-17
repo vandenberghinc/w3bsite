@@ -156,7 +156,7 @@ class RateLimit(_defaults_.Defaults):
 		try: rate_limits[mode]["rate"]
 		except KeyError: rate_limits[mode]["rate"] = 0
 		timestamp = rate_limits[mode]["timestamp"]
-		increased = Date(date.increase(timestamp, format=date.timestamp_format, minutes=reset_minutes))
+		increased = Date(timestamp).increase(minutes=reset_minutes)
 		if date >= increased:
 			rate_limits[mode]["rate"] = 0
 			rate_limits[mode]["timestamp"] = date.timestamp
