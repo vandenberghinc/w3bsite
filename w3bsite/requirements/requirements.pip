@@ -17,6 +17,6 @@ django
 django-cors-headers
 
 # inc packages.
-dev0s>=3.29.5
-ssht00ls>=3.30.5
+dev0s>=3.30.3
+ssht00ls>=3.30.7
 

@@ -43,7 +43,7 @@ class Django(_defaults_.Defaults):
 		self.users = Users(defaults=defaults)
 
 		#
-	def start(self, host="127.0.0.1", port="8000", production=False):
+	def start(self, host="127.0.0.1", port="8000", production=False, reload=True):
 
 		# check secret key.
 		os.chdir(self.root)
@@ -65,6 +65,7 @@ class Django(_defaults_.Defaults):
 		if dev0s.defaults.options.log_level >= 1:
 			dev0s.response.log(f"Starting {self.name}.", save=True)
 		sys.argv = [f"{self.root}/manage.py", "runserver", f"{host}:{port}"]
+		if not reload: sys.argv += ["--noreload"]
 		import manage
 		manage.main()
 		
