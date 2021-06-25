@@ -16,7 +16,10 @@ stripe
 django
 django-cors-headers
 
+# security patches.
+normalize-url>=4.5.1
+
 # inc packages.
-dev0s>=3.30.3
-ssht00ls>=3.30.7
+dev0s>=3.33.5
+ssht00ls>=3.31.9
 

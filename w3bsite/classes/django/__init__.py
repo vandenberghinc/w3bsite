@@ -46,7 +46,7 @@ class Django(_defaults_.Defaults):
 	def start(self, host="127.0.0.1", port="8000", production=False, reload=True):
 
 		# check secret key.
-		os.chdir(self.root)
+		os.chdir(str(self.root))
 		try:
 			add_secret_key = Files.load("__defaults__/env/json", format="json")["DJANGO_SECRET_KEY"] in ["False","True","None","","null",None,False,True]
 		except:
@@ -108,7 +108,7 @@ class Django(_defaults_.Defaults):
 		if not Files.exists(f"{self.database}/data/db.sqlite3") or forced:
 			dev0s.response.log(f"Applying {ALIAS} webserver migrations.")
 			dev0s.env.export(export="__defaults__/env/json", env={"MIGRATIONS": True,})
-			os.chdir(self.root)
+			os.chdir(str(self.root))
 			#import manage
 			#old_argv = list(sys.argv)
 			#sys.argv = [f"{self.root}/manage.py", "migrate"]

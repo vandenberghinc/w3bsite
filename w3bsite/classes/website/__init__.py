@@ -195,7 +195,7 @@ class Website(dev0s.cli.CLI,Traceback):
 			if firebase_admin != None:
 				if isinstance(firebase_admin, str) and firebase_admin[:len("__defaults__/env")] == "__defaults__/env":
 					firebase_admin = f"{root}/{firebase_admin}".replace("//","/").replace("//","/")
-		self.root = gfp.clean(root)
+		self.root = str(gfp.clean(root))
 		self.name = name
 		self.description = description
 		self.author = author
@@ -360,17 +360,17 @@ class Website(dev0s.cli.CLI,Traceback):
 		self.https_domain = f"https://{self.domain}"
 
 		# environment for settings.py.
-		os.chdir(gfp.clean(self.root))
+		os.chdir(str(gfp.clean(self.root)))
 		if not os.path.exists("__defaults__/env"): os.mkdir("__defaults__/env")
 		SECRET_KEY = dev0s.env.get("DJANGO_SECRET_KEY", default=None)
 		if SECRET_KEY == None:  SECRET_KEY = String().generate(length=128, capitalize=True, digits=True, special=True)
 		dev0s.env.export(export="__defaults__/env/json", env={
-			"DJANGO_SECRET_KEY":SECRET_KEY,
-			"WEBSITE_BASE":gfp.base(SOURCE_PATH),
+			"DJANGO_SECRET_KEY":str(SECRET_KEY),
+			"WEBSITE_BASE":str(gfp.base(SOURCE_PATH)),
 			"DOMAIN":str(self.domain),
 			"DATABASE":str(self.database),
 			"PRODUCTION":str(self.production),
-			"DEBUG":self.debug,
+			"DEBUG":bool(self.debug),
 		})
 
 		# template data.
@@ -437,11 +437,11 @@ class Website(dev0s.cli.CLI,Traceback):
 			# colors.
 			"COLORS":colors,
 			# wbsite info.
-			"NAME":self.name,
-			"DOMAIN":self.domain,
-			"PRODUCTION":self.production,
-			"AUTHOR":self.author,
-			"ORGANIZATION":self.organization,
+			"NAME":str(self.name),
+			"DOMAIN":str(self.domain),
+			"PRODUCTION":str(self.production),
+			"AUTHOR":str(self.author),
+			"ORGANIZATION":str(self.organization),
 			# include other tempalte data's.
 			"STRIPE":{},
 			"FIREBASE":{},
@@ -995,19 +995,19 @@ class Website(dev0s.cli.CLI,Traceback):
 				if base == "": full_key = key
 				else: full_key = base+"_"+key
 				_format_ = None
-				if isinstance(value, str):
+				if isinstance(value, (str,String,FilePath)):
 					_format_ = "str"
-					local_security.set_secret_env(full_key, value)
-				elif isinstance(value, int):
+					local_security.set_secret_env(full_key, str(value))
+				elif isinstance(value, (int,Integer)):
 					_format_ = "int"
 					local_security.set_secret_env(full_key, str(value))
-				elif isinstance(value, bool):
+				elif isinstance(value, (bool,Boolean)):
 					_format_ = "bool"
 					local_security.set_secret_env(full_key, str(value))
 				elif value == None:
 					_format_ = "null"
 					local_security.set_secret_env(full_key, "None")
-				elif isinstance(value, dict):
+				elif isinstance(value, (dict,Dictionary)):
 					_format_ = "dict"
 					stored += __handle_dict__(dictionary=value, base=full_key)
 				else:
