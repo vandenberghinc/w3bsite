@@ -65,7 +65,7 @@ class Deployment(Object):
 		self.email = email
 
 		# vars.
-		self.live = gfp.clean(self.library, remove_double_slash=True, remove_last_slash=True) in gfp.clean(self.root, remove_double_slash=True, remove_last_slash=True)
+		self.live = str(gfp.clean(self.library, remove_double_slash=True, remove_last_slash=True)) in str(gfp.clean(self.root, remove_double_slash=True, remove_last_slash=True))
 
 		# objects.
 		self.namecheap = namecheap

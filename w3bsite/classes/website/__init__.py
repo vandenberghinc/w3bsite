@@ -355,7 +355,7 @@ class Website(dev0s.cli.CLI,Traceback):
 			if not Files.exists(dir): Files.create(dir, directory=True)
 
 		# set variables.
-		self.live = utils.equalize_path(self.root, striplast=True) == utils.equalize_path(self.library, striplast=True)
+		self.live = utils.equalize_path(str(self.root), striplast=True) == utils.equalize_path(str(self.library), striplast=True)
 		self.http_domain = f"http://{self.domain}"
 		self.https_domain = f"https://{self.domain}"
 

@@ -20,6 +20,6 @@ django-cors-headers
 normalize-url>=4.5.1
 
 # inc packages.
-dev0s>=3.33.5
-ssht00ls>=3.31.9
+dev0s>=3.33.7
+ssht00ls>=3.32.0
 
